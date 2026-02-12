@@ -1,10 +1,19 @@
-Goal Quest (GitHub Pages)
-1) Sube TODO este contenido al repositorio (manteniendo carpetas).
-2) En GitHub: Settings -> Pages -> Build and deployment:
-   - Source: Deploy from a branch
-   - Branch: main / (root)
-3) Espera a que aparezca el link, y abre ese URL.
+GOAL QUEST – Refactor (sin cambiar lógica)
+========================================
+
+Estructura:
+- index.html
+- css/main.css
+- js/app.js
+- assets/backgrounds/*
+- assets/classes/*
+
+Cómo probar local:
+- Abrir index.html en Chrome/Edge.
+
+GitHub Pages:
+- Sube TODO el contenido del ZIP al repo (index.html en la raíz).
+- Settings → Pages → Deploy from branch → main /(root)
 
 Notas:
-- No abras el archivo local con doble click (file://) si el navegador bloquea recursos.
-  Para local, usa un servidor simple: `python -m http.server` y abre http://localhost:8000/
+- No se cambió la lógica del juego; solo se separó CSS y JS.
