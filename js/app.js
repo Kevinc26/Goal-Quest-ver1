@@ -1,6 +1,6 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 1.0.0 - Producción GitHub Pages
-// Autor: Kevin + ChatGPT
+// Versión: 2.0 - MÓDULO DE PODER
+// Feedback emocional · Mundo transformable · Narrativa épica
 // ============================================================
 
 // ==================== DATOS DEL JUEGO ====================
@@ -99,8 +99,7 @@ const GAME_DATA = {
     }
 };
 
-// ==================== ASSETS - CORREGIDO PARA GITHUB PAGES ====================
-// Todas las rutas son relativas a la raíz del proyecto
+// ==================== ASSETS ====================
 const ASSETS = {
     start: "./assets/backgrounds/pantalla de inicio.png",
     acts: {
@@ -125,11 +124,250 @@ const ASSETS = {
     }
 };
 
-// ==================== FUNCIÓN ASSET ====================
-// Devuelve la ruta completa para GitHub Pages
 function asset(relPath) {
-    return relPath; // Ya incluye "./assets/..."
+    return relPath;
 }
+
+// ==================== MÓDULO DE PODER ====================
+// Feedback emocional · Partículas · Mundo transformable · Narrativa épica
+// =========================================================
+
+// ---------------------------------------------
+// 1. SISTEMA DE PARTÍCULAS (FONDO DINÁMICO)
+// ---------------------------------------------
+const ParticleSystem = {
+    container: null,
+    particles: [],
+    isActive: false,
+
+    init() {
+        if (!document.querySelector('.particle-container')) {
+            this.container = document.createElement('div');
+            this.container.className = 'particle-container';
+            document.body.appendChild(this.container);
+        }
+    },
+
+    start() {
+        if (this.isActive) return;
+        this.isActive = true;
+        this.init();
+        this.generateParticles(30);
+    },
+
+    stop() {
+        this.isActive = false;
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    },
+
+    generateParticles(count) {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+        
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            const size = Math.floor(Math.random() * 6) + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = Math.floor(Math.random() * 10) + 10 + 's';
+            this.container.appendChild(particle);
+        }
+    }
+};
+
+// ---------------------------------------------
+// 2. MENSAJES DE PODER (FRASES MOTIVACIONALES)
+// ---------------------------------------------
+const PowerMessages = {
+    daily: [
+        "✨ Ya comenzaste a cambiar.",
+        "⚡ Hoy fuiste más fuerte que tu miedo.",
+        "🌟 La fortuna sonríe a los valientes.",
+        "🌅 Tu progreso transforma el mundo.",
+        "🔥 Cada paso te acerca a tu leyenda.",
+        "💫 El héroe dentro de ti despertó."
+    ],
+    
+    region: [
+        "🗡️ El caos se ordena ante tu voluntad.",
+        "🛡️ Tu identidad se forja con cada decisión.",
+        "🏹 Las distracciones caen, el enfoque reina.",
+        "❤️ Te estás convirtiendo en quien elegiste ser.",
+        "⚔️ No fue el monstruo. Fue tu límite. Y lo superaste."
+    ],
+    
+    levelUp: [
+        "⭐ Tu poder trasciende lo imaginado.",
+        "👑 El mundo ahora te reconoce.",
+        "🌠 Eres más de lo que fuiste ayer.",
+        "✨ La leyenda continúa creciendo.",
+        "💥 Tu potencial no tiene techo."
+    ],
+    
+    dayComplete: [
+        "🏆 Hoy conquistaste tu mundo.",
+        "🌙 El día terminó, pero tu poder permanece.",
+        "🎯 Mañana, nuevos desafíos. Hoy, celebra.",
+        "🔥 Esta es tu racha. Esta es tu historia.",
+        "💪 No solo cumpliste tareas. Construiste destino."
+    ],
+    
+    firstTask: [
+        "🌅 El primer paso. El más importante.",
+        "⚡ Tu viaje comienza ahora.",
+        "✨ Algo grande está por venir.",
+        "🔥 Despertaste al guerrero interior.",
+        "💫 La energía fluye a través de ti."
+    ],
+
+    combat: [
+        "⚔️ Hoy enfrentas tu miedo.",
+        "🛡️ El dragón no es tu enemigo. Tu duda lo es.",
+        "🔥 Respira. El poder está en ti.",
+        "🌪️ El caos se rinde ante la voluntad férrea.",
+        "💥 Un desafío digno de tu crecimiento."
+    ],
+
+    victory: [
+        "👑 No fue el monstruo. Fue tu límite. Y lo superaste.",
+        "✨ Has demostrado de qué estás hecho.",
+        "🏆 El jefe cayó. Tu confianza asciende.",
+        "🌠 Un enemigo menos. Una lección más.",
+        "⚡ El mundo se vuelve más claro contigo."
+    ]
+};
+
+// ---------------------------------------------
+// 3. FEEDBACK EMOCIONAL (ANIMACIONES Y MENSAJES)
+// ---------------------------------------------
+const PowerFeedback = {
+    showMessage(text, color = 'var(--primary)') {
+        const message = document.createElement('div');
+        message.className = 'power-message';
+        message.style.color = color;
+        message.style.borderColor = color;
+        message.textContent = text;
+        document.body.appendChild(message);
+        
+        setTimeout(() => {
+            if (message.parentNode) message.remove();
+        }, 3000);
+    },
+
+    flash(color = 'rgba(77, 255, 145, 0.3)') {
+        const overlay = document.createElement('div');
+        overlay.className = 'power-flash-overlay';
+        overlay.style.background = `radial-gradient(circle at center, ${color} 0%, transparent 70%)`;
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.remove();
+        }, 1500);
+    },
+
+    shake(element) {
+        if (!element) return;
+        element.style.animation = 'powerPulse 0.5s ease';
+        setTimeout(() => {
+            element.style.animation = '';
+        }, 500);
+    },
+
+    onTaskComplete(type, isFirstTask = false) {
+        if (isFirstTask) {
+            const msg = PowerMessages.firstTask[Math.floor(Math.random() * PowerMessages.firstTask.length)];
+            this.showMessage(msg, 'var(--warning)');
+            this.flash('rgba(255, 209, 102, 0.4)');
+            
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 659.25;
+                gainNode.gain.value = 0.1;
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.2);
+            } catch (e) {
+                console.log('Sonido no disponible');
+            }
+            return;
+        }
+
+        if (type === 'daily') {
+            const msg = PowerMessages.daily[Math.floor(Math.random() * PowerMessages.daily.length)];
+            this.showMessage(msg, 'var(--primary)');
+            this.flash();
+        } else if (type === 'region') {
+            const msg = PowerMessages.region[Math.floor(Math.random() * PowerMessages.region.length)];
+            this.showMessage(msg, 'var(--secondary)');
+            this.flash('rgba(108, 99, 255, 0.3)');
+        }
+    },
+
+    onLevelUp() {
+        const msg = PowerMessages.levelUp[Math.floor(Math.random() * PowerMessages.levelUp.length)];
+        this.showMessage(msg, 'var(--warning)');
+        this.flash('rgba(255, 215, 0, 0.4)');
+    },
+
+    onDayComplete() {
+        const msg = PowerMessages.dayComplete[Math.floor(Math.random() * PowerMessages.dayComplete.length)];
+        this.showMessage(msg, 'var(--gold)');
+        this.flash('rgba(255, 215, 0, 0.5)');
+        
+        document.body.classList.add('world-state-completed');
+        setTimeout(() => {
+            document.body.classList.remove('world-state-completed');
+        }, 5000);
+    },
+
+    onCombatStart(bossName) {
+        const msg = PowerMessages.combat[Math.floor(Math.random() * PowerMessages.combat.length)];
+        this.showMessage(msg, 'var(--danger)');
+        this.flash('rgba(255, 107, 107, 0.3)');
+    },
+
+    onVictory() {
+        const msg = PowerMessages.victory[Math.floor(Math.random() * PowerMessages.victory.length)];
+        this.showMessage(msg, 'var(--warning)');
+        this.flash('rgba(255, 215, 0, 0.5)');
+    }
+};
+
+// ---------------------------------------------
+// 4. TRANSFORMACIÓN DEL MUNDO (SEGÚN PROGRESO)
+// ---------------------------------------------
+const WorldTransformer = {
+    updateState(tasksCompleted) {
+        const body = document.body;
+        for (let i = 0; i <= 5; i++) {
+            body.classList.remove(`world-state-${i}`);
+        }
+        body.classList.remove('world-state-completed');
+        
+        if (tasksCompleted >= GameState.stats.dailyTasksGoal) {
+            body.classList.add('world-state-completed');
+        } else {
+            body.classList.add(`world-state-${tasksCompleted}`);
+        }
+    },
+
+    energizeTitle() {
+        const title = document.querySelector('.game-title');
+        if (title && !title.classList.contains('energized')) {
+            title.classList.add('energized');
+        }
+    }
+};
 
 // ==================== SISTEMA DE CAMINOS POR CLASE ====================
 const CLASS_PATHS = {
@@ -395,10 +633,7 @@ const PathSystem = {
         notification.style.borderLeftColor = character?.color || 'var(--primary)';
         notification.innerHTML = `<div style="font-size: 24px; color: ${character?.color || 'var(--primary)'}">${icon}</div><div style="font-size: 12px;"><strong style="color: ${character?.color || 'var(--primary)'}">${character?.name || 'Aventurero'}:</strong><br>${message}</div>`;
         document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.style.animation = 'slideIn 0.3s ease reverse';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        setTimeout(() => { notification.style.animation = 'slideIn 0.3s ease reverse'; setTimeout(() => notification.remove(), 300); }, 3000);
     }
 };
 
@@ -452,6 +687,8 @@ const GameState = {
         this.load();
         this.checkDailyReset();
         this.generateDailyMissions();
+        WorldTransformer.updateState(this.stats.dailyTasksCompleted);
+        ParticleSystem.init();
     },
 
     load() {
@@ -555,12 +792,19 @@ const GameState = {
             this.dailyMissionsState.completedDailyMissions.push(missionId);
             this.stats.dailyTasksCompleted++;
             
+            const isFirstTask = this.stats.dailyTasksCompleted === 1;
+            PowerFeedback.onTaskComplete('daily', isFirstTask);
+            
             const expGained = 25;
             this.stats.exp += expGained;
             this.stats.dailyExp += expGained;
             
+            WorldTransformer.updateState(this.stats.dailyTasksCompleted);
+            
             if (this.isTodayCompleted()) {
                 this.todayCompleted = true;
+                PowerFeedback.onDayComplete();
+                
                 PathSystem.showClassNotification(`¡DÍA COMPLETADO! ${this.stats.dailyTasksGoal}/${this.stats.dailyTasksGoal} tareas diarias`, '🏆');
                 const dailyBonus = 50;
                 this.stats.exp += dailyBonus;
@@ -590,6 +834,8 @@ const GameState = {
             this.stats.dailyExp = 0;
             this.stats.lastRegionMissionDate = null;
             this.stats.lastCompletedRegionDay = null;
+            
+            WorldTransformer.updateState(0);
             
             if (this.lastPlayedDate) {
                 const lastDate = new Date(this.lastPlayedDate);
@@ -683,7 +929,7 @@ const GameState = {
 
     startRegionTask(regionId, missionIndex) {
         if (this.hasCompletedRegionMissionToday()) {
-            PathSystem.showClassNotification('¡Ya completaste una misión de región hoy! Vuelve mañana.', '🌙');
+            PathSystem.showClassNotification('¡Ya completaste una misión de región hoy!', '🌙');
             return null;
         }
         
@@ -808,6 +1054,9 @@ const GameState = {
             this.stats.lastRegionMissionDate = new Date().toDateString();
             this.stats.lastCompletedRegionDay = missionIndex;
             
+            const isFirstTask = this.stats.dailyTasksCompleted === 0;
+            PowerFeedback.onTaskComplete('region', isFirstTask);
+            
             const expGained = 25;
             this.stats.exp += expGained;
             this.stats.dailyExp += expGained;
@@ -838,6 +1087,9 @@ const GameState = {
             this.stats.hp = this.stats.maxHp;
             this.stats.mp = this.stats.maxMp;
             this.stats.nextLevelExp = Math.floor(this.stats.nextLevelExp * 1.5);
+            
+            PowerFeedback.onLevelUp();
+            
             PathSystem.showClassNotification(`¡Nivel ${this.stats.level}!`, '⭐');
             return true;
         }
@@ -885,6 +1137,8 @@ const GameState = {
         }
         const region = GAME_DATA.regions.find(r => r.id === regionId);
         if (!region) return null;
+        
+        PowerFeedback.onCombatStart(region.boss.name);
         
         this.currentCombat = {
             regionId,
@@ -947,6 +1201,9 @@ const GameState = {
             const expReward = 100 * region.boss.difficulty;
             this.stats.exp += expReward;
             this.stats.dailyExp += expReward;
+            
+            PowerFeedback.onVictory();
+            
             this.checkLevelUp();
             this.save();
             return expReward;
@@ -1038,7 +1295,9 @@ const GameState = {
                 <h3 style="color: ${color}; margin-bottom: 20px;">${title}</h3>
                 <p style="color: #f0f0f0; margin-bottom: 30px; font-size: 14px; line-height: 1.6;">
                     ${message}<br><br>
-                    <em style="color: ${GameState.character?.color || 'var(--primary)'}">${motivationalMessage}</em>
+                    <em style="color: ${GameState.character?.color || 'var(--primary)'}">
+                        ${motivationalMessage}
+                    </em>
                 </p>
                 <div style="margin: 20px 0;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
@@ -1146,16 +1405,25 @@ const RenderEngine = {
         }
         
         container.innerHTML = html;
+        
+        if (screenName === 'start') {
+            setTimeout(() => {
+                ParticleSystem.start();
+                WorldTransformer.energizeTitle();
+            }, 100);
+        }
     },
 
     renderStartScreen() {
         const pathName = GameState.character ? PathSystem.getPathName() : '';
+        
         return `
             <div class="game-screen active">
                 <h1 class="game-title">GOALQUEST</h1>
                 <p style="text-align: center; color: var(--warning); margin: 20px 0;">
                     RPG de Transformación Psicológica
                 </p>
+                
                 ${GameState.character ? `
                     <div style="text-align: center; margin-bottom: 20px;">
                         <div style="font-size: 40px; color: ${GameState.character.color}">${GameState.character.icon}</div>
@@ -1167,31 +1435,37 @@ const RenderEngine = {
                         </div>
                     </div>
                 ` : ''}
+                
                 <div class="ff-menu">
                     <button class="menu-option" onclick="window.showScreen('characters')">
                         <i class="fas fa-gamepad"></i>
                         <span>▶ JUGAR AHORA</span>
                     </button>
+                    
                     ${GameState.character ? `
                         <button class="menu-option" onclick="window.showScreen('daily')">
                             <i class="fas fa-calendar-day"></i>
                             <span>MISIONES DIARIAS (${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal})</span>
                         </button>
+                        
                         <button class="menu-option" onclick="window.showScreen('world')">
                             <i class="fas fa-play"></i>
                             <span>CONTINUAR AVENTURA</span>
                         </button>
                     ` : ''}
+                    
                     <button class="menu-option" onclick="window.showScreen('settings')">
                         <i class="fas fa-cog"></i>
                         <span>CONFIGURACIÓN</span>
                     </button>
                 </div>
+                
                 ${GameState.character && GameState.stats.dailyStreak > 0 ? `
                     <div style="text-align: center; color: var(--warning); margin-top: 30px;">
                         🔥 Racha activa: ${GameState.stats.dailyStreak} días
                     </div>
                 ` : ''}
+                
                 <div style="position: absolute; bottom: 20px; width: 100%; text-align: center; color: #666; font-size: 10px;">
                     © 2024 GOALQUEST RPG - Transforma tu bienestar
                 </div>
@@ -1205,9 +1479,11 @@ const RenderEngine = {
                 <button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom: 20px;">
                     ← VOLVER
                 </button>
+                
                 <h2 style="color: var(--primary); text-align: center; margin: 20px 0;">
                     SELECCIONA TU PERSONAJE
                 </h2>
+                
                 <div class="character-grid">
                     ${GAME_DATA.characters.map(char => {
                         const isSelected = GameState.character?.id === char.id;
@@ -1219,6 +1495,7 @@ const RenderEngine = {
                             <div class="character-card ${isSelected ? 'selected' : ''}"
                                  onclick="window.selectCharacter(${char.id})"
                                  style="--char-color: ${char.color}; --char-color-rgb: ${char.colorRgb}">
+                                
                                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                                     <div style="width:64px;height:64px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;">
                                         <img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;" 
@@ -1232,9 +1509,11 @@ const RenderEngine = {
                                         </p>
                                     </div>
                                 </div>
+                                
                                 <p style="margin: 15px 0; font-size: 12px; color: #ccc; flex-grow: 1;">
                                     ${char.description}
                                 </p>
+                                
                                 <div style="display: flex; justify-content: space-between; margin-top: auto;">
                                     <div style="text-align: center;">
                                         <div style="color: var(--danger); font-size: 11px;">HP</div>
@@ -1253,6 +1532,7 @@ const RenderEngine = {
                         `;
                     }).join('')}
                 </div>
+                
                 ${GameState.character ? `
                     <div style="text-align: center; margin-top: 30px;">
                         <button class="ff-button" onclick="window.startAdventure()">
@@ -1297,6 +1577,7 @@ const RenderEngine = {
                         ` : ''}
                     </div>
                 </div>
+                
                 <div style="display: flex; gap: 20px; align-items: center;">
                     <div>
                         <div style="font-size: 10px; color: var(--danger);">HP</div>
@@ -1306,6 +1587,7 @@ const RenderEngine = {
                             </div>
                         </div>
                     </div>
+                    
                     <div>
                         <div style="font-size: 10px; color: var(--primary);">MP</div>
                         <div class="stat-bar mp-bar">
@@ -1314,6 +1596,7 @@ const RenderEngine = {
                             </div>
                         </div>
                     </div>
+                    
                     <div>
                         <div style="font-size: 10px; color: var(--warning);">EXP</div>
                         <div class="stat-bar exp-bar">
@@ -1322,6 +1605,7 @@ const RenderEngine = {
                             </div>
                         </div>
                     </div>
+                    
                     <div>
                         <div style="font-size: 10px; color: var(--info); text-align: center;">DIARIO</div>
                         <div class="daily-progress-bar">
@@ -1342,23 +1626,25 @@ const RenderEngine = {
         }
         
         const dailyProgressPercent = Math.min(100, (GameState.stats.dailyTasksCompleted / GameState.stats.dailyTasksGoal) * 100);
+        const pathName = PathSystem.getPathName();
+        const pathDescription = PathSystem.getPathDescription();
         
         return `
             <div class="game-screen active">
                 ${this.renderStatusBar()}
+                
                 <h2 style="color: var(--primary); text-align: center; margin: 20px 0;">
-                    ${PathSystem.getPathName()}
+                    ${pathName}
                 </h2>
                 <p style="text-align: center; color: #aaa; margin-bottom: 10px; font-size: 12px;">
-                    ${PathSystem.getPathDescription()}
+                    ${pathDescription}
                 </p>
-                <div style="background: rgba(26,26,46,0.95); border-radius: 15px; padding: 20px; border: 3px solid var(--warning); margin-bottom: 30px; max-width: 600px; width: 100%;">
+                
+                <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 20px; border: 3px solid var(--warning); margin-bottom: 30px; max-width: 600px; width: 100%;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
                             <div style="color: var(--warning); font-size: 14px;">PROGRESO DIARIO</div>
-                            <div style="color: #aaa; font-size: 10px;">
-                                ${GameState.isTodayCompleted() ? '✅ Día completado' : `${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} tareas restantes`}
-                            </div>
+                            <div style="color: #aaa; font-size: 10px;">${GameState.isTodayCompleted() ? '✅ Día completado' : `${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} tareas restantes`}</div>
                         </div>
                         <div style="color: var(--warning); font-size: 16px;">
                             ${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}
@@ -1378,49 +1664,55 @@ const RenderEngine = {
                             💪 Completa ${GameState.stats.dailyTasksGoal} tareas diarias para bonus
                         </div>
                     `}
+                    
                     ${GameState.hasCompletedRegionMissionToday() ? `
                         <div style="color: var(--warning); text-align: center; margin-top: 15px; font-size: 12px;">
                             🌙 Ya completaste tu misión de región hoy. Vuelve mañana.
                         </div>
                     ` : ''}
+                    
                     <div style="text-align: center; margin-top: 20px;">
                         <button class="ff-button" onclick="window.showScreen('daily')" style="padding: 10px 20px; font-size: 12px;">
                             📅 VER MISIONES DIARIAS
                         </button>
                     </div>
                 </div>
+                
                 <p style="text-align: center; color: #aaa; margin-bottom: 30px;">
                     Completa las 7 misiones de cada región para desbloquear el combate contra el jefe
                 </p>
+                
                 <div class="map-grid">
-                    ${GAME_DATA.regions.map(r => {
-                        const unlocked = GameState.isRegionUnlocked(r.id);
-                        const completed = GameState.completedMissions[r.id]?.filter(m => m).length || 0;
-                        const isCompleted = GameState.isRegionCompleted(r.id);
-                        const isBossDefeated = GameState.isBossDefeated(r.id);
-                        const regionTheme = PathSystem.getRegionTheme(r.id);
-                        const imgSrc = asset(ASSETS.acts[r.id]);
-                        const nextMission = GameState.getNextAvailableMission(r.id);
+                    ${GAME_DATA.regions.map(region => {
+                        const isUnlocked = GameState.isRegionUnlocked(region.id);
+                        const isCompleted = GameState.isRegionCompleted(region.id);
+                        const isBossDefeated = GameState.isBossDefeated(region.id);
+                        const completedMissions = GameState.completedMissions[region.id]?.filter(m => m).length || 0;
+                        const regionTheme = PathSystem.getRegionTheme(region.id);
+                        const imgSrc = asset(ASSETS.acts[region.id]);
+                        const nextMission = GameState.getNextAvailableMission(region.id);
                         
                         return `
-                            <div class="region-tile ${unlocked ? '' : 'locked'}"
-                                 onclick="${unlocked ? `window.enterRegion(${r.id})` : ''}"
-                                 style="--region-color: ${r.color}; --region-color-rgb: ${r.colorRgb}">
+                            <div class="region-tile ${isUnlocked ? '' : 'locked'}"
+                                 onclick="${isUnlocked ? `window.enterRegion(${region.id})` : ''}"
+                                 style="--region-color: ${region.color}; --region-color-rgb: ${region.colorRgb}">
+                                
                                 <div>
                                     <div style="width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin-bottom:10px;">
                                         <img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;" 
-                                             onerror="this.onerror=null; this.remove(); this.parentElement.innerHTML = '<div style=\\'font-size:40px; padding:10px;\\'>${r.icon}</div>';">
+                                             onerror="this.onerror=null; this.remove(); this.parentElement.innerHTML = '<div style=\\'font-size:40px; padding:10px;\\'>${region.icon}</div>';">
                                     </div>
-                                    <h4 style="color: ${r.color};">${regionTheme}</h4>
-                                    <p style="color: #666; font-size: 10px; margin-top: 5px;">${r.name}</p>
+                                    <h4 style="color: ${region.color}">${regionTheme}</h4>
+                                    <p style="color: #666; font-size: 10px; margin-top: 5px;">${region.name}</p>
                                 </div>
-                                ${unlocked ? `
+                                
+                                ${isUnlocked ? `
                                     <div style="margin: 15px 0;">
                                         <div style="background: rgba(0,0,0,0.3); border-radius: 5px; height: 8px;">
-                                            <div style="height: 100%; background: ${r.color}; border-radius: 5px; width: ${(completed / 7) * 100}%;"></div>
+                                            <div style="height: 100%; background: ${region.color}; border-radius: 5px; width: ${(completedMissions / 7) * 100}%"></div>
                                         </div>
                                         <div style="font-size: 10px; color: #aaa; margin-top: 5px;">
-                                            ${completed}/7 misiones
+                                            ${completedMissions}/7 misiones
                                         </div>
                                         ${!GameState.hasCompletedRegionMissionToday() && nextMission !== -1 && !isCompleted ? `
                                             <div style="font-size: 9px; color: var(--warning); margin-top: 5px;">
@@ -1428,20 +1720,23 @@ const RenderEngine = {
                                             </div>
                                         ` : ''}
                                     </div>
+                                    
                                     ${isCompleted && !isBossDefeated ? `
-                                        <button class="ff-button" onclick="window.startCombat(${r.id}); event.stopPropagation();"
+                                        <button class="ff-button" onclick="window.startCombat(${region.id}); event.stopPropagation();"
                                                 style="padding: 8px 15px; font-size: 11px; background: linear-gradient(145deg, var(--danger), #cc4a4a); margin: 5px 0;">
                                             ⚔️ COMBATIR JEFE
                                         </button>
                                     ` : ''}
+                                    
                                     ${isBossDefeated ? `
                                         <div style="color: var(--warning); font-size: 12px; margin-top: 10px;">
                                             👑 Jefe derrotado
                                         </div>
                                     ` : ''}
-                                    ${!isCompleted ? `
+                                    
+                                    ${isUnlocked && !isCompleted ? `
                                         <div style="color: var(--primary); font-size: 10px; margin-top: 10px;">
-                                            🎯 ${7 - completed} misiones restantes
+                                            🎯 ${7 - completedMissions} misiones restantes
                                         </div>
                                     ` : ''}
                                 ` : `
@@ -1454,6 +1749,7 @@ const RenderEngine = {
                         `;
                     }).join('')}
                 </div>
+                
                 <div style="text-align: center; margin-top: 30px;">
                     <button class="ff-button" onclick="window.showScreen('daily')">
                         <i class="fas fa-calendar-day"></i> MISIONES DIARIAS
@@ -1476,7 +1772,10 @@ const RenderEngine = {
         }
         
         GameState.generateDailyMissions();
-        const available = GameState.getAvailableDailyMissions();
+        
+        const availableMissions = GameState.getAvailableDailyMissions();
+        const completedCount = GameState.dailyMissionsState.completedDailyMissions.length;
+        const totalDailyMissions = GameState.dailyMissionsState.availableMissions.length;
         const dailyProgressPercent = Math.min(100, (GameState.stats.dailyTasksCompleted / GameState.stats.dailyTasksGoal) * 100);
         
         return `
@@ -1484,64 +1783,114 @@ const RenderEngine = {
                 <button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom: 20px;">
                     ← VOLVER AL MAPA
                 </button>
+                
                 <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
                     <div style="font-size: 50px; color: var(--warning)">📅</div>
                     <div>
                         <h2 style="color: var(--warning);">MISIONES DIARIAS</h2>
-                        <p style="color: #aaa; font-size: 12px;">
-                            Renuevan cada día - ${GameState.dailyMissionsState.availableMissions.length} disponibles hoy
-                        </p>
-                        ${GameState.isTodayCompleted() ? `
-                            <p style="color: var(--primary); font-size: 11px; margin-top: 5px;">
-                                🏆 ¡Día completado! Vuelve mañana
-                            </p>
-                        ` : `
-                            <p style="color: var(--warning); font-size: 11px; margin-top: 5px;">
+                        <p style="color: #aaa; font-size: 12px;">Renuevan cada día - ${totalDailyMissions} disponibles hoy</p>
+                        ${GameState.isTodayCompleted() ? 
+                            '<p style="color: var(--primary); font-size: 11px; margin-top: 5px;">🏆 ¡Día completado! Vuelve mañana</p>' : 
+                            `<p style="color: var(--warning); font-size: 11px; margin-top: 5px;">
                                 📝 ${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} tareas disponibles hoy
-                            </p>
-                        `}
+                            </p>`}
                     </div>
                 </div>
-                <div style="background: rgba(26,26,46,0.95); border-radius: 15px; padding: 20px; border: 3px solid var(--warning); margin-bottom: 30px; width: 100%; max-width: 800px;">
+                
+                <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 20px; border: 3px solid var(--warning); margin-bottom: 30px; width: 100%; max-width: 800px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div style="color: var(--warning);">PROGRESO DIARIO</div>
                         <div style="color: var(--warning);">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div>
                     </div>
                     <div class="daily-progress-bar" style="width: 100%;">
-                        <div class="daily-progress-fill" style="width: ${dailyProgressPercent}%;"></div>
+                        <div class="daily-progress-fill" style="width: ${dailyProgressPercent}%">
+                            <div class="daily-progress-text">${Math.round(dailyProgressPercent)}%</div>
+                        </div>
                     </div>
                     <div style="color: var(--info); text-align: center; margin-top: 10px; font-size: 12px;">
                         💪 Completa ${GameState.stats.dailyTasksGoal} tareas para ganar +50 EXP bonus
                     </div>
                 </div>
+                
                 <h3 style="color: var(--primary); margin-bottom: 20px;">TUS MISIONES DE HOY</h3>
-                ${available.length > 0 ? `
-                    <div style="background: rgba(26,26,46,0.95); border-radius: 15px; padding: 20px; border: 2px solid var(--warning); width: 100%; max-width: 800px;">
-                        ${available.map((m, i) => `
-                            <div class="daily-mission-item available" onclick="window.startDailyTask(${i})">
-                                <div style="width:24px;height:24px;border:2px solid ${m.categoryColor}; border-radius:5px; display:flex; align-items:center; justify-content:center;">
-                                    ${m.type === 'timer' ? '⏰' : '📝'}
-                                </div>
-                                <div style="flex:1;">
-                                    <div style="color: var(--warning); font-size: 12px;">
-                                        ${m.text}${m.type === 'timer' ? ` (${m.time} min)` : ''}
+                
+                ${availableMissions.length > 0 ? `
+                    <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 20px; border: 2px solid var(--warning); width: 100%; max-width: 800px;">
+                        ${availableMissions.map((mission, index) => {
+                            const missionIcon = mission.type === 'timer' ? '⏰' : '📝';
+                            const timeText = mission.type === 'timer' ? ` (${mission.time} min)` : '';
+                            const canComplete = GameState.canCompleteMoreTasksToday();
+                            
+                            return `
+                                <div class="daily-mission-item ${canComplete ? 'available' : ''} ${!canComplete ? 'disabled' : ''}" 
+                                     onclick="${canComplete ? `window.startDailyTask(${index})` : ''}">
+                                    
+                                    <div style="width: 24px; height: 24px; border: 2px solid ${mission.categoryColor}; 
+                                         border-radius: 5px; display: flex; align-items: center; 
+                                         justify-content: center; background: transparent;">
+                                        ${missionIcon}
                                     </div>
-                                    <div style="color: ${m.categoryColor};">
-                                        ${m.category}
+                                    
+                                    <div style="flex: 1;">
+                                        <div style="color: ${canComplete ? 'var(--warning)' : 'white'}; font-size: 12px;">
+                                            ${mission.text}${timeText}
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                                            <div style="color: ${mission.categoryColor}; font-size: 10px;">
+                                                ${mission.category}
+                                            </div>
+                                            ${canComplete ? 
+                                                '<div style="color: var(--warning); font-size: 10px;">🔥 DISPONIBLE</div>' :
+                                                '<div style="color: var(--danger); font-size: 10px;">⏰ Día completado</div>'}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
+                    
                     <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 11px;">
                         ⭐ Cada misión completada te da +25 EXP
                     </div>
                 ` : `
-                    <div style="background: rgba(26,26,46,0.95); padding: 40px; text-align: center; border: 2px solid var(--primary);">
-                        <div style="font-size: 60px; color: var(--primary);">🏆</div>
-                        <h3 style="color: var(--primary);">¡TODAS COMPLETADAS!</h3>
+                    <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 40px; border: 2px solid var(--primary); width: 100%; max-width: 800px; text-align: center;">
+                        <div style="font-size: 60px; color: var(--primary); margin-bottom: 20px;">🏆</div>
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">¡TODAS LAS MISIONES COMPLETADAS!</h3>
+                        <p style="color: #aaa; margin-bottom: 20px; font-size: 12px;">
+                            Has completado todas tus misiones diarias. ¡Excelente trabajo!
+                        </p>
+                        <p style="color: var(--warning); font-size: 11px;">
+                            Vuelve mañana para nuevas misiones diarias
+                        </p>
                     </div>
                 `}
+                
+                ${completedCount > 0 ? `
+                    <div style="margin-top: 40px; width: 100%; max-width: 800px;">
+                        <h3 style="color: var(--primary); margin-bottom: 20px;">MISIONES COMPLETADAS HOY (${completedCount})</h3>
+                        <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 20px; border: 2px solid var(--primary);">
+                            ${GameState.dailyMissionsState.completedDailyMissions.map(missionId => {
+                                const mission = GameState.dailyMissionsState.availableMissions.find(m => m.id === missionId);
+                                if (!mission) return '';
+                                
+                                const missionIcon = mission.type === 'timer' ? '⏰' : '📝';
+                                const timeText = mission.type === 'timer' ? ` (${mission.time} min)` : '';
+                                
+                                return `
+                                    <div style="padding: 10px; margin: 5px 0; background: rgba(77, 255, 145, 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
+                                        <div style="color: var(--primary); font-size: 11px;">
+                                            ${missionIcon} ${mission.text}${timeText}
+                                        </div>
+                                        <div style="color: ${mission.categoryColor}; font-size: 9px; margin-top: 3px;">
+                                            ${mission.category} • +25 EXP
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
                 <div style="text-align: center; margin-top: 30px;">
                     <button class="ff-button" onclick="window.showScreen('world')">
                         <i class="fas fa-map"></i> VOLVER AL MAPA
@@ -1559,9 +1908,10 @@ const RenderEngine = {
             return '';
         }
         
+        const missionTypes = region.missionTypes;
         const completed = GameState.completedMissions[regionId] || [];
         const regionTheme = PathSystem.getRegionTheme(regionId);
-        const nextMission = GameState.getNextAvailableMission(regionId);
+        const nextMissionIndex = GameState.getNextAvailableMission(regionId);
         const hasCompletedToday = GameState.hasCompletedRegionMissionToday();
         
         return `
@@ -1569,84 +1919,97 @@ const RenderEngine = {
                 <button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom: 20px;">
                     ← VOLVER AL MAPA
                 </button>
+                
                 <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
-                    <div style="font-size: 50px; color: ${region.color};">${region.icon}</div>
+                    <div style="font-size: 50px; color: ${region.color}">${region.icon}</div>
                     <div>
-                        <h2 style="color: ${region.color};">${regionTheme}</h2>
+                        <h2 style="color: ${region.color}">${regionTheme}</h2>
                         <p style="color: #666; font-size: 12px;">${region.name} | Dificultad: ${region.boss.difficulty}</p>
                         <p style="color: var(--info); font-size: 11px; margin-top: 5px;">
                             ${completed.filter(m => m).length}/7 misiones completadas
                         </p>
+                        
                         ${hasCompletedToday ? `
                             <p style="color: var(--warning); font-size: 11px; margin-top: 5px;">
                                 🌙 Ya completaste tu misión hoy. Vuelve mañana.
                             </p>
                         ` : ''}
-                        ${!hasCompletedToday && nextMission !== -1 ? `
+                        
+                        ${!hasCompletedToday && nextMissionIndex !== -1 ? `
                             <p style="color: var(--warning); font-size: 11px; margin-top: 5px;">
-                                🔥 Misión de hoy: Día ${nextMission + 1}
+                                🔥 Misión de hoy: Día ${nextMissionIndex + 1}
                             </p>
                         ` : ''}
-                        ${nextMission === -1 && completed.length === 7 ? `
+                        
+                        ${nextMissionIndex === -1 && completed.length === 7 ? `
                             <p style="color: var(--primary); font-size: 11px; margin-top: 5px;">
                                 🏆 ¡Región completada! Enfréntate al jefe.
                             </p>
                         ` : ''}
                     </div>
                 </div>
+                
                 <h3 style="color: var(--primary); margin-bottom: 20px;">MISIONES DE LA SEMANA</h3>
-                <div style="background: rgba(26,26,46,0.95); border-radius: 15px; padding: 20px; border: 2px solid ${region.color}; width: 100%; max-width: 800px;">
-                    ${Array.from({ length: 7 }).map((_, i) => {
-                        const isCompleted = completed[i];
-                        const isNext = i === nextMission;
-                        const canComplete = !hasCompletedToday && !isCompleted && isNext;
-                        const missionText = PathSystem.getMissionText(regionId, i);
+                
+                <div style="background: rgba(26, 26, 46, 0.95); border-radius: 15px; padding: 20px; border: 2px solid ${region.color}; width: 100%; max-width: 800px;">
+                    ${Array.from({length: 7}).map((_, index) => {
+                        const isCompleted = completed[index];
+                        const missionType = missionTypes[index];
+                        const typeIcon = missionType === 'timer' ? '⏰' : '📝';
+                        const isAvailable = GameState.isMissionAvailable(regionId, index);
+                        const canComplete = !hasCompletedToday && !isCompleted && index === nextMissionIndex;
+                        const isNextMission = index === nextMissionIndex;
                         
-                        let status = '';
-                        if (isCompleted) {
-                            status = '<div style="color: var(--primary); font-size: 10px;">✅ +25 EXP</div>';
-                        } else if (canComplete) {
-                            status = '<div style="color: var(--warning); font-size: 10px;">🔥 DISPONIBLE HOY - Click para completar</div>';
-                        } else if (isNext && hasCompletedToday) {
-                            status = '<div style="color: var(--warning); font-size: 10px;">🌙 Vuelve mañana</div>';
-                        } else if (isNext) {
-                            status = '<div style="color: var(--info); font-size: 10px;">⏳ Misión de mañana</div>';
-                        } else if (!isCompleted && i < nextMission) {
-                            status = '<div style="color: var(--primary); font-size: 10px;">✅ Ya completada</div>';
-                        } else if (!isCompleted && i > nextMission) {
-                            status = '<div style="color: #aaa; font-size: 10px;">🔒 Completa días anteriores</div>';
-                        }
+                        const missionText = PathSystem.getMissionText(regionId, index);
+                        
+                        let statusText = '';
+                        if (isCompleted) statusText = '<div style="color: var(--primary); font-size: 10px;">✅ +25 EXP</div>';
+                        else if (canComplete) statusText = '<div style="color: var(--warning); font-size: 10px;">🔥 DISPONIBLE HOY - Click para completar</div>';
+                        else if (isNextMission && hasCompletedToday) statusText = '<div style="color: var(--warning); font-size: 10px;">🌙 Vuelve mañana</div>';
+                        else if (isNextMission) statusText = '<div style="color: var(--info); font-size: 10px;">⏳ Misión de mañana</div>';
+                        else if (!isCompleted && index < nextMissionIndex) statusText = '<div style="color: var(--primary); font-size: 10px;">✅ Ya completada</div>';
+                        else if (!isCompleted && index > nextMissionIndex) statusText = '<div style="color: #aaa; font-size: 10px;">🔒 Completa días anteriores</div>';
                         
                         return `
-                            <div class="mission-item ${isCompleted ? 'completed' : ''} ${canComplete ? 'today' : ''}"
-                                 onclick="${canComplete ? `window.startRegionTask(${regionId}, ${i})` : ''}">
-                                <div style="width:24px;height:24px;border:2px solid ${region.color}; border-radius:5px; display:flex; align-items:center; justify-content:center; background:${isCompleted ? region.color : 'transparent'};">
-                                    ${isCompleted ? '✓' : isNext ? '🔥' : (region.missionTypes[i] === 'timer' ? '⏰' : '📝')}
+                            <div class="mission-item ${isCompleted ? 'completed' : ''} ${canComplete ? 'today' : ''} ${(!canComplete && !isCompleted) ? 'disabled' : ''}" 
+                                 onclick="${canComplete ? `window.startRegionTask(${regionId}, ${index})` : ''}">
+                                
+                                <div style="width: 24px; height: 24px; border: 2px solid ${region.color}; 
+                                     border-radius: 5px; display: flex; align-items: center; 
+                                     justify-content: center; background: ${isCompleted ? region.color : 'transparent'};">
+                                    ${isCompleted ? '✓' : isNextMission ? '🔥' : typeIcon}
                                 </div>
-                                <div style="flex:1;">
-                                    <div style="color: ${isCompleted ? region.color : (canComplete ? 'var(--warning)' : 'white')};">
-                                        Día ${i + 1}: ${missionText}
+                                
+                                <div style="flex: 1;">
+                                    <div style="color: ${isCompleted ? region.color : (canComplete ? 'var(--warning)' : 'white')}; font-size: 12px;">
+                                        Día ${index + 1}: ${missionText} ${!isCompleted ? `(${typeIcon} ${missionType === 'timer' ? 'Temporizador' : 'Texto'})` : ''}
                                     </div>
-                                    ${status}
+                                    ${statusText}
                                 </div>
                             </div>
                         `;
                     }).join('')}
                 </div>
+                
                 ${completed.length === 7 && !GameState.isBossDefeated(regionId) ? `
                     <div style="text-align: center; margin-top: 30px;">
-                        <button class="ff-button" onclick="window.startCombat(${regionId})" style="background: var(--danger);">
+                        <button class="ff-button" onclick="window.startCombat(${regionId})"
+                                style="background: linear-gradient(145deg, var(--danger), #cc4a4a);">
                             ⚔️ DESAFIAR A ${region.boss.name}
                         </button>
+                        <p style="color: var(--warning); font-size: 11px; margin-top: 10px;">
+                            ¡Has completado todas las misiones! Ahora puedes enfrentar al jefe.
+                        </p>
                     </div>
-                ` : ''}
-                ${completed.length === 7 && GameState.isBossDefeated(regionId) ? `
+                ` : completed.length === 7 ? `
                     <div style="text-align: center; margin-top: 30px;">
-                        <div style="color: var(--warning); padding: 15px; background: rgba(255,209,102,0.1); border-radius: 10px; border: 2px solid var(--warning);">
-                            👑 Jefe derrotado - Región completada
+                        <div style="color: var(--warning); padding: 15px; background: rgba(255, 209, 102, 0.1); border-radius: 10px; border: 2px solid var(--warning);">
+                            👑 Jefe derrotado<br>
+                            <small style="color: #aaa;">¡Región completada al 100%!</small>
                         </div>
                     </div>
                 ` : ''}
+                
                 <div style="text-align: center; margin-top: 30px;">
                     <button class="ff-button" onclick="window.showScreen('daily')" style="background: var(--warning);">
                         <i class="fas fa-calendar-day"></i> IR A MISIONES DIARIAS
@@ -1662,49 +2025,83 @@ const RenderEngine = {
             return '';
         }
         
-        const c = GameState.currentCombat;
-        const r = GAME_DATA.regions.find(x => x.id === c.regionId);
+        const combat = GameState.currentCombat;
+        const region = GAME_DATA.regions.find(r => r.id === combat.regionId);
+        const enemyHealthPercent = (combat.enemy.currentHp / combat.enemy.hp) * 100;
+        const playerHealthPercent = (combat.playerHp / GameState.stats.maxHp) * 100;
         
         return `
             <div class="game-screen active">
                 <button class="ff-button" onclick="window.fleeCombat()" style="margin-bottom: 20px;">
-                    🏃 HUIR
+                    🏃 HUIR DEL COMBATE
                 </button>
+                
                 <div class="combat-arena">
-                    <h2 style="color: var(--danger); text-align: center;">
-                        VS ${r.boss.name}
+                    <div class="combat-context">
+                        ⚔️ Hoy enfrentas tu miedo. ⚔️
+                    </div>
+                    
+                    <h2 style="color: var(--danger); text-align: center; margin-bottom: 20px;">
+                        COMBATE CONTRA ${region.boss.name}
                     </h2>
-                    <div style="display: flex; justify-content: space-around; margin: 30px 0;">
+                    
+                    <div style="display: flex; justify-content: space-around; align-items: center; margin: 30px 0;">
                         <div style="text-align: center;">
-                            <div style="font-size: 60px;">${GameState.character?.icon}</div>
-                            <div>${GameState.character?.name}</div>
-                            <div class="stat-bar hp-bar">
-                                <div class="stat-fill" style="width: ${(c.playerHp / GameState.stats.maxHp) * 100}%;">
-                                    <div class="stat-text">${c.playerHp}/${GameState.stats.maxHp}</div>
+                            <div style="font-size: 60px;">${GameState.character?.icon || '👤'}</div>
+                            <div style="color: var(--primary); margin-top: 10px;">${GameState.character?.name}</div>
+                            <div class="stat-bar hp-bar" style="width: 120px; margin: 10px auto;">
+                                <div class="stat-fill" style="width: ${playerHealthPercent}%">
+                                    <div class="stat-text">${combat.playerHp}/${GameState.stats.maxHp}</div>
                                 </div>
                             </div>
                         </div>
+                        
                         <div style="font-size: 40px; color: var(--danger);">⚔️</div>
+                        
                         <div style="text-align: center;">
-                            <div style="font-size: 60px;">${r.boss.sprite}</div>
-                            <div>${r.boss.name}</div>
-                            <div class="stat-bar hp-bar">
-                                <div class="stat-fill" style="width: ${(c.enemy.currentHp / c.enemy.hp) * 100}%;">
-                                    <div class="stat-text">${c.enemy.currentHp}/${c.enemy.hp}</div>
+                            <div class="enemy-sprite">${region.boss.sprite}</div>
+                            <div style="color: var(--danger); margin-top: 10px;">${region.boss.name}</div>
+                            <div class="stat-bar hp-bar" style="width: 120px; margin: 10px auto;">
+                                <div class="stat-fill" style="width: ${enemyHealthPercent}%">
+                                    <div class="stat-text">${combat.enemy.currentHp}/${combat.enemy.hp}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 15px;">
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <p style="color: var(--warning); font-size: 12px;">
+                            EXP Disponible: ${GameState.stats.exp} | EXP Diaria: ${GameState.stats.dailyExp}
+                        </p>
+                        <p style="color: #aaa; font-size: 11px;">
+                            Los ataques usan tu EXP diaria acumulada
+                        </p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0;">
                         <button class="ff-button" onclick="window.performAttack('weak')">
-                            ⚡ DÉBIL<br><small>10 + EXP/10</small>
+                            ⚡ DÉBIL<br>
+                            <small>10 + EXP/10</small>
                         </button>
+                        
                         <button class="ff-button" onclick="window.performAttack('medium')">
-                            💥 MEDIO<br><small>20 + EXP/5</small>
+                            💥 MEDIO<br>
+                            <small>20 + EXP/5</small>
                         </button>
+                        
                         <button class="ff-button" onclick="window.performAttack('strong')">
-                            🔥 FUERTE<br><small>30 + EXP/3</small>
+                            🔥 FUERTE<br>
+                            <small>30 + EXP/3</small>
                         </button>
+                    </div>
+                    
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; max-height: 150px; overflow-y: auto;">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">REGISTRO DE COMBATE</h4>
+                        ${combat.log.map(entry => `
+                            <div style="color: #aaa; font-size: 11px; margin: 5px 0; padding: 5px; background: rgba(0,0,0,0.2); border-radius: 5px;">
+                                ${entry}
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             </div>
@@ -1717,40 +2114,80 @@ const RenderEngine = {
         return `
             <div class="game-screen active">
                 <button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom: 20px;">
-                    ← VOLVER
+                    ← VOLVER AL MAPA
                 </button>
+                
                 <div style="text-align: center; margin: 50px 0;">
-                    <div style="font-size: 100px;">🔥</div>
-                    <h2 style="color: var(--warning);">CAMPAMENTO</h2>
+                    <div style="font-size: 100px; animation: fire 1s ease-in-out infinite;">🔥</div>
+                    <h2 style="color: var(--warning); margin: 20px 0;">CAMPAMENTO DE DESCANSO</h2>
+                    <p style="color: #aaa; margin-bottom: 30px;">
+                        El héroe descansa junto a la hoguera para recuperar fuerzas
+                    </p>
+                    
                     <button class="ff-button" onclick="window.restAction()" style="font-size: 16px; padding: 20px 40px;">
-                        💤 DESCANSAR<br><small>+30 HP, +10 MP</small>
+                        💤 DESCANSAR<br>
+                        <small>+30 HP, +10 MP</small>
                     </button>
                 </div>
-                <div style="background: rgba(26,26,46,0.95); border-radius: 20px; padding: 30px; border: 3px solid var(--primary);">
-                    <h3 style="color: var(--warning); text-align: center;">ESTADO</h3>
-                    <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 20px;">
+                
+                <div style="background: rgba(26, 26, 46, 0.95); border-radius: 20px; padding: 30px; margin-top: 30px; border: 3px solid var(--primary); max-width: 600px; width: 100%;">
+                    <h3 style="color: var(--warning); text-align: center; margin-bottom: 20px;">
+                        ESTADO DEL HÉROE
+                    </h3>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="color: var(--warning);">PROGRESO DIARIO</div>
+                            <div style="color: var(--warning);">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div>
+                        </div>
+                        <div class="daily-progress-bar" style="width: 100%;">
+                            <div class="daily-progress-fill" style="width: ${dailyProgressPercent}%">
+                                <div class="daily-progress-text">${Math.round(dailyProgressPercent)}%</div>
+                            </div>
+                        </div>
+                        ${GameState.isTodayCompleted() ? 
+                            '<div style="color: var(--primary); text-align: center; margin-top: 10px; font-size: 12px;">🏆 ¡Día completado!</div>' :
+                            `<div style="color: var(--info); text-align: center; margin-top: 10px; font-size: 12px;">
+                                ${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} tareas restantes hoy
+                            </div>`
+                        }
+                        ${GameState.hasCompletedRegionMissionToday() ? `
+                            <div style="color: var(--warning); text-align: center; margin-top: 10px; font-size: 12px;">
+                                🌙 Misión de región completada hoy
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
                         <div style="text-align: center;">
-                            <div style="color: var(--danger);">HP</div>
+                            <div style="color: var(--danger);">SALUD</div>
                             <div style="font-size: 24px;">${GameState.stats.hp}/${GameState.stats.maxHp}</div>
                         </div>
+                        
                         <div style="text-align: center;">
-                            <div style="color: var(--primary);">MP</div>
+                            <div style="color: var(--primary);">ENERGÍA</div>
                             <div style="font-size: 24px;">${GameState.stats.mp}/${GameState.stats.maxMp}</div>
                         </div>
+                        
                         <div style="text-align: center;">
                             <div style="color: var(--warning);">NIVEL</div>
                             <div style="font-size: 24px;">${GameState.stats.level}</div>
                         </div>
+                        
                         <div style="text-align: center;">
-                            <div style="color: var(--secondary);">RACHA</div>
-                            <div style="font-size: 24px;">${GameState.stats.dailyStreak} días</div>
+                            <div style="color: var(--secondary);">EXP DIARIA</div>
+                            <div style="font-size: 24px;">${GameState.stats.dailyExp}</div>
                         </div>
                     </div>
-                    ${GameState.hasCompletedRegionMissionToday() ? `
-                        <div style="color: var(--warning); text-align: center; margin-top: 20px;">
-                            🌙 Misión de región completada hoy
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <div style="color: var(--warning); font-size: 12px; margin-top: 10px;">
+                            Racha actual: ${GameState.stats.dailyStreak} días
                         </div>
-                    ` : ''}
+                        ${GameState.stats.dailyStreak >= 7 ? 
+                            '<div style="color: var(--primary); font-size: 12px; margin-top: 10px;">🔥 ¡Racha semanal activa!</div>' :
+                            ''}
+                    </div>
                 </div>
             </div>
         `;
@@ -1762,17 +2199,39 @@ const RenderEngine = {
                 <button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom: 20px;">
                     ← VOLVER
                 </button>
-                <h2 style="color: var(--primary); margin: 30px 0;">CONFIGURACIÓN</h2>
+                
+                <h2 style="color: var(--primary); text-align: center; margin: 30px 0;">CONFIGURACIÓN</h2>
+                
                 <div class="ff-menu">
                     <div style="margin: 20px 0;">
-                        <div style="color: var(--primary);">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div>
+                        <div style="color: var(--primary); margin-bottom: 10px;">VOLUMEN</div>
+                        <input type="range" min="0" max="100" value="50" style="width: 100%;">
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="color: var(--primary); margin-bottom: 10px;">VELOCIDAD DE TEXTO</div>
+                        <input type="range" min="1" max="10" value="5" style="width: 100%;">
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="color: var(--primary); margin-bottom: 10px;">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div>
                         <input type="range" min="3" max="10" value="${GameState.stats.dailyTasksGoal}" 
                                onchange="window.changeDailyGoal(this.value)" style="width: 100%;">
+                        <div style="color: #aaa; font-size: 10px; text-align: center; margin-top: 5px;">
+                            Ajusta cuántas tareas necesitas completar cada día
+                        </div>
                     </div>
+                    
                     <button class="ff-button" onclick="window.resetGame()" 
-                            style="width: 100%; background: var(--danger);">
+                            style="width: 100%; margin-top: 20px; background: linear-gradient(145deg, var(--danger), #cc4a4a);">
                         🔄 REINICIAR JUEGO
                     </button>
+                    
+                    <div style="margin-top: 30px; padding: 15px; background: rgba(255, 209, 102, 0.1); border-radius: 10px; border: 2px solid var(--warning);">
+                        <p style="color: var(--warning); margin: 0; font-size: 11px; text-align: center;">
+                            💡 El progreso se guarda automáticamente
+                        </p>
+                    </div>
                 </div>
             </div>
         `;
@@ -1780,120 +2239,194 @@ const RenderEngine = {
 };
 
 // ==================== FUNCIONES GLOBALES ====================
-window.showScreen = (s, d) => RenderEngine.showScreen(s, d);
-window.selectCharacter = (id) => {
-    if (GameState.selectCharacter(id)) RenderEngine.showScreen('characters');
+window.showScreen = function(screen, data) {
+    RenderEngine.showScreen(screen, data);
 };
-window.startAdventure = () => {
+
+window.selectCharacter = function(characterId) {
+    if (GameState.selectCharacter(characterId)) {
+        RenderEngine.showScreen('characters');
+    }
+};
+
+window.startAdventure = function() {
     if (!GameState.character) {
         PathSystem.showClassNotification('Selecciona un personaje primero', '❌');
         return;
     }
+    
     GameState.save();
     RenderEngine.showScreen('world');
-    PathSystem.showClassNotification(`¡Bienvenido, ${GameState.character.name}!`, '🚀');
+    PathSystem.showClassNotification(`¡Bienvenido, ${GameState.character.name}! Completa 5 tareas diarias.`, '🚀');
 };
-window.enterRegion = (id) => RenderEngine.showScreen('region', id);
-window.startDailyTask = (i) => {
-    if (GameState.startDailyTask(i)) GameState.showTaskPopup(GameState.currentTask);
+
+window.enterRegion = function(regionId) {
+    RenderEngine.showScreen('region', regionId);
 };
-window.startRegionTask = (rid, i) => {
-    if (GameState.startRegionTask(rid, i)) GameState.showTaskPopup(GameState.currentTask);
-};
-window.saveTaskInput = (v) => GameState.saveUserInput(v);
-window.finishTask = () => {
-    if (GameState.completeTask()) {
-        window.closeTaskPopup();
-        RenderEngine.showScreen(
-            GameState.currentTask?.type === 'daily' ? 'daily' : 
-            (GameState.currentTask?.type === 'region' ? 'region' : 'world'), 
-            GameState.currentTask?.regionId
-        );
+
+window.startDailyTask = function(missionIndex) {
+    if (GameState.startDailyTask(missionIndex)) {
+        GameState.showTaskPopup(GameState.currentTask);
     }
 };
-window.pauseResumeTimer = () => {
+
+window.startRegionTask = function(regionId, missionIndex) {
+    if (GameState.startRegionTask(regionId, missionIndex)) {
+        GameState.showTaskPopup(GameState.currentTask);
+    }
+};
+
+window.saveTaskInput = function(value) {
+    GameState.saveUserInput(value);
+};
+
+window.finishTask = function() {
+    if (GameState.completeTask()) {
+        window.closeTaskPopup();
+        if (GameState.currentTask?.type === 'daily') {
+            RenderEngine.showScreen('daily');
+        } else if (GameState.currentTask?.type === 'region') {
+            const regionId = GameState.currentTask.regionId;
+            GameState.currentTask = null;
+            RenderEngine.showScreen('region', regionId);
+        } else {
+            RenderEngine.showScreen('world');
+        }
+    }
+};
+
+window.pauseResumeTimer = function() {
     if (GameState.taskTimer) {
         clearInterval(GameState.taskTimer);
         GameState.taskTimer = null;
+        PathSystem.showClassNotification('Timer pausado', '⏸️');
     } else {
         GameState.startTimer();
+        PathSystem.showClassNotification('Timer reanudado', '▶️');
     }
 };
-window.resetTimer = () => {
-    if (GameState.currentTask?.missionType === 'timer') {
-        GameState.taskTimerSeconds = (GameState.currentTask.time || 5) * 60;
+
+window.resetTimer = function() {
+    if (GameState.currentTask && GameState.currentTask.missionType === 'timer') {
+        const time = GameState.currentTask.time || 5;
+        GameState.taskTimerSeconds = time * 60;
+        
         if (GameState.taskTimer) {
             clearInterval(GameState.taskTimer);
             GameState.startTimer();
         }
+        
+        PathSystem.showClassNotification('Timer reiniciado', '🔄');
     }
 };
-window.closeTaskPopup = () => {
-    document.querySelector('.task-popup')?.remove();
+
+window.closeTaskPopup = function() {
+    const popup = document.querySelector('.task-popup');
+    if (popup) {
+        popup.remove();
+    }
+    
     if (GameState.taskTimer) {
         clearInterval(GameState.taskTimer);
         GameState.taskTimer = null;
     }
+    
     GameState.currentTask = null;
 };
-window.startCombat = (id) => {
-    if (GameState.startCombat(id)) {
+
+window.startCombat = function(regionId) {
+    if (GameState.startCombat(regionId)) {
         RenderEngine.showScreen('combat');
-        PathSystem.showClassNotification(`¡Combate contra ${GAME_DATA.regions.find(r => r.id === id).boss.name}!`, '⚔️');
+        PathSystem.showClassNotification(`¡Combate contra ${GAME_DATA.regions.find(r => r.id === regionId).boss.name}!`, '⚔️');
     }
 };
-window.performAttack = (t) => {
-    const r = GameState.combatAttack(t);
-    if (r) {
-        if (r.victory) {
+
+window.performAttack = function(type) {
+    const result = GameState.combatAttack(type);
+    
+    if (result) {
+        const damageDisplay = document.createElement('div');
+        damageDisplay.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary);
+            animation: fadeIn 0.2s ease, fadeOut 0.5s ease 0.5s forwards;
+            z-index: 1000;
+            pointer-events: none;
+        `;
+        damageDisplay.textContent = `-${result.damage}`;
+        document.body.appendChild(damageDisplay);
+        
+        setTimeout(() => damageDisplay.remove(), 700);
+        
+        if (result.victory) {
             setTimeout(() => {
                 PathSystem.showClassNotification('¡Jefe derrotado!', '🏆');
                 RenderEngine.showScreen('world');
             }, 1000);
         } else {
             setTimeout(() => {
-                GameState.enemyTurn();
-                RenderEngine.showScreen('combat');
-                if (GameState.currentCombat?.playerHp <= 0) {
-                    setTimeout(() => {
-                        PathSystem.showClassNotification('Derrotado', '💀');
-                        GameState.currentCombat = null;
-                        RenderEngine.showScreen('world');
-                    }, 1000);
+                const enemyTurn = GameState.enemyTurn();
+                if (enemyTurn) {
+                    RenderEngine.showScreen('combat');
+                    
+                    if (GameState.currentCombat && GameState.currentCombat.playerHp <= 0) {
+                        setTimeout(() => {
+                            PathSystem.showClassNotification('¡Has sido derrotado!', '💀');
+                            GameState.currentCombat = null;
+                            RenderEngine.showScreen('world');
+                        }, 1000);
+                    }
                 }
             }, 1000);
         }
     }
 };
-window.fleeCombat = () => {
-    if (confirm('¿Huir? -10% EXP')) {
+
+window.fleeCombat = function() {
+    if (confirm('¿Huir del combate? Perderás 10% de tu EXP.')) {
         GameState.stats.exp = Math.max(0, Math.floor(GameState.stats.exp * 0.9));
         GameState.currentCombat = null;
+        PathSystem.showClassNotification('Has huido. -10% EXP', '🏃');
         RenderEngine.showScreen('world');
     }
 };
-window.restAction = () => {
-    const r = GameState.rest();
-    PathSystem.showClassNotification(`+${r.hp} HP, +${r.mp} MP`, '💤');
+
+window.restAction = function() {
+    const result = GameState.rest();
+    PathSystem.showClassNotification(`Descansado: +${result.hp} HP, +${result.mp} MP`, '💤');
     RenderEngine.showScreen('rest');
 };
-window.changeDailyGoal = (g) => {
-    GameState.stats.dailyTasksGoal = parseInt(g);
-    GameState.save();
-    RenderEngine.showScreen('settings');
+
+window.changeDailyGoal = function(newGoal) {
+    const goal = parseInt(newGoal);
+    if (goal >= 3 && goal <= 10) {
+        GameState.stats.dailyTasksGoal = goal;
+        GameState.save();
+        PathSystem.showClassNotification(`Meta diaria cambiada a ${goal} tareas`, '🎯');
+        RenderEngine.showScreen('settings');
+    }
 };
-window.resetGame = () => {
-    if (GameState.reset()) RenderEngine.showScreen('start');
+
+window.resetGame = function() {
+    if (GameState.reset()) {
+        RenderEngine.showScreen('start');
+    }
 };
 
 // ==================== INICIALIZACIÓN ====================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             loadingScreen.style.opacity = '0';
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
+                
                 GameState.init();
                 RenderEngine.showScreen('start');
             }, 300);
