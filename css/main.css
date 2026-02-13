@@ -1,7 +1,4 @@
-/* ==================== GOALQUEST - ESTILOS COMPLETOS ==================== */
-/* Versión: 2.0 - MÓDULO DE PODER */
-/* ======================================================================= */
-
+/* ==================== GOALQUEST - ESTILOS BASE ==================== */
 :root {
     --primary: #4dff91;
     --secondary: #6c63ff;
@@ -34,7 +31,6 @@ body {
     transition: filter 1s ease, background 1s ease, box-shadow 1s ease;
 }
 
-/* Fondo animado */
 body::before {
     content: '';
     position: fixed;
@@ -47,6 +43,7 @@ body::before {
         radial-gradient(circle at 80% 70%, rgba(108, 99, 255, 0.1) 0%, transparent 50%);
     z-index: -1;
     animation: backgroundShift 20s ease-in-out infinite alternate;
+    pointer-events: none;
 }
 
 @keyframes backgroundShift {
@@ -54,39 +51,175 @@ body::before {
     100% { filter: hue-rotate(20deg); }
 }
 
-/* ==================== TRANSFORMACIÓN DEL MUNDO ==================== */
+/* ==================== ESTADOS DEL MUNDO ==================== */
 body.world-state-0 {
     filter: brightness(0.9) contrast(1.1);
 }
-
 body.world-state-1 {
     filter: brightness(1) contrast(1.1);
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
 }
-
 body.world-state-2 {
     filter: brightness(1.05) contrast(1.05);
     background: linear-gradient(135deg, #0f0f1f 0%, #1f1f35 100%);
 }
-
 body.world-state-3 {
     filter: brightness(1.1) contrast(1);
     background: linear-gradient(135deg, #141428 0%, #242442 100%);
 }
-
 body.world-state-4 {
     filter: brightness(1.15) contrast(0.95);
     background: linear-gradient(135deg, #1a1a33 0%, #2a2a4a 100%);
 }
-
 body.world-state-5 {
     filter: brightness(1.2) contrast(0.9);
     background: linear-gradient(135deg, #1f1f3f 0%, #2f2f5f 100%);
 }
-
 body.world-state-completed {
     filter: brightness(1.25) contrast(0.9);
     background: linear-gradient(135deg, #2a2a4a 0%, #3a3a6a 100%);
     box-shadow: inset 0 0 100px rgba(255, 215, 0, 0.2);
+}
+
+/* ==================== ANIMACIONES DE PODER ==================== */
+@keyframes powerGlow {
+    0% { box-shadow: 0 0 5px rgba(77, 255, 145, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(77, 255, 145, 0.9), 0 0 60px rgba(108, 99, 255, 0.5); }
+    100% { box-shadow: 0 0 5px rgba(77, 255, 145, 0.5); }
+}
+
+@keyframes powerFlash {
+    0% { background-color: rgba(77, 255, 145, 0); }
+    20% { background-color: rgba(77, 255, 145, 0.3); }
+    100% { background-color: rgba(77, 255, 145, 0); }
+}
+
+@keyframes powerPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes particleFloat {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes titleSunrise {
+    0% { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary); }
+    100% { text-shadow: 0 0 40px var(--primary), 0 0 80px var(--primary), 0 0 120px var(--secondary); }
+}
+
+@keyframes messageRise {
+    0% { opacity: 0; transform: translate(-50%, 30px); }
+    20% { opacity: 1; transform: translate(-50%, -50%); }
+    80% { opacity: 1; transform: translate(-50%, -60px); }
+    100% { opacity: 0; transform: translate(-50%, -100px); }
+}
+
+@keyframes victoryPulse {
+    0%, 100% { box-shadow: 0 0 20px var(--warning); }
+    50% { box-shadow: 0 0 50px var(--warning); }
+}
+
+@keyframes firstGlow {
+    0% { box-shadow: 0 0 10px rgba(77, 255, 145, 0.5); }
+    100% { box-shadow: 0 0 40px rgba(77, 255, 145, 0.9), 0 0 80px rgba(108, 99, 255, 0.5); }
+}
+
+@keyframes contextGlow {
+    0%, 100% { border-left-color: var(--danger); }
+    50% { border-left-color: #ffa500; }
+}
+
+/* ==================== ELEMENTOS DE PODER ==================== */
+.power-flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(77, 255, 145, 0.3) 0%, transparent 70%);
+    animation: powerFade 1.5s ease-out forwards;
+    z-index: 9999;
+}
+
+@keyframes powerFade {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.power-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 10, 26, 0.95);
+    border: 3px solid var(--primary);
+    color: var(--primary);
+    padding: 20px 40px;
+    font-size: 20px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(77, 255, 145, 0.5);
+    animation: messageRise 3s ease-out forwards;
+    z-index: 10000;
+    pointer-events: none;
+    text-shadow: 0 0 10px var(--primary);
+}
+
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(77, 255, 145, 0.6);
+    border-radius: 50%;
+    animation: particleFloat 8s linear infinite;
+    box-shadow: 0 0 10px rgba(77, 255, 145, 0.5);
+}
+
+.game-title.energized {
+    animation: titleSunrise 3s infinite alternate;
+    text-shadow: 
+        0 0 20px var(--primary),
+        0 0 40px var(--primary),
+        0 0 80px var(--primary);
+}
+
+.first-task-glow {
+    animation: firstGlow 2s infinite alternate;
+}
+
+.combat-context {
+    background: rgba(26, 26, 46, 0.9);
+    border-left: 8px solid var(--danger);
+    padding: 15px 25px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: var(--light-text);
+    text-align: center;
+    animation: contextGlow 3s infinite;
+}
+
+.victory-message {
+    color: var(--warning);
+    font-size: 16px;
+    padding: 20px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid var(--warning);
+    animation: victoryPulse 2s infinite;
 }
 
 /* ==================== PANTALLA DE CARGA ==================== */
@@ -137,7 +270,7 @@ body.world-state-completed {
     to { opacity: 1; }
 }
 
-/* ==================== TÍTULO PRINCIPAL ==================== */
+/* ==================== TÍTULO ==================== */
 .game-title {
     font-size: 3.5rem;
     color: var(--primary);
@@ -147,15 +280,6 @@ body.world-state-completed {
         0 0 10px var(--primary),
         0 0 20px var(--primary);
     animation: titleGlow 3s ease-in-out infinite;
-    transition: text-shadow 0.5s ease;
-}
-
-.game-title.energized {
-    animation: titleSunrise 3s infinite alternate;
-    text-shadow: 
-        0 0 20px var(--primary),
-        0 0 40px var(--primary),
-        0 0 80px var(--primary);
 }
 
 @keyframes titleGlow {
@@ -163,12 +287,7 @@ body.world-state-completed {
     50% { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary), 0 0 60px var(--primary); }
 }
 
-@keyframes titleSunrise {
-    0% { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary); }
-    100% { text-shadow: 0 0 40px var(--primary), 0 0 80px var(--primary), 0 0 120px var(--secondary); }
-}
-
-/* ==================== MENÚS ==================== */
+/* ==================== MENÚ ==================== */
 .ff-menu {
     background: rgba(26, 26, 46, 0.95);
     border: 3px solid var(--primary);
@@ -314,23 +433,6 @@ body.world-state-completed {
     max-width: 600px;
     width: 100%;
     margin: 30px auto;
-    position: relative;
-}
-
-.combat-context {
-    background: rgba(26, 26, 46, 0.9);
-    border-left: 8px solid var(--danger);
-    padding: 15px 25px;
-    margin-bottom: 25px;
-    font-size: 14px;
-    color: var(--light-text);
-    text-align: center;
-    animation: contextGlow 3s infinite;
-}
-
-@keyframes contextGlow {
-    0%, 100% { border-left-color: var(--danger); }
-    50% { border-left-color: #ffa500; }
 }
 
 .enemy-sprite {
@@ -343,22 +445,6 @@ body.world-state-completed {
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
-}
-
-.victory-message {
-    color: var(--warning);
-    font-size: 16px;
-    padding: 20px;
-    background: rgba(0,0,0,0.5);
-    border: 2px solid var(--warning);
-    animation: victoryPulse 2s infinite;
-    margin-top: 20px;
-    text-align: center;
-}
-
-@keyframes victoryPulse {
-    0%, 100% { box-shadow: 0 0 20px var(--warning); }
-    50% { box-shadow: 0 0 50px var(--warning); }
 }
 
 /* ==================== BARRAS DE ESTADO ==================== */
@@ -616,104 +702,6 @@ body.world-state-completed {
     box-shadow: 0 0 20px rgba(255, 209, 102, 0.3);
 }
 
-/* ==================== FEEDBACK EMOCIONAL ==================== */
-@keyframes powerGlow {
-    0% { box-shadow: 0 0 5px rgba(77, 255, 145, 0.5); }
-    50% { box-shadow: 0 0 30px rgba(77, 255, 145, 0.9), 0 0 60px rgba(108, 99, 255, 0.5); }
-    100% { box-shadow: 0 0 5px rgba(77, 255, 145, 0.5); }
-}
-
-@keyframes powerFlash {
-    0% { background-color: rgba(77, 255, 145, 0); }
-    20% { background-color: rgba(77, 255, 145, 0.3); }
-    100% { background-color: rgba(77, 255, 145, 0); }
-}
-
-@keyframes powerPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-@keyframes particleFloat {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-}
-
-.power-flash-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: radial-gradient(circle at center, rgba(77, 255, 145, 0.3) 0%, transparent 70%);
-    animation: powerFade 1.5s ease-out forwards;
-    z-index: 9999;
-}
-
-@keyframes powerFade {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-.power-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(10, 10, 26, 0.95);
-    border: 3px solid var(--primary);
-    color: var(--primary);
-    padding: 20px 40px;
-    font-size: 20px;
-    text-align: center;
-    box-shadow: 0 0 50px rgba(77, 255, 145, 0.5);
-    animation: messageRise 3s ease-out forwards;
-    z-index: 10000;
-    pointer-events: none;
-    text-shadow: 0 0 10px var(--primary);
-}
-
-@keyframes messageRise {
-    0% { opacity: 0; transform: translate(-50%, 30px); }
-    20% { opacity: 1; transform: translate(-50%, -50%); }
-    80% { opacity: 1; transform: translate(-50%, -60px); }
-    100% { opacity: 0; transform: translate(-50%, -100px); }
-}
-
-.first-task-glow {
-    animation: firstGlow 2s infinite alternate;
-}
-
-@keyframes firstGlow {
-    0% { box-shadow: 0 0 10px rgba(77, 255, 145, 0.5); }
-    100% { box-shadow: 0 0 40px rgba(77, 255, 145, 0.9), 0 0 80px rgba(108, 99, 255, 0.5); }
-}
-
-/* ==================== PARTÍCULAS ==================== */
-.particle-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-}
-
-.particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(77, 255, 145, 0.6);
-    border-radius: 50%;
-    animation: particleFloat 8s linear infinite;
-    box-shadow: 0 0 10px rgba(77, 255, 145, 0.5);
-}
-
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .game-title { font-size: 2rem; }
@@ -722,9 +710,7 @@ body.world-state-completed {
     .ff-menu { padding: 20px; }
     .status-bar { flex-direction: column; }
     .stat-bar { width: 100%; }
-    .daily-progress-bar { width: 100%; }
     .timer-display { font-size: 2rem; }
-    .power-message { font-size: 16px; padding: 15px 30px; width: 90%; }
 }
 
 @media (max-width: 480px) {
@@ -734,5 +720,4 @@ body.world-state-completed {
     .character-grid { grid-template-columns: 1fr; }
     .map-grid { grid-template-columns: 1fr; }
     .popup-content { padding: 20px; }
-    .power-message { font-size: 14px; padding: 12px 20px; }
 }
