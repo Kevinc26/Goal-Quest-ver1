@@ -1,6 +1,78 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 2.0.0 - MÓDULO DE PODER COMPLETO
+// Versión: 2.1.0 - CON SISTEMA DE MÚSICA
 // ============================================================
+
+// ==================== SISTEMA DE MÚSICA ====================
+const MusicSystem = {
+    currentTrack: null,
+    audio: null,
+    isMuted: false,
+    
+    init() {
+        if (!this.audio) {
+            this.audio = new Audio();
+            this.audio.loop = true;
+            this.audio.volume = 0.5;
+        }
+    },
+    
+    play(trackName) {
+        this.init();
+        
+        if (this.currentTrack === trackName && !this.audio.paused) return;
+        
+        const trackPath = `./assets/music/${trackName}.mp3`;
+        this.audio.src = trackPath;
+        this.audio.load();
+        
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('Auto-play bloqueado. Esperando interacción...');
+                const playOnClick = () => {
+                    this.audio.play();
+                    document.removeEventListener('click', playOnClick);
+                };
+                document.addEventListener('click', playOnClick, { once: true });
+            });
+        }
+        
+        this.currentTrack = trackName;
+        console.log(`🎵 Reproduciendo: ${trackName}`);
+    },
+    
+    stop() {
+        if (this.audio) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.currentTrack = null;
+        }
+    },
+    
+    pause() {
+        if (this.audio) this.audio.pause();
+    },
+    
+    resume() {
+        if (this.audio && this.currentTrack) {
+            this.audio.play().catch(e => console.log('Error al reanudar:', e));
+        }
+    },
+    
+    setVolume(level) {
+        if (this.audio) {
+            this.audio.volume = Math.max(0, Math.min(1, level));
+        }
+    },
+    
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        if (this.audio) {
+            this.audio.muted = this.isMuted;
+        }
+        return this.isMuted;
+    }
+};
 
 // ==================== DATOS DEL JUEGO ====================
 const GAME_DATA = {
@@ -99,7 +171,6 @@ const GAME_DATA = {
 };
 
 // ==================== MÓDULO DE PODER ====================
-// Sistema de partículas
 const ParticleSystem = {
     container: null,
     isActive: false,
@@ -149,7 +220,6 @@ const ParticleSystem = {
     }
 };
 
-// Mensajes de poder
 const PowerMessages = {
     daily: [
         "✨ Ya comenzaste a cambiar.",
@@ -197,7 +267,6 @@ const PowerMessages = {
     ]
 };
 
-// Feedback emocional
 const PowerFeedback = {
     showMessage(text, color = 'var(--primary)') {
         const message = document.createElement('div');
@@ -294,7 +363,6 @@ const PowerFeedback = {
     }
 };
 
-// Transformación del mundo
 const WorldTransformer = {
     updateState(tasksCompleted) {
         const body = document.body;
@@ -806,6 +874,30 @@ const RenderEngine = {
         GameState.currentScreen = screenName;
         const container = document.getElementById('game-container');
         let html = '';
+        
+        // ===== CONTROL DE MÚSICA SEGÚN PANTALLA =====
+        switch(screenName) {
+            case 'start':
+                MusicSystem.play('tema-inicio');
+                break;
+            case 'world':
+                MusicSystem.play('tema-mundo');
+                break;
+            case 'combat':
+                MusicSystem.play('tema-combate');
+                break;
+            case 'rest':
+                MusicSystem.play('tema-descanso');
+                break;
+            case 'region':
+                // Por ahora usa tema-mundo, más adelante puedes añadir música por región
+                MusicSystem.play('tema-mundo');
+                break;
+            default:
+                MusicSystem.play('tema-mundo');
+                break;
+        }
+        
         switch(screenName) {
             case 'start': html = this.renderStartScreen(); break;
             case 'characters': html = this.renderCharacterScreen(); break;
@@ -889,7 +981,29 @@ const RenderEngine = {
     },
 
     renderSettingsScreen() {
-        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom: 20px;">← VOLVER</button><h2 style="color: var(--primary); margin: 30px 0;">CONFIGURACIÓN</h2><div class="ff-menu"><div style="margin: 20px 0;"><div style="color: var(--primary);">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div><input type="range" min="3" max="10" value="${GameState.stats.dailyTasksGoal}" onchange="window.changeDailyGoal(this.value)" style="width: 100%;"></div><button class="ff-button" onclick="window.resetGame()" style="width: 100%; background: var(--danger);">🔄 REINICIAR JUEGO</button></div></div>`;
+        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom: 20px;">← VOLVER</button><h2 style="color: var(--primary); margin: 30px 0;">CONFIGURACIÓN</h2><div class="ff-menu">
+            <!-- ===== CONTROL DE MÚSICA ===== -->
+            <div style="margin: 20px 0;">
+                <div style="color: var(--primary); margin-bottom: 10px;">🎵 MÚSICA</div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="ff-button" onclick="MusicSystem.play('tema-inicio')" style="padding: 8px 15px; font-size: 11px;">🔊 REPRODUCIR</button>
+                    <button class="ff-button" onclick="MusicSystem.pause()" style="padding: 8px 15px; font-size: 11px;">⏸️ PAUSAR</button>
+                    <button class="ff-button" onclick="MusicSystem.toggleMute()" style="padding: 8px 15px; font-size: 11px;">🔇 SILENCIAR</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <label style="color: #aaa; font-size: 10px;">Volumen</label>
+                    <input type="range" min="0" max="1" step="0.1" value="0.5" 
+                           onchange="MusicSystem.setVolume(this.value)" style="width: 100%;">
+                </div>
+            </div>
+            <div style="margin: 20px 0;">
+                <div style="color: var(--primary);">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div>
+                <input type="range" min="3" max="10" value="${GameState.stats.dailyTasksGoal}" 
+                       onchange="window.changeDailyGoal(this.value)" style="width: 100%;">
+            </div>
+            <button class="ff-button" onclick="window.resetGame()" 
+                    style="width: 100%; background: var(--danger);">🔄 REINICIAR JUEGO</button>
+        </div></div>`;
     }
 };
 
