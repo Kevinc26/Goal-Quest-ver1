@@ -7,22 +7,22 @@ const OnboardingSystem = {
     
     screens: [
         {
-            image: './assets/onboarding/1-que-es.png',
+            image: image: '/Goal-Quest-ver1/assets/onboarding/1-que-es.png',
             title: '¿QUÉ ES GOALQUEST?',
             text: '<span class="onboarding-highlight">Un RPG de vida real.</span><br>Tus objetivos son misiones. Tu progreso es real. No es un juego. Es tu historia.'
         },
         {
-            image: './assets/onboarding/2-como-funciona.png',
+            image: '/Goal-Quest-ver1/assets/onboarding/2-como-funciona.png',
             title: 'CÓMO FUNCIONA',
             text: 'Eliges una clase que resuena contigo. Recibes misiones reales. Las cumples.<br><span class="onboarding-highlight">Ganas EXP. Subes nivel. Te conviertes.</span>'
         },
         {
-            image: './assets/onboarding/3-identidad.png',
+            image: '/Goal-Quest-ver1/assets/onboarding/3-identidad.png',
             title: 'IDENTIDAD',
             text: 'No se trata de lo que haces.<br>Se trata de <span class="onboarding-highlight">quien eliges ser</span>.<br>Cada misión no es una tarea. Es un paso hacia tu nueva identidad.'
         },
         {
-            image: './assets/onboarding/4-mundo-te-espera.png',
+            image: '/Goal-Quest-ver1/assets/onboarding/4-mundo-te-espera.png',
             title: 'EL MUNDO TE ESPERA',
             text: 'El caos reina cuando dejamos de avanzar.<br>La fortuna sonríe a los valientes.<br><span class="onboarding-highlight" style="font-size: 20px;">Hoy empiezas.</span>'
         }
