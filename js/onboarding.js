@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - SISTEMA DE ONBOARDING ====================
-// Versión: 1.3 - DEBUG (muestra errores en consola)
+// Versión: 1.4 - CORRECCIÓN RADICAL
 // ============================================================================
 
 const OnboardingSystem = {
@@ -91,71 +91,55 @@ const OnboardingSystem = {
     },
 
     skip() {
-        console.log('🔹 Omitir onboarding');
         this.markAsSeen();
         window.location.hash = '';
         this.destroy();
         
-        if (typeof RenderEngine !== 'undefined') {
-            console.log('✅ RenderEngine encontrado, volviendo a start');
-            RenderEngine.showScreen('start');
+        // Forzar navegación a start
+        if (typeof window.showScreen !== 'undefined') {
+            window.showScreen('start');
         } else {
-            console.error('❌ RenderEngine NO encontrado');
+            console.error('showScreen no disponible');
         }
     },
 
-    // ========== VERSIÓN DEBUG ==========
+    // ========== VERSIÓN CORREGIDA - USA showScreen GLOBAL ==========
     start() {
-        console.log('🔹 Iniciando juego desde onboarding');
-        
         // Marcar como visto
         this.markAsSeen();
-        console.log('✅ localStorage marcado');
         
         // Limpiar hash
         window.location.hash = '';
-        console.log('✅ Hash limpiado');
         
         // Destruir overlay
         this.destroy();
-        console.log('✅ Overlay destruido');
         
-        // VERIFICAR QUE RenderEngine EXISTE
-        if (typeof RenderEngine === 'undefined') {
-            console.error('❌ ERROR CRÍTICO: RenderEngine no está definido');
-            console.log('🔄 Intentando recuperar...');
+        // ========== SOLUCIÓN RADICAL ==========
+        // En lugar de usar RenderEngine, usamos la función global showScreen
+        if (typeof window.showScreen !== 'undefined') {
+            console.log('✅ Usando showScreen global');
             
-            // Si no existe, esperar un momento y reintentar
+            // Ir a selección de personaje
             setTimeout(() => {
-                if (typeof RenderEngine !== 'undefined') {
-                    console.log('✅ RenderEngine apareció después de esperar');
-                    RenderEngine.showScreen('characters');
-                    
-                    setTimeout(() => {
-                        if (typeof PowerFeedback !== 'undefined') {
-                            PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
-                            PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
-                        }
-                    }, 500);
-                } else {
-                    console.error('❌ RenderEngine sigue sin existir. Recarga manual.');
-                }
-            }, 500);
+                window.showScreen('characters');
+                
+                // Mensaje épico (opcional)
+                setTimeout(() => {
+                    if (typeof PowerFeedback !== 'undefined') {
+                        PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
+                        PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
+                    }
+                }, 500);
+            }, 300);
             
-            return;
+        } else {
+            console.error('❌ showScreen no disponible');
+            
+            // Último recurso: recargar la página
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
-        
-        // Si existe, proceder normal
-        console.log('✅ RenderEngine encontrado, navegando a characters');
-        RenderEngine.showScreen('characters');
-        
-        // Mensaje épico
-        setTimeout(() => {
-            if (typeof PowerFeedback !== 'undefined') {
-                PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
-                PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
-            }
-        }, 500);
     },
 
     update() {
@@ -179,14 +163,10 @@ const OnboardingSystem = {
     },
 
     init() {
-        console.log('🔹 Inicializando onboarding');
-        
         if (this.hasSeenOnboarding()) {
-            console.log('✅ Onboarding ya visto, omitiendo');
             return false;
         }
 
-        console.log('✅ Mostrando onboarding por primera vez');
         window.location.hash = 'onboarding-0';
         
         const container = document.getElementById('game-container');
@@ -201,4 +181,3 @@ const OnboardingSystem = {
 };
 
 window.OnboardingSystem = OnboardingSystem;
-console.log('✅ OnboardingSystem cargado correctamente');
