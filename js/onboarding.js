@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - SISTEMA DE ONBOARDING ====================
-// Versión: 1.4 - CORRECCIÓN RADICAL
+// Versión: 1.5 - TRANSICIONES SUAVES
 // ============================================================================
 
 const OnboardingSystem = {
@@ -40,6 +40,32 @@ const OnboardingSystem = {
         localStorage.removeItem(this.STORAGE_KEY);
     },
 
+    // ========== TRANSICIÓN SUAVE ENTRE PANTALLAS ==========
+    transitionTo(index) {
+        const container = document.getElementById('game-container');
+        const currentOverlay = document.querySelector('.onboarding-overlay');
+        
+        if (!currentOverlay) {
+            // Si no hay overlay, solo renderizar
+            container.innerHTML = this.renderScreen(index);
+            return;
+        }
+
+        // Fade out del contenido actual (solo el contenedor, no el overlay)
+        const content = currentOverlay.querySelector('.onboarding-container');
+        if (content) {
+            content.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(-10px)';
+        }
+
+        // Cambiar el hash después de la animación de salida
+        setTimeout(() => {
+            window.location.hash = `onboarding-${index}`;
+            // El update se encargará del fade in
+        }, 300);
+    },
+
     renderScreen(index) {
         const screen = this.screens[index];
         const total = this.screens.length;
@@ -50,8 +76,8 @@ const OnboardingSystem = {
         }
 
         return `
-            <div class="onboarding-overlay">
-                <div class="onboarding-container">
+            <div class="onboarding-overlay" style="animation: onboardingFadeIn 0.8s ease;">
+                <div class="onboarding-container" style="animation: onboardingSlideIn 0.6s ease; opacity: 1; transform: translateY(0); transition: opacity 0.3s ease, transform 0.3s ease;">
                     <div class="onboarding-icon">${screen.icon}</div>
                     <h1 class="onboarding-title">${screen.title}</h1>
                     <div class="onboarding-text">
@@ -85,60 +111,75 @@ const OnboardingSystem = {
         const nextIndex = currentIndex + 1;
         
         if (nextIndex < this.screens.length) {
-            window.location.hash = `onboarding-${nextIndex}`;
-            this.update();
+            this.transitionTo(nextIndex);
         }
     },
 
     skip() {
-        this.markAsSeen();
-        window.location.hash = '';
-        this.destroy();
-        
-        // Forzar navegación a start
-        if (typeof window.showScreen !== 'undefined') {
-            window.showScreen('start');
+        // Fade out completo antes de salir
+        const overlay = document.querySelector('.onboarding-overlay');
+        if (overlay) {
+            overlay.style.transition = 'opacity 0.4s ease';
+            overlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                this.markAsSeen();
+                window.location.hash = '';
+                this.destroy();
+                
+                if (typeof window.showScreen !== 'undefined') {
+                    window.showScreen('start');
+                }
+            }, 400);
         } else {
-            console.error('showScreen no disponible');
+            this.markAsSeen();
+            window.location.hash = '';
+            this.destroy();
+            if (typeof window.showScreen !== 'undefined') {
+                window.showScreen('start');
+            }
         }
     },
 
-    // ========== VERSIÓN CORREGIDA - USA showScreen GLOBAL ==========
+    // ========== TRANSICIÓN DE SALIDA SUAVE ==========
     start() {
-        // Marcar como visto
         this.markAsSeen();
         
-        // Limpiar hash
-        window.location.hash = '';
+        const overlay = document.querySelector('.onboarding-overlay');
         
-        // Destruir overlay
-        this.destroy();
-        
-        // ========== SOLUCIÓN RADICAL ==========
-        // En lugar de usar RenderEngine, usamos la función global showScreen
-        if (typeof window.showScreen !== 'undefined') {
-            console.log('✅ Usando showScreen global');
+        if (overlay) {
+            // Animación de salida
+            overlay.style.transition = 'opacity 0.5s ease';
+            overlay.style.opacity = '0';
             
-            // Ir a selección de personaje
             setTimeout(() => {
-                window.showScreen('characters');
+                window.location.hash = '';
+                this.destroy();
                 
-                // Mensaje épico (opcional)
+                // Pequeña pausa antes de mostrar personajes
                 setTimeout(() => {
-                    if (typeof PowerFeedback !== 'undefined') {
-                        PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
-                        PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
+                    if (typeof window.showScreen !== 'undefined') {
+                        window.showScreen('characters');
+                        
+                        setTimeout(() => {
+                            if (typeof PowerFeedback !== 'undefined') {
+                                PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
+                                PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
+                            }
+                        }, 500);
                     }
-                }, 500);
-            }, 300);
+                }, 100);
+            }, 500);
             
         } else {
-            console.error('❌ showScreen no disponible');
-            
-            // Último recurso: recargar la página
+            // Fallback si no hay overlay
+            window.location.hash = '';
+            this.destroy();
             setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+                if (typeof window.showScreen !== 'undefined') {
+                    window.showScreen('characters');
+                }
+            }, 100);
         }
     },
 
@@ -148,17 +189,22 @@ const OnboardingSystem = {
         const currentIndex = parseInt(currentHash.replace('#onboarding-', '')) || 0;
         
         if (currentIndex >= 0 && currentIndex < this.screens.length) {
+            // Reemplazar el contenido completamente (el fade in viene del CSS)
             container.innerHTML = this.renderScreen(currentIndex);
+            
+            // Asegurar que el nuevo contenido tenga opacidad 1
+            const newContent = document.querySelector('.onboarding-container');
+            if (newContent) {
+                newContent.style.opacity = '1';
+                newContent.style.transform = 'translateY(0)';
+            }
         }
     },
 
     destroy() {
         const overlay = document.querySelector('.onboarding-overlay');
         if (overlay) {
-            overlay.style.animation = 'onboardingFadeIn 0.3s ease reverse';
-            setTimeout(() => {
-                overlay.remove();
-            }, 300);
+            overlay.remove();
         }
     },
 
