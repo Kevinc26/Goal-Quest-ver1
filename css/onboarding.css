@@ -1,0 +1,224 @@
+/* ==================== GOALQUEST - ONBOARDING ÉPICO ==================== */
+/* Primera impresión. Identidad. Llamado a la aventura. */
+/* ===================================================================== */
+
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 26, 0.98);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: onboardingFadeIn 0.8s ease;
+}
+
+.onboarding-container {
+    max-width: 700px;
+    width: 90%;
+    background: linear-gradient(145deg, #1a1a2e, #0f0f1f);
+    border: 3px solid var(--primary);
+    padding: 40px 30px;
+    position: relative;
+    box-shadow: 0 0 50px rgba(77, 255, 145, 0.3);
+    animation: onboardingSlideIn 0.6s ease;
+}
+
+.onboarding-container::before {
+    content: '⚔️🛡️⚔️';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0a0a1a;
+    padding: 5px 20px;
+    color: var(--primary);
+    font-size: 20px;
+    letter-spacing: 10px;
+}
+
+.onboarding-container::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(77, 255, 145, 0.3);
+    pointer-events: none;
+}
+
+.onboarding-icon {
+    font-size: 80px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: onboardingFloat 3s ease-in-out infinite;
+}
+
+.onboarding-title {
+    font-size: 28px;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px var(--primary);
+    letter-spacing: 4px;
+}
+
+.onboarding-text {
+    font-size: 16px;
+    color: #f0f0f0;
+    text-align: center;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.onboarding-highlight {
+    color: var(--warning);
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--warning);
+}
+
+.onboarding-progress {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0 20px;
+}
+
+.onboarding-dot {
+    width: 12px;
+    height: 12px;
+    background: #3a3a5a;
+    border: 1px solid #6a6a8a;
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+.onboarding-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary);
+    transform: rotate(0deg);
+}
+
+.onboarding-button {
+    background: transparent;
+    border: 3px solid var(--primary);
+    color: var(--primary);
+    padding: 16px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-shadow: 0 0 10px var(--primary);
+    box-shadow: 0 0 20px rgba(77, 255, 145, 0.2);
+}
+
+.onboarding-button:hover {
+    background: var(--primary);
+    color: #0a0a1a;
+    box-shadow: 0 0 40px var(--primary);
+    transform: translateY(-3px);
+}
+
+.onboarding-skip {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    color: #6a6a8a;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+}
+
+.onboarding-skip:hover {
+    color: #aaa;
+    text-decoration-color: #aaa;
+}
+
+@keyframes onboardingFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes onboardingSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+@keyframes onboardingFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .onboarding-container {
+        padding: 30px 20px;
+    }
+    
+    .onboarding-title {
+        font-size: 22px;
+    }
+    
+    .onboarding-text {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+    
+    .onboarding-icon {
+        font-size: 60px;
+    }
+    
+    .onboarding-button {
+        font-size: 16px;
+        padding: 14px 30px;
+        letter-spacing: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .onboarding-container {
+        padding: 25px 15px;
+    }
+    
+    .onboarding-title {
+        font-size: 20px;
+    }
+    
+    .onboarding-text {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+    
+    .onboarding-icon {
+        font-size: 50px;
+    }
+    
+    .onboarding-skip {
+        position: static;
+        text-align: center;
+        margin-top: 20px;
+    }
+}
