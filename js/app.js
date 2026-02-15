@@ -498,7 +498,8 @@ const GameState = {
         AchievementSystem.check(this);
         
         // ========== INICIAR ONBOARDING SI ES PRIMERA VEZ ==========
-        if (!this.character && !OnboardingSystem.hasSeenOnboarding()) {
+        // DESPUÉS (corregido):
+        if (typeof OnboardingSystem !== 'undefined' && !this.character && !OnboardingSystem.hasSeon {
             setTimeout(() => {
                 OnboardingSystem.init();
             }, 100);
