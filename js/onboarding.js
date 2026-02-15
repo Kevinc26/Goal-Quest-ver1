@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - SISTEMA DE ONBOARDING ====================
-// Versión: 1.5 - TRANSICIONES SUAVES
+// Versión: 1.6 - CON IMÁGENES PERSONALIZADAS
 // ============================================================================
 
 const OnboardingSystem = {
@@ -7,22 +7,22 @@ const OnboardingSystem = {
     
     screens: [
         {
-            icon: '⚔️🛡️',
+            image: './assets/onboarding/1-que-es.png',
             title: '¿QUÉ ES GOALQUEST?',
             text: '<span class="onboarding-highlight">Un RPG de vida real.</span><br>Tus objetivos son misiones. Tu progreso es real. No es un juego. Es tu historia.'
         },
         {
-            icon: '📜⚡',
+            image: './assets/onboarding/2-como-funciona.png',
             title: 'CÓMO FUNCIONA',
             text: 'Eliges una clase que resuena contigo. Recibes misiones reales. Las cumples.<br><span class="onboarding-highlight">Ganas EXP. Subes nivel. Te conviertes.</span>'
         },
         {
-            icon: '🦁👑',
+            image: './assets/onboarding/3-identidad.png',
             title: 'IDENTIDAD',
             text: 'No se trata de lo que haces.<br>Se trata de <span class="onboarding-highlight">quien eliges ser</span>.<br>Cada misión no es una tarea. Es un paso hacia tu nueva identidad.'
         },
         {
-            icon: '🌅⚔️',
+            image: './assets/onboarding/4-mundo-te-espera.png',
             title: 'EL MUNDO TE ESPERA',
             text: 'El caos reina cuando dejamos de avanzar.<br>La fortuna sonríe a los valientes.<br><span class="onboarding-highlight" style="font-size: 20px;">Hoy empiezas.</span>'
         }
@@ -40,18 +40,15 @@ const OnboardingSystem = {
         localStorage.removeItem(this.STORAGE_KEY);
     },
 
-    // ========== TRANSICIÓN SUAVE ENTRE PANTALLAS ==========
     transitionTo(index) {
         const container = document.getElementById('game-container');
         const currentOverlay = document.querySelector('.onboarding-overlay');
         
         if (!currentOverlay) {
-            // Si no hay overlay, solo renderizar
             container.innerHTML = this.renderScreen(index);
             return;
         }
 
-        // Fade out del contenido actual (solo el contenedor, no el overlay)
         const content = currentOverlay.querySelector('.onboarding-container');
         if (content) {
             content.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -59,10 +56,8 @@ const OnboardingSystem = {
             content.style.transform = 'translateY(-10px)';
         }
 
-        // Cambiar el hash después de la animación de salida
         setTimeout(() => {
             window.location.hash = `onboarding-${index}`;
-            // El update se encargará del fade in
         }, 300);
     },
 
@@ -78,7 +73,15 @@ const OnboardingSystem = {
         return `
             <div class="onboarding-overlay" style="animation: onboardingFadeIn 0.8s ease;">
                 <div class="onboarding-container" style="animation: onboardingSlideIn 0.6s ease; opacity: 1; transform: translateY(0); transition: opacity 0.3s ease, transform 0.3s ease;">
-                    <div class="onboarding-icon">${screen.icon}</div>
+                    
+                    <!-- ===== IMAGEN PERSONALIZADA ===== -->
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${screen.image}" 
+                             alt="${screen.title}"
+                             style="width: 128px; height: 128px; image-rendering: pixelated; filter: drop-shadow(0 0 10px var(--primary));"
+                             onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML += '<div style=\\'font-size: 60px; color: var(--primary);\\'>⚔️</div>';">
+                    </div>
+                    
                     <h1 class="onboarding-title">${screen.title}</h1>
                     <div class="onboarding-text">
                         ${screen.text}
@@ -116,7 +119,6 @@ const OnboardingSystem = {
     },
 
     skip() {
-        // Fade out completo antes de salir
         const overlay = document.querySelector('.onboarding-overlay');
         if (overlay) {
             overlay.style.transition = 'opacity 0.4s ease';
@@ -126,7 +128,6 @@ const OnboardingSystem = {
                 this.markAsSeen();
                 window.location.hash = '';
                 this.destroy();
-                
                 if (typeof window.showScreen !== 'undefined') {
                     window.showScreen('start');
                 }
@@ -141,14 +142,12 @@ const OnboardingSystem = {
         }
     },
 
-    // ========== TRANSICIÓN DE SALIDA SUAVE ==========
     start() {
         this.markAsSeen();
         
         const overlay = document.querySelector('.onboarding-overlay');
         
         if (overlay) {
-            // Animación de salida
             overlay.style.transition = 'opacity 0.5s ease';
             overlay.style.opacity = '0';
             
@@ -156,7 +155,6 @@ const OnboardingSystem = {
                 window.location.hash = '';
                 this.destroy();
                 
-                // Pequeña pausa antes de mostrar personajes
                 setTimeout(() => {
                     if (typeof window.showScreen !== 'undefined') {
                         window.showScreen('characters');
@@ -172,7 +170,6 @@ const OnboardingSystem = {
             }, 500);
             
         } else {
-            // Fallback si no hay overlay
             window.location.hash = '';
             this.destroy();
             setTimeout(() => {
@@ -189,10 +186,8 @@ const OnboardingSystem = {
         const currentIndex = parseInt(currentHash.replace('#onboarding-', '')) || 0;
         
         if (currentIndex >= 0 && currentIndex < this.screens.length) {
-            // Reemplazar el contenido completamente (el fade in viene del CSS)
             container.innerHTML = this.renderScreen(currentIndex);
             
-            // Asegurar que el nuevo contenido tenga opacidad 1
             const newContent = document.querySelector('.onboarding-container');
             if (newContent) {
                 newContent.style.opacity = '1';
