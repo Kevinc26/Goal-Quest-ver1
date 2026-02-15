@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - SISTEMA DE ONBOARDING ====================
-// Versión: 1.6 - CON IMÁGENES PERSONALIZADAS (CORREGIDO)
+// Versión: 1.7 - CORREGIDO (ERROR DE SINTAXIS ELIMINADO)
 // ============================================================================
 
 const OnboardingSystem = {
