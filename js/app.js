@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 2.4 - COMPLETA Y FUNCIONAL
+// Versión: 2.5 - CON ONBOARDING CORREGIDO
 // ============================================================
 
 // ==================== DATOS DEL JUEGO ====================
@@ -490,6 +490,7 @@ const GameState = {
     },
     
     init() {
+        console.log("🎮 Inicializando GameState...");
         this.load();
         this.checkDailyReset();
         this.generateDailyMissions();
@@ -499,9 +500,12 @@ const GameState = {
         
         // ========== INICIAR ONBOARDING SI ES PRIMERA VEZ ==========
         if (typeof OnboardingSystem !== 'undefined' && !this.character && !OnboardingSystem.hasSeenOnboarding()) {
+            console.log("🎬 Mostrando onboarding...");
             setTimeout(() => {
                 OnboardingSystem.init();
             }, 100);
+        } else {
+            console.log("⏭️ Onboarding omitido");
         }
         // ==========================================================
     },
