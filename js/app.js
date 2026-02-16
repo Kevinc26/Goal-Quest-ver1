@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 2.5 - CON ONBOARDING CORREGIDO
+// Versión: 2.6 - CON MÚSICA 8-BIT
 // ============================================================
 
 // ==================== DATOS DEL JUEGO ====================
@@ -127,6 +127,43 @@ function asset(relPath) {
     return relPath;
 }
 
+// ==================== SISTEMA DE MÚSICA ====================
+const MusicSystem = {
+    audio: null,
+    isPlaying: false,
+    
+    init() {
+        try {
+            this.audio = new Audio('./assets/sounds/8bit-musica-fondo.mp3');
+            this.audio.loop = true;
+            this.audio.volume = 0.3;
+            console.log("🎵 Música cargada");
+        } catch (e) {
+            console.error("Error cargando música:", e);
+        }
+    },
+    
+    play() {
+        if (!this.audio) this.init();
+        if (this.audio && !this.isPlaying) {
+            this.audio.play().catch(e => console.log("⏸️ Autoplay bloqueado:", e));
+            this.isPlaying = true;
+        }
+    },
+    
+    pause() {
+        if (this.audio && this.isPlaying) {
+            this.audio.pause();
+            this.isPlaying = false;
+        }
+    },
+    
+    toggle() {
+        if (this.isPlaying) this.pause();
+        else this.play();
+    }
+};
+
 // ==================== SISTEMA DE LOGROS ====================
 const AchievementSystem = {
     achievements: [
@@ -176,6 +213,7 @@ const AchievementSystem = {
         notification.style.boxShadow = `0 0 30px ${achievement.color}`;
         notification.style.padding = '20px';
         notification.style.maxWidth = '350px';
+        notification.style.zIndex = '10001';
         notification.innerHTML = `
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="font-size: 48px;">${achievement.icon}</div>
@@ -490,24 +528,22 @@ const GameState = {
     },
     
     init() {
-        console.log("🎮 Inicializando GameState...");
+        console.log("Initialized GameState...");
         this.load();
         this.checkDailyReset();
         this.generateDailyMissions();
         WorldTransformer.updateState(this.stats.dailyTasksCompleted);
         ParticleSystem.init();
         AchievementSystem.check(this);
+        MusicSystem.play(); // <-- MÚSICA ACTIVADA
         
-        // ========== INICIAR ONBOARDING SI ES PRIMERA VEZ ==========
         if (typeof OnboardingSystem !== 'undefined' && !this.character && !OnboardingSystem.hasSeenOnboarding()) {
-            console.log("🎬 Mostrando onboarding...");
             setTimeout(() => {
                 OnboardingSystem.init();
             }, 100);
         } else {
-            console.log("⏭️ Onboarding omitido");
+            console.log("Onboarding omitido");
         }
-        // ==========================================================
     },
     
     load() {
