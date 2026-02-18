@@ -1,6 +1,125 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 2.6 - CON MÚSICA 8-BIT
+// Versión: 3.0 - CON SISTEMA DE CORRUPCIÓN DIGITAL
 // ============================================================
+
+// ==================== SISTEMA DE CORRUPCIÓN DIGITAL ====================
+const CORRUPTION_LEVELS = {
+    0: { name: 'ESTABLE', color: '#4dff91', particles: 0, musicVol: 1.0, filter: 0, bgDarkness: 0 },
+    1: { name: 'INESTABLE', color: '#b388ff', particles: 0.15, musicVol: 0.9, filter: 0.1, bgDarkness: 0 },
+    2: { name: 'CORROMPIDO', color: '#aa00ff', particles: 0.4, musicVol: 0.8, filter: 0.3, bgDarkness: 0.1 },
+    3: { name: 'CRÍTICO', color: '#ff00ff', particles: 0.6, musicVol: 0.7, filter: 0.5, bgDarkness: 0.2 }
+};
+
+const CORRUPTION_MESSAGES = {
+    1: { title: '🔮 Interferencia detectada...', message: 'La señal está débil. Completa una misión para estabilizar.' },
+    2: { title: '⚠️ Corrupción creciente', message: 'El sistema se degrada. Vuelve antes de que sea tarde.' },
+    3: { title: '💀 Sistema comprometido', message: 'Te estamos perdiendo... Una misión lo restaurará.' }
+};
+
+// ==================== SISTEMA DE MÚSICA ====================
+const MusicSystem = {
+    audio: null,
+    isPlaying: false,
+    userInteracted: false,
+    button: null,
+    corruptionLevel: 0,
+    baseVolume: 0.3,
+
+    init() {
+        this.audio = new Audio();
+        this.audio.src = 'assets/music/tema-inicio.mp3';
+        this.audio.loop = true;
+        this.audio.volume = this.baseVolume;
+
+        const enableMusic = () => {
+            if (!this.userInteracted) {
+                this.userInteracted = true;
+                document.removeEventListener('click', enableMusic);
+                document.removeEventListener('keydown', enableMusic);
+                if (this.button && this.button.dataset.state === 'on') {
+                    this.play();
+                }
+            }
+        };
+        document.addEventListener('click', enableMusic);
+        document.addEventListener('keydown', enableMusic);
+
+        this.createButton();
+        const saved = localStorage.getItem('goalquest_music');
+        if (saved === 'on') {
+            this.button.dataset.state = 'on';
+            this.button.innerHTML = '🎵 Música: ON';
+            if (this.userInteracted) this.play();
+        } else {
+            this.button.dataset.state = 'off';
+            this.button.innerHTML = '🎵 Música: OFF';
+        }
+    },
+
+    createButton() {
+        this.button = document.createElement('div');
+        this.button.innerHTML = '🎵 Música: OFF';
+        this.button.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4a4e69;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        `;
+        this.button.dataset.state = 'off';
+        this.button.addEventListener('click', () => this.toggle());
+        document.body.appendChild(this.button);
+    },
+
+    toggle() {
+        if (this.button.dataset.state === 'off') {
+            this.button.dataset.state = 'on';
+            this.button.innerHTML = '🎵 Música: ON';
+            localStorage.setItem('goalquest_music', 'on');
+            if (this.userInteracted) this.play();
+        } else {
+            this.button.dataset.state = 'off';
+            this.button.innerHTML = '🎵 Música: OFF';
+            localStorage.setItem('goalquest_music', 'off');
+            this.stop();
+        }
+    },
+
+    play() {
+        if (!this.audio) return;
+        this.audio.play().catch(e => console.log('🎵 Esperando interacción...'));
+        this.isPlaying = true;
+    },
+
+    stop() {
+        if (this.audio) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.isPlaying = false;
+        }
+    },
+
+    setCorruptionLevel(level) {
+        this.corruptionLevel = level || 0;
+        if (this.isPlaying) {
+            const config = CORRUPTION_LEVELS[level] || CORRUPTION_LEVELS[0];
+            this.audio.volume = this.baseVolume * config.musicVol;
+        }
+    },
+
+    setVolume(vol) {
+        if (this.audio) this.audio.volume = Math.max(0, Math.min(1, vol));
+    }
+};
 
 // ==================== DATOS DEL JUEGO ====================
 const GAME_DATA = {
@@ -126,43 +245,6 @@ const ASSETS = {
 function asset(relPath) {
     return relPath;
 }
-
-// ==================== SISTEMA DE MÚSICA ====================
-const MusicSystem = {
-    audio: null,
-    isPlaying: false,
-    
-    init() {
-        try {
-            this.audio = new Audio('./assets/sounds/8bit-musica-fondo.mp3');
-            this.audio.loop = true;
-            this.audio.volume = 0.3;
-            console.log("🎵 Música cargada");
-        } catch (e) {
-            console.error("Error cargando música:", e);
-        }
-    },
-    
-    play() {
-        if (!this.audio) this.init();
-        if (this.audio && !this.isPlaying) {
-            this.audio.play().catch(e => console.log("⏸️ Autoplay bloqueado:", e));
-            this.isPlaying = true;
-        }
-    },
-    
-    pause() {
-        if (this.audio && this.isPlaying) {
-            this.audio.pause();
-            this.isPlaying = false;
-        }
-    },
-    
-    toggle() {
-        if (this.isPlaying) this.pause();
-        else this.play();
-    }
-};
 
 // ==================== SISTEMA DE LOGROS ====================
 const AchievementSystem = {
@@ -293,16 +375,53 @@ const AchievementSystem = {
 
 // ==================== MÓDULO DE PODER ====================
 const ParticleSystem = {
-    container: null, isActive: false,
-    init() { if (!document.querySelector('.particle-container')) { this.container = document.createElement('div'); this.container.className = 'particle-container'; document.body.appendChild(this.container); } },
-    start() { if (this.isActive) return; this.isActive = true; this.init(); this.generateParticles(30); },
-    stop() { this.isActive = false; if (this.container) this.container.innerHTML = ''; },
+    container: null,
+    isActive: false,
+    corruptionLevel: 0,
+
+    init() {
+        if (!document.querySelector('.particle-container')) {
+            this.container = document.createElement('div');
+            this.container.className = 'particle-container';
+            document.body.appendChild(this.container);
+        }
+    },
+
+    start() {
+        if (this.isActive) return;
+        this.isActive = true;
+        this.init();
+        this.generateParticles(80);
+    },
+
+    stop() {
+        this.isActive = false;
+        if (this.container) this.container.innerHTML = '';
+    },
+
+    setCorruptionLevel(level) {
+        this.corruptionLevel = level || 0;
+        if (this.isActive) {
+            this.generateParticles(80);
+        }
+    },
+
     generateParticles(count) {
         if (!this.container) return;
         this.container.innerHTML = '';
+        
+        const corruptionRatio = CORRUPTION_LEVELS[this.corruptionLevel]?.particles || 0;
+        
         for (let i = 0; i < count; i++) {
             const p = document.createElement('div');
             p.className = 'particle';
+            
+            const isCorrupted = Math.random() < corruptionRatio;
+            p.style.backgroundColor = isCorrupted ? '#b388ff' : '#4dff91';
+            p.style.boxShadow = isCorrupted 
+                ? '0 0 10px #b388ff' 
+                : '0 0 10px #4dff91';
+            
             p.style.left = Math.random() * 100 + '%';
             p.style.top = Math.random() * 100 + '%';
             p.style.animationDelay = Math.random() * 5 + 's';
@@ -345,18 +464,6 @@ const PowerFeedback = {
             const msg = PowerMessages.firstTask[Math.floor(Math.random() * PowerMessages.firstTask.length)];
             this.showMessage(msg, 'var(--warning)');
             this.flash('rgba(255,209,102,0.4)');
-            try {
-                const ctx = new (AudioContext || webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.value = 659.25;
-                gain.gain.value = 0.1;
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.2);
-            } catch (e) {}
         } else if (type === 'daily') {
             this.showMessage(PowerMessages.daily[Math.floor(Math.random() * PowerMessages.daily.length)], 'var(--primary)');
             this.flash();
@@ -520,6 +627,10 @@ const GameState = {
     taskTimer: null,
     taskTimerSeconds: 0,
     achievements: {},
+    
+    // Corrupción
+    corruptionLevel: 0,
+    lastLoginDate: null,
 
     selectCharacter(id) {
         const c = GAME_DATA.characters.find(x => x.id === id);
@@ -532,18 +643,10 @@ const GameState = {
         this.load();
         this.checkDailyReset();
         this.generateDailyMissions();
+        this.calculateCorruptionLevel(); // Nuevo
         WorldTransformer.updateState(this.stats.dailyTasksCompleted);
         ParticleSystem.init();
         AchievementSystem.check(this);
-        MusicSystem.play(); // <-- MÚSICA ACTIVADA
-        
-        if (typeof OnboardingSystem !== 'undefined' && !this.character && !OnboardingSystem.hasSeenOnboarding()) {
-            setTimeout(() => {
-                OnboardingSystem.init();
-            }, 100);
-        } else {
-            console.log("Onboarding omitido");
-        }
     },
     
     load() {
@@ -561,6 +664,11 @@ const GameState = {
                 this.todayCompleted = d.todayCompleted || false;
                 this.dailyMissionsState = d.dailyMissionsState || { lastGeneratedDate: null, availableMissions: [], completedDailyMissions: [] };
                 this.achievements = d.achievements || {};
+                
+                // Cargar corrupción
+                this.corruptionLevel = d.corruptionLevel || 0;
+                this.lastLoginDate = d.lastLoginDate || null;
+                
                 if (this.stats.lastRegionMissionDate === undefined) this.stats.lastRegionMissionDate = null;
                 if (this.stats.lastCompletedRegionDay === undefined) this.stats.lastCompletedRegionDay = null;
                 if (this.stats.totalTasksCompleted === undefined) this.stats.totalTasksCompleted = 0;
@@ -576,9 +684,109 @@ const GameState = {
             completedMissions: this.completedMissions, defeatedBosses: this.defeatedBosses,
             completedRegions: this.completedRegions, lastPlayedDate: this.lastPlayedDate,
             todayCompleted: this.todayCompleted, dailyMissionsState: this.dailyMissionsState,
-            achievements: this.achievements, saveDate: new Date().toISOString()
+            achievements: this.achievements,
+            corruptionLevel: this.corruptionLevel,
+            lastLoginDate: this.lastLoginDate,
+            saveDate: new Date().toISOString()
         }));
     },
+    
+    // ==================== NUEVOS MÉTODOS DE CORRUPCIÓN ====================
+    calculateCorruptionLevel() {
+        const today = new Date().toDateString();
+        
+        if (!this.lastLoginDate) {
+            this.lastLoginDate = today;
+            this.corruptionLevel = 0;
+            this.save();
+            return 0;
+        }
+        
+        const lastDate = new Date(this.lastLoginDate);
+        const currentDate = new Date(today);
+        const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+        
+        let newLevel = 0;
+        
+        if (daysDiff >= 3) {
+            newLevel = 3;
+        } else if (daysDiff === 2) {
+            newLevel = 2;
+        } else if (daysDiff === 1 || (daysDiff === 0 && this.stats.dailyTasksCompleted === 0)) {
+            newLevel = 1;
+        } else {
+            newLevel = 0;
+        }
+        
+        if (this.lastLoginDate !== today) {
+            this.lastLoginDate = today;
+        }
+        
+        if (newLevel !== this.corruptionLevel && newLevel > 0) {
+            this.showCorruptionMessage(newLevel);
+        }
+        
+        this.corruptionLevel = newLevel;
+        this.save();
+        return newLevel;
+    },
+
+    showCorruptionMessage(level) {
+        const msg = CORRUPTION_MESSAGES[level];
+        if (!msg) return;
+        
+        const notification = document.createElement('div');
+        notification.className = 'notification corruption-notification';
+        notification.style.borderLeftColor = CORRUPTION_LEVELS[level].color;
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 32px; color: ${CORRUPTION_LEVELS[level].color};">⚠️</div>
+                <div>
+                    <div style="color: ${CORRUPTION_LEVELS[level].color}; font-size: 12px; font-weight: bold; margin-bottom: 5px;">${msg.title}</div>
+                    <div style="color: #aaa; font-size: 10px;">${msg.message}</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 4000);
+    },
+
+    checkCorruptionRecovery() {
+        if (this.stats.dailyTasksCompleted >= 1 && this.corruptionLevel > 0) {
+            const oldLevel = this.corruptionLevel;
+            this.corruptionLevel = 0;
+            this.save();
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification recovery-notification';
+            notification.style.borderLeftColor = '#4dff91';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-size: 32px; color: #4dff91;">✅</div>
+                    <div>
+                        <div style="color: #4dff91; font-size: 12px; font-weight: bold;">Sistema estabilizado.</div>
+                        <div style="color: #aaa; font-size: 10px;">La corrupción ha sido contenida.</div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            
+            this.triggerRecoveryEffect();
+        }
+    },
+
+    triggerRecoveryEffect() {
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.style.transition = 'box-shadow 0.3s ease';
+            container.style.boxShadow = '0 0 50px #4dff91';
+            setTimeout(() => {
+                container.style.boxShadow = '';
+            }, 1000);
+        }
+    },
+    // ==================== FIN NUEVOS MÉTODOS ====================
     
     generateDailyMissions() {
         const t = new Date().toDateString();
@@ -627,6 +835,7 @@ const GameState = {
             }
             
             this.checkLevelUp();
+            this.checkCorruptionRecovery(); // NUEVO
             this.save();
             return true;
         }
@@ -864,6 +1073,8 @@ const GameState = {
             this.completedRegions = {};
             this.dailyMissionsState = { lastGeneratedDate: null, availableMissions: [], completedDailyMissions: [] };
             this.achievements = {};
+            this.corruptionLevel = 0;
+            this.lastLoginDate = null;
             this.currentCombat = null;
             this.lastPlayedDate = null;
             this.todayCompleted = false;
@@ -893,7 +1104,57 @@ const RenderEngine = {
         else if (s === 'settings') h = this.renderSettingsScreen();
         else if (s === 'achievements') h = AchievementSystem.renderScreen();
         c.innerHTML = h;
+        
+        // Aplicar efectos de corrupción
+        this.applyCorruptionEffects(GameState.corruptionLevel);
+        
         if (s === 'start') { setTimeout(() => { ParticleSystem.start(); WorldTransformer.energizeTitle(); }, 100); }
+    },
+    
+    // NUEVO: Aplicar efectos de corrupción
+    applyCorruptionEffects(level) {
+        if (level === undefined || level === null) return;
+        
+        document.querySelectorAll('.corruption-overlay').forEach(el => el.remove());
+        document.querySelectorAll('.glitch-line').forEach(el => el.remove());
+        document.body.classList.remove('corruption-bg-2', 'corruption-bg-3');
+        
+        if (level === 0) {
+            const gameScreen = document.querySelector('.game-screen');
+            if (gameScreen) gameScreen.classList.remove('corruption-border-effect');
+            return;
+        }
+        
+        if (level >= 2) {
+            document.body.classList.add(`corruption-bg-${level}`);
+        }
+        
+        if (level >= 1) {
+            const gameScreen = document.querySelector('.game-screen');
+            if (gameScreen) gameScreen.classList.add('corruption-border-effect');
+        }
+        
+        const overlay = document.createElement('div');
+        overlay.className = `corruption-overlay level-${level}`;
+        document.body.appendChild(overlay);
+        
+        if (level >= 2) {
+            for (let i = 0; i < 3; i++) {
+                const line = document.createElement('div');
+                line.className = `glitch-line level-${level}`;
+                line.style.top = `${Math.random() * 100}%`;
+                line.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(line);
+            }
+        }
+        
+        if (window.ParticleSystem) {
+            ParticleSystem.setCorruptionLevel(level);
+        }
+        
+        if (window.MusicSystem) {
+            MusicSystem.setCorruptionLevel(level);
+        }
     },
     
     renderStartScreen() {
@@ -973,7 +1234,12 @@ window.restAction = () => { const r = GameState.rest(); PathSystem.showClassNoti
 window.changeDailyGoal = (g) => { GameState.stats.dailyTasksGoal = parseInt(g); GameState.save(); RenderEngine.showScreen('settings'); };
 window.resetGame = () => { if (GameState.reset()) RenderEngine.showScreen('start'); };
 
-// ==================== INICIALIZACIÓN ====================
+// ==================== INICIALIZACIÓN (CON MÚSICA Y CORRUPCIÓN) ====================
+window.GameState = GameState;
+window.ParticleSystem = ParticleSystem;
+window.MusicSystem = MusicSystem;
+window.CORRUPTION_LEVELS = CORRUPTION_LEVELS;
+
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const ls = document.getElementById('loading-screen');
@@ -983,6 +1249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ls.style.display = 'none';
                 GameState.init();
                 RenderEngine.showScreen('start');
+                MusicSystem.init();
             }, 300);
         }
     }, 1500);
