@@ -1,5 +1,5 @@
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 3.0 - CON SISTEMA DE CORRUPCIÓN DIGITAL
+// Versión: 4.2 - CON AERIL CORREGIDO
 // ============================================================
 
 // ==================== SISTEMA DE CORRUPCIÓN DIGITAL ====================
@@ -14,6 +14,178 @@ const CORRUPTION_MESSAGES = {
     1: { title: '🔮 Interferencia detectada...', message: 'La señal está débil. Completa una misión para estabilizar.' },
     2: { title: '⚠️ Corrupción creciente', message: 'El sistema se degrada. Vuelve antes de que sea tarde.' },
     3: { title: '💀 Sistema comprometido', message: 'Te estamos perdiendo... Una misión lo restaurará.' }
+};
+
+// ==================== SISTEMA DE AERIL ====================
+const AerilSystem = {
+    corruptionLevel: 0,
+    messageElement: null,
+    aerilElement: null,
+    lastMessageDate: null,
+    hasSpokenToday: false,
+    
+    messages: {
+        0: ["El portal está estable.", "Todo está en equilibrio.", "Has mantenido la luz encendida.", "La energía fluye con calma.", "Tu presencia fortalece el vínculo."],
+        1: ["Siento interferencia...", "Algo está cambiando.", "El sistema necesita atención.", "Hay estática en el aire.", "No todo está en orden."],
+        2: ["La Corrupción se está filtrando.", "El portal no resistirá mucho.", "Te necesitamos.", "La luz parpadea.", "Estamos perdiendo integridad."],
+        3: ["Estamos perdiendo estabilidad.", "No tardes.", "El mundo depende de ti.", "Es crítico.", "Vuelve pronto."]
+    },
+    
+    specialMessages: {
+        welcome: "Has regresado.",
+        streak7: "Tu presencia fortalece el portal.",
+        streak30: "El viaje ya te está transformando.",
+        recovery: "Gracias por volver."
+    },
+    
+    init() {
+        this.createAeril();
+        this.createMessageElement();
+        this.checkFirstEntry();
+    },
+    
+    createAeril() {
+        this.aerilElement = document.createElement('div');
+        this.aerilElement.className = 'aeril-guardian';
+        
+        // Intentar cargar la imagen
+        const aerilImg = document.createElement('img');
+        aerilImg.src = 'assets/classes/Aerial.png'; // CORREGIDO
+        aerilImg.alt = 'Aeril';
+        aerilImg.className = 'aeril-sprite';
+        aerilImg.style.width = '80px';
+        aerilImg.style.height = '80px';
+        aerilImg.style.objectFit = 'contain';
+        aerilImg.style.imageRendering = 'pixelated';
+        
+        // Fallback por si no carga
+        aerilImg.onerror = function() {
+            console.log('Usando emoji como fallback');
+            this.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.className = 'aeril-sprite';
+            fallback.style.fontSize = '60px';
+            fallback.style.lineHeight = '1';
+            fallback.textContent = '🔮';
+            this.parentNode.appendChild(fallback);
+        };
+        
+        this.aerilElement.appendChild(aerilImg);
+        document.body.appendChild(this.aerilElement);
+    },
+    
+    createMessageElement() {
+        this.messageElement = document.createElement('div');
+        this.messageElement.className = 'aeril-message';
+        document.body.appendChild(this.messageElement);
+    },
+    
+    checkFirstEntry() {
+        const today = new Date().toDateString();
+        if (this.lastMessageDate !== today) {
+            this.lastMessageDate = today;
+            this.hasSpokenToday = false;
+        }
+    },
+    
+    setCorruptionLevel(level) {
+        this.corruptionLevel = level;
+        this.updateAppearance();
+        this.updateMessage();
+    },
+    
+    updateAppearance() {
+        if (!this.aerilElement) return;
+        
+        this.aerilElement.classList.remove('corrupt-1', 'corrupt-2', 'corrupt-3', 'recovering');
+        
+        if (this.corruptionLevel > 0) {
+            this.aerilElement.classList.add(`corrupt-${this.corruptionLevel}`);
+            
+            if (Math.random() < 0.3) {
+                setTimeout(() => {
+                    this.aerilElement.classList.add('glitch');
+                    setTimeout(() => {
+                        this.aerilElement.classList.remove('glitch');
+                    }, 100);
+                }, Math.random() * 5000);
+            }
+            
+            if (this.corruptionLevel >= 2 && !this.glitchInterval) {
+                this.glitchInterval = setInterval(() => {
+                    if (this.corruptionLevel >= 2 && Math.random() < 0.5) {
+                        this.aerilElement.classList.add('glitch');
+                        setTimeout(() => {
+                            this.aerilElement.classList.remove('glitch');
+                        }, 100);
+                    }
+                }, 15000);
+            }
+        } else {
+            if (this.glitchInterval) {
+                clearInterval(this.glitchInterval);
+                this.glitchInterval = null;
+            }
+        }
+    },
+    
+    updateMessage() {
+        if (!this.messageElement) return;
+        
+        const level = this.corruptionLevel;
+        const messages = this.messages[level] || this.messages[0];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        
+        this.messageElement.innerHTML = `🔮 Aeril: "${randomMessage}"`;
+        this.messageElement.style.borderLeftColor = CORRUPTION_LEVELS[level].color;
+    },
+    
+    showWelcomeMessage() {
+        if (!this.messageElement || this.hasSpokenToday) return;
+        
+        this.messageElement.innerHTML = `🔮 Aeril: "${this.specialMessages.welcome}"`;
+        this.messageElement.style.borderLeftColor = '#4dff91';
+        this.hasSpokenToday = true;
+        
+        const gameScreen = document.querySelector('.game-screen');
+        if (gameScreen) {
+            gameScreen.style.transition = 'box-shadow 0.3s ease';
+            gameScreen.style.boxShadow = '0 0 50px #4dff91';
+            setTimeout(() => {
+                gameScreen.style.boxShadow = '';
+            }, 2000);
+        }
+        
+        this.aerilElement.classList.add('welcome-glow');
+        setTimeout(() => {
+            this.aerilElement.classList.remove('welcome-glow');
+        }, 2000);
+        
+        this.aerilElement.classList.add('look-up');
+        setTimeout(() => {
+            this.aerilElement.classList.remove('look-up');
+        }, 1500);
+    },
+    
+    showRecoveryMessage() {
+        this.aerilElement.classList.add('recovering');
+        this.messageElement.innerHTML = `🔮 Aeril: "${this.specialMessages.recovery}"`;
+        this.messageElement.style.borderLeftColor = '#4dff91';
+        
+        setTimeout(() => {
+            this.aerilElement.classList.remove('recovering');
+        }, 1000);
+    },
+    
+    showStreakMessage(days) {
+        if (days >= 30) {
+            this.messageElement.innerHTML = `🔮 Aeril: "${this.specialMessages.streak30}"`;
+            this.messageElement.style.borderLeftColor = '#ffd700';
+        } else if (days >= 7) {
+            this.messageElement.innerHTML = `🔮 Aeril: "${this.specialMessages.streak7}"`;
+            this.messageElement.style.borderLeftColor = '#ffd700';
+        }
+    }
 };
 
 // ==================== SISTEMA DE MÚSICA ====================
@@ -336,7 +508,7 @@ const AchievementSystem = {
         return `
             <div class="game-screen active">
                 <button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom: 20px;">← VOLVER AL MAPA</button>
-                <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 40px; width: 100%; max-width: 1000px;">
+                <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 40px; width: 100%; max-width: 1000px; margin-left: auto; margin-right: auto;">
                     <div style="font-size: 80px; color: var(--gold); text-shadow: 0 0 30px var(--gold);">🏆</div>
                     <div>
                         <h2 style="color: var(--gold); font-size: 28px; margin-bottom: 10px;">SALÓN DE LA FAMA</h2>
@@ -344,7 +516,7 @@ const AchievementSystem = {
                         <div style="width: 300px; height: 8px; background: rgba(255,215,0,0.2); margin-top: 15px; border: 1px solid var(--gold);"><div style="width: ${(unlocked/total)*100}%; height: 100%; background: var(--gold);"></div></div>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; width: 100%; max-width: 1200px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; width: 100%; max-width: 1200px; margin: 0 auto;">
                     ${this.achievements.map(ach => {
                         const isUnlocked = state.achievements?.[ach.id]?.unlocked;
                         const progress = this.getProgress(state, ach.id);
@@ -628,7 +800,6 @@ const GameState = {
     taskTimerSeconds: 0,
     achievements: {},
     
-    // Corrupción
     corruptionLevel: 0,
     lastLoginDate: null,
 
@@ -643,10 +814,20 @@ const GameState = {
         this.load();
         this.checkDailyReset();
         this.generateDailyMissions();
-        this.calculateCorruptionLevel(); // Nuevo
+        this.calculateCorruptionLevel();
         WorldTransformer.updateState(this.stats.dailyTasksCompleted);
         ParticleSystem.init();
         AchievementSystem.check(this);
+        
+        setTimeout(() => {
+            AerilSystem.init();
+            AerilSystem.setCorruptionLevel(this.corruptionLevel);
+            AerilSystem.showWelcomeMessage();
+            
+            if (this.stats.dailyStreak >= 7) {
+                AerilSystem.showStreakMessage(this.stats.dailyStreak);
+            }
+        }, 500);
     },
     
     load() {
@@ -665,7 +846,6 @@ const GameState = {
                 this.dailyMissionsState = d.dailyMissionsState || { lastGeneratedDate: null, availableMissions: [], completedDailyMissions: [] };
                 this.achievements = d.achievements || {};
                 
-                // Cargar corrupción
                 this.corruptionLevel = d.corruptionLevel || 0;
                 this.lastLoginDate = d.lastLoginDate || null;
                 
@@ -691,7 +871,6 @@ const GameState = {
         }));
     },
     
-    // ==================== NUEVOS MÉTODOS DE CORRUPCIÓN ====================
     calculateCorruptionLevel() {
         const today = new Date().toDateString();
         
@@ -757,6 +936,8 @@ const GameState = {
             this.corruptionLevel = 0;
             this.save();
             
+            AerilSystem.showRecoveryMessage();
+            
             const notification = document.createElement('div');
             notification.className = 'notification recovery-notification';
             notification.style.borderLeftColor = '#4dff91';
@@ -786,7 +967,6 @@ const GameState = {
             }, 1000);
         }
     },
-    // ==================== FIN NUEVOS MÉTODOS ====================
     
     generateDailyMissions() {
         const t = new Date().toDateString();
@@ -835,7 +1015,7 @@ const GameState = {
             }
             
             this.checkLevelUp();
-            this.checkCorruptionRecovery(); // NUEVO
+            this.checkCorruptionRecovery();
             this.save();
             return true;
         }
@@ -1105,13 +1285,20 @@ const RenderEngine = {
         else if (s === 'achievements') h = AchievementSystem.renderScreen();
         c.innerHTML = h;
         
-        // Aplicar efectos de corrupción
         this.applyCorruptionEffects(GameState.corruptionLevel);
         
-        if (s === 'start') { setTimeout(() => { ParticleSystem.start(); WorldTransformer.energizeTitle(); }, 100); }
+        if (s === 'start') { 
+            setTimeout(() => { 
+                ParticleSystem.start(); 
+                WorldTransformer.energizeTitle();
+                
+                if (window.AerilSystem) {
+                    AerilSystem.setCorruptionLevel(GameState.corruptionLevel);
+                }
+            }, 100); 
+        }
     },
     
-    // NUEVO: Aplicar efectos de corrupción
     applyCorruptionEffects(level) {
         if (level === undefined || level === null) return;
         
@@ -1177,7 +1364,7 @@ const RenderEngine = {
     renderWorldScreen() {
         if (!GameState.character) { this.showScreen('characters'); return ''; }
         const p = Math.min(100, (GameState.stats.dailyTasksCompleted / GameState.stats.dailyTasksGoal) * 100);
-        return `<div class="game-screen active">${this.renderStatusBar()}<h2 style="color:var(--primary);text-align:center;margin:20px 0;">${PathSystem.getPathName()}</h2><p style="text-align:center;color:#aaa;margin-bottom:10px;font-size:12px;">${PathSystem.getPathDescription()}</p><div style="background:rgba(26,26,46,0.95);border-radius:15px;padding:20px;border:3px solid var(--warning);margin-bottom:30px;max-width:600px;width:100%;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div><div style="color:var(--warning);font-size:14px;">PROGRESO DIARIO</div><div style="color:#aaa;font-size:10px;">${GameState.isTodayCompleted() ? '✅ Completado' : `${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} restantes`}</div></div><div style="color:var(--warning);font-size:16px;">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div></div><div class="daily-progress-bar" style="width:100%;"><div class="daily-progress-fill" style="width:${p}%"><div class="daily-progress-text">${Math.round(p)}%</div></div></div>${GameState.isTodayCompleted() ? `<div style="color:var(--primary);text-align:center;margin-top:15px;font-size:12px;">🏆 Día completado</div>` : `<div style="color:var(--info);text-align:center;margin-top:15px;font-size:12px;">💪 Completa ${GameState.stats.dailyTasksGoal} tareas</div>`}${GameState.hasCompletedRegionMissionToday() ? `<div style="color:var(--warning);text-align:center;margin-top:15px;font-size:12px;">🌙 Misión de región completada</div>` : ''}<div style="display:flex;justify-content:center;gap:10px;margin-top:20px;"><button class="ff-button" onclick="window.showScreen('daily')" style="padding:10px 20px;font-size:12px;">📅 DIARIAS</button><button class="ff-button" onclick="window.showScreen('achievements')" style="padding:10px 20px;font-size:12px;background:var(--gold);">🏆 LOGROS</button></div></div><p style="text-align:center;color:#aaa;margin-bottom:30px;">7 misiones por región para desbloquear al jefe</p><div class="map-grid">${GAME_DATA.regions.map(r => { const u = GameState.isRegionUnlocked(r.id); const c = GameState.completedMissions[r.id]?.filter(m => m).length || 0; const ic = GameState.isRegionCompleted(r.id); const bd = GameState.isBossDefeated(r.id); const t = PathSystem.getRegionTheme(r.id); const img = asset(ASSETS.acts[r.id]); const n = GameState.getNextAvailableMission(r.id); return `<div class="region-tile ${u ? '' : 'locked'}" onclick="${u ? `window.enterRegion(${r.id})` : ''}" style="--region-color:${r.color};--region-color-rgb:${r.colorRgb}"><div><div style="width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin-bottom:10px;"><img src="${img}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;" onerror="this.onerror=null;this.remove();this.parentElement.innerHTML='<div style=\\'font-size:40px;padding:10px;\\'>${r.icon}</div>';"></div><h4 style="color:${r.color};">${t}</h4><p style="color:#666;font-size:10px;margin-top:5px;">${r.name}</p></div>${u ? `<div style="margin:15px 0;"><div style="background:rgba(0,0,0,0.3);border-radius:5px;height:8px;"><div style="height:100%;background:${r.color};border-radius:5px;width:${(c/7)*100}%;"></div></div><div style="font-size:10px;color:#aaa;margin-top:5px;">${c}/7 misiones</div>${!GameState.hasCompletedRegionMissionToday() && n !== -1 && !ic ? `<div style="font-size:9px;color:var(--warning);margin-top:5px;">🔥 Hoy: Día ${n+1}</div>` : ''}</div>${ic && !bd ? `<button class="ff-button" onclick="window.startCombat(${r.id});event.stopPropagation();" style="padding:8px 15px;font-size:11px;background:var(--danger);margin:5px 0;">⚔️ JEFE</button>` : ''}${bd ? `<div style="color:var(--warning);font-size:12px;margin-top:10px;">👑 Derrotado</div>` : ''}${!ic ? `<div style="color:var(--primary);font-size:10px;margin-top:10px;">🎯 ${7-c} restantes</div>` : ''}` : `<div style="font-size:30px;margin:10px 0;">🔒</div><div style="font-size:10px;color:#aaa;">Completa región anterior</div>`}</div>`; }).join('')}</div><div style="text-align:center;margin-top:30px;"><button class="ff-button" onclick="window.showScreen('daily')">📅 DIARIAS</button><button class="ff-button" onclick="window.showScreen('rest')">🔥 DESCANSAR</button><button class="ff-button" onclick="window.showScreen('start')">🏠 MENÚ</button></div></div>`;
+        return `<div class="game-screen active">${this.renderStatusBar()}<h2 style="color:var(--primary);text-align:center;margin:20px 0;">${PathSystem.getPathName()}</h2><p style="text-align:center;color:#aaa;margin-bottom:10px;font-size:12px;">${PathSystem.getPathDescription()}</p><div class="daily-progress-container"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div><div style="color:var(--warning);font-size:14px;">PROGRESO DIARIO</div><div style="color:#aaa;font-size:10px;">${GameState.isTodayCompleted() ? '✅ Completado' : `${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} restantes`}</div></div><div style="color:var(--warning);font-size:16px;">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div></div><div class="daily-progress-bar" style="width:100%;"><div class="daily-progress-fill" style="width:${p}%"><div class="daily-progress-text">${Math.round(p)}%</div></div></div>${GameState.isTodayCompleted() ? `<div style="color:var(--primary);text-align:center;margin-top:15px;font-size:12px;">🏆 Día completado</div>` : `<div style="color:var(--info);text-align:center;margin-top:15px;font-size:12px;">💪 Completa ${GameState.stats.dailyTasksGoal} tareas</div>`}${GameState.hasCompletedRegionMissionToday() ? `<div style="color:var(--warning);text-align:center;margin-top:15px;font-size:12px;">🌙 Misión de región completada</div>` : ''}<div class="button-container"><button class="ff-button" onclick="window.showScreen('daily')" style="padding:10px 20px;font-size:12px;">📅 DIARIAS</button><button class="ff-button" onclick="window.showScreen('achievements')" style="padding:10px 20px;font-size:12px;background:var(--gold);">🏆 LOGROS</button></div></div><p style="text-align:center;color:#aaa;margin-bottom:30px;">7 misiones por región para desbloquear al jefe</p><div class="map-grid">${GAME_DATA.regions.map(r => { const u = GameState.isRegionUnlocked(r.id); const c = GameState.completedMissions[r.id]?.filter(m => m).length || 0; const ic = GameState.isRegionCompleted(r.id); const bd = GameState.isBossDefeated(r.id); const t = PathSystem.getRegionTheme(r.id); const img = asset(ASSETS.acts[r.id]); const n = GameState.getNextAvailableMission(r.id); return `<div class="region-tile ${u ? '' : 'locked'}" onclick="${u ? `window.enterRegion(${r.id})` : ''}" style="--region-color:${r.color};--region-color-rgb:${r.colorRgb}"><div><div style="width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin-bottom:10px;"><img src="${img}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;" onerror="this.onerror=null;this.remove();this.parentElement.innerHTML='<div style=\\'font-size:40px;padding:10px;\\'>${r.icon}</div>';"></div><h4 style="color:${r.color};">${t}</h4><p style="color:#666;font-size:10px;margin-top:5px;">${r.name}</p></div>${u ? `<div style="margin:15px 0;"><div style="background:rgba(0,0,0,0.3);border-radius:5px;height:8px;"><div style="height:100%;background:${r.color};border-radius:5px;width:${(c/7)*100}%;"></div></div><div style="font-size:10px;color:#aaa;margin-top:5px;">${c}/7 misiones</div>${!GameState.hasCompletedRegionMissionToday() && n !== -1 && !ic ? `<div style="font-size:9px;color:var(--warning);margin-top:5px;">🔥 Hoy: Día ${n+1}</div>` : ''}</div>${ic && !bd ? `<button class="ff-button" onclick="window.startCombat(${r.id});event.stopPropagation();" style="padding:8px 15px;font-size:11px;background:var(--danger);margin:5px 0;">⚔️ JEFE</button>` : ''}${bd ? `<div style="color:var(--warning);font-size:12px;margin-top:10px;">👑 Derrotado</div>` : ''}${!ic ? `<div style="color:var(--primary);font-size:10px;margin-top:10px;">🎯 ${7-c} restantes</div>` : ''}` : `<div style="font-size:30px;margin:10px 0;">🔒</div><div style="font-size:10px;color:#aaa;">Completa región anterior</div>`}</div>`; }).join('')}</div><div class="button-container"><button class="ff-button" onclick="window.showScreen('daily')">📅 DIARIAS</button><button class="ff-button" onclick="window.showScreen('rest')">🔥 DESCANSAR</button><button class="ff-button" onclick="window.showScreen('start')">🏠 MENÚ</button></div></div>`;
     },
     
     renderDailyMissionsScreen() {
@@ -1185,7 +1372,7 @@ const RenderEngine = {
         GameState.generateDailyMissions();
         const a = GameState.getAvailableDailyMissions();
         const p = Math.min(100, (GameState.stats.dailyTasksCompleted / GameState.stats.dailyTasksGoal) * 100);
-        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom:20px;">← VOLVER</button><div style="display:flex;align-items:center;gap:20px;margin-bottom:30px;"><div style="font-size:50px;color:var(--warning)">📅</div><div><h2 style="color:var(--warning);">MISIONES DIARIAS</h2><p style="color:#aaa;font-size:12px;">${GameState.dailyMissionsState.availableMissions.length} disponibles hoy</p>${GameState.isTodayCompleted() ? '<p style="color:var(--primary);font-size:11px;margin-top:5px;">🏆 Día completado</p>' : `<p style="color:var(--warning);font-size:11px;margin-top:5px;">📝 ${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} disponibles</p>`}</div></div><div style="background:rgba(26,26,46,0.95);border-radius:15px;padding:20px;border:3px solid var(--warning);margin-bottom:30px;width:100%;max-width:800px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="color:var(--warning);">PROGRESO</div><div style="color:var(--warning);">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div></div><div class="daily-progress-bar" style="width:100%;"><div class="daily-progress-fill" style="width:${p}%;"></div></div><div style="color:var(--info);text-align:center;margin-top:10px;font-size:12px;">+50 EXP al completar el día</div></div><h3 style="color:var(--primary);margin-bottom:20px;">MISIONES DE HOY</h3>${a.length > 0 ? `<div style="background:rgba(26,26,46,0.95);border-radius:15px;padding:20px;border:2px solid var(--warning);width:100%;max-width:800px;">${a.map((m,i) => `<div class="daily-mission-item available" onclick="window.startDailyTask(${i})"><div style="width:24px;height:24px;border:2px solid ${m.categoryColor};border-radius:5px;display:flex;align-items:center;justify-content:center;">${m.type === 'timer' ? '⏰' : '📝'}</div><div style="flex:1;"><div style="color:var(--warning);font-size:12px;">${m.text}${m.type === 'timer' ? ` (${m.time} min)` : ''}</div><div style="color:${m.categoryColor};">${m.category}</div></div></div>`).join('')}</div><div style="text-align:center;margin-top:30px;color:#aaa;font-size:11px;">⭐ +25 EXP por misión</div>` : '<div style="background:rgba(26,26,46,0.95);padding:40px;text-align:center;border:2px solid var(--primary);"><div style="font-size:60px;color:var(--primary);">🏆</div><h3 style="color:var(--primary);">¡TODAS COMPLETADAS!</h3></div>'}<div style="text-align:center;margin-top:30px;"><button class="ff-button" onclick="window.showScreen('world')"><i class="fas fa-map"></i> VOLVER</button></div></div>`;
+        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom:20px;">← VOLVER</button><div class="daily-missions-header"><div style="font-size:50px;color:var(--warning)">📅</div><div><h2 style="color:var(--warning);">MISIONES DIARIAS</h2><p style="color:#aaa;font-size:12px;">${GameState.dailyMissionsState.availableMissions.length} disponibles hoy</p>${GameState.isTodayCompleted() ? '<p style="color:var(--primary);font-size:11px;margin-top:5px;">🏆 Día completado</p>' : `<p style="color:var(--warning);font-size:11px;margin-top:5px;">📝 ${GameState.stats.dailyTasksGoal - GameState.stats.dailyTasksCompleted} disponibles</p>`}</div></div><div class="daily-progress-box"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><div style="color:var(--warning);">PROGRESO</div><div style="color:var(--warning);">${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal}</div></div><div class="daily-progress-bar" style="width:100%;"><div class="daily-progress-fill" style="width:${p}%;"></div></div><div style="color:var(--info);text-align:center;margin-top:10px;font-size:12px;">+50 EXP al completar el día</div></div><h3 style="color:var(--primary);margin-bottom:20px;text-align:center;">MISIONES DE HOY</h3>${a.length > 0 ? `<div class="daily-mission-list">${a.map((m,i) => `<div class="daily-mission-item available" onclick="window.startDailyTask(${i})"><div style="width:24px;height:24px;border:2px solid ${m.categoryColor};border-radius:5px;display:flex;align-items:center;justify-content:center;">${m.type === 'timer' ? '⏰' : '📝'}</div><div style="flex:1;"><div style="color:var(--warning);font-size:12px;">${m.text}${m.type === 'timer' ? ` (${m.time} min)` : ''}</div><div style="color:${m.categoryColor};">${m.category}</div></div></div>`).join('')}</div><div style="text-align:center;margin-top:30px;color:#aaa;font-size:11px;">⭐ +25 EXP por misión</div>` : '<div style="background:rgba(26,26,46,0.95);padding:40px;text-align:center;border:2px solid var(--primary);"><div style="font-size:60px;color:var(--primary);">🏆</div><h3 style="color:var(--primary);">¡TODAS COMPLETADAS!</h3></div>'}<div class="button-container" style="margin-top:30px;"><button class="ff-button" onclick="window.showScreen('world')"><i class="fas fa-map"></i> VOLVER</button></div></div>`;
     },
     
     renderRegionScreen(r) {
@@ -1195,14 +1382,14 @@ const RenderEngine = {
         const t = PathSystem.getRegionTheme(r);
         const n = GameState.getNextAvailableMission(r);
         const h = GameState.hasCompletedRegionMissionToday();
-        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom:20px;">← VOLVER</button><div style="display:flex;align-items:center;gap:20px;margin-bottom:30px;"><div style="font-size:50px;color:${rg.color};">${rg.icon}</div><div><h2 style="color:${rg.color};">${t}</h2><p style="color:#666;font-size:12px;">${rg.name} | Dificultad: ${rg.boss.difficulty}</p><p style="color:var(--info);font-size:11px;margin-top:5px;">${c.filter(m => m).length}/7 misiones</p>${h ? '<p style="color:var(--warning);font-size:11px;margin-top:5px;">🌙 Misión completada hoy</p>' : ''}${!h && n !== -1 ? `<p style="color:var(--warning);font-size:11px;margin-top:5px;">🔥 Hoy: Día ${n+1}</p>` : ''}${n === -1 && c.length === 7 ? '<p style="color:var(--primary);font-size:11px;margin-top:5px;">🏆 ¡Enfréntate al jefe!</p>' : ''}</div></div><h3 style="color:var(--primary);margin-bottom:20px;">MISIONES DE LA SEMANA</h3><div style="background:rgba(26,26,46,0.95);border-radius:15px;padding:20px;border:2px solid ${rg.color};width:100%;max-width:800px;">${Array.from({length:7}).map((_,i) => { const ic = c[i]; const isNext = i === n; const can = !h && !ic && isNext; const mt = PathSystem.getMissionText(r, i); let s = ''; if (ic) s = '<div style="color:var(--primary);font-size:10px;">✅ +25 EXP</div>'; else if (can) s = '<div style="color:var(--warning);font-size:10px;">🔥 DISPONIBLE</div>'; else if (isNext && h) s = '<div style="color:var(--warning);font-size:10px;">🌙 Vuelve mañana</div>'; else if (isNext) s = '<div style="color:var(--info);font-size:10px;">⏳ Mañana</div>'; else if (!ic && i < n) s = '<div style="color:var(--primary);font-size:10px;">✅ Completada</div>'; else if (!ic && i > n) s = '<div style="color:#aaa;font-size:10px;">🔒 Anteriores</div>'; return `<div class="mission-item ${ic ? 'completed' : ''} ${can ? 'today' : ''}" onclick="${can ? `window.startRegionTask(${r},${i})` : ''}"><div style="width:24px;height:24px;border:2px solid ${rg.color};border-radius:5px;display:flex;align-items:center;justify-content:center;background:${ic ? rg.color : 'transparent'};">${ic ? '✓' : isNext ? '🔥' : (rg.missionTypes[i] === 'timer' ? '⏰' : '📝')}</div><div style="flex:1;"><div style="color:${ic ? rg.color : (can ? 'var(--warning)' : 'white')};">Día ${i+1}: ${mt}</div>${s}</div></div>`; }).join('')}</div>${c.length === 7 && !GameState.isBossDefeated(r) ? `<div style="text-align:center;margin-top:30px;"><button class="ff-button" onclick="window.startCombat(${r})" style="background:var(--danger);">⚔️ DESAFIAR A ${rg.boss.name}</button></div>` : ''}${c.length === 7 && GameState.isBossDefeated(r) ? `<div style="text-align:center;margin-top:30px;"><div style="color:var(--warning);padding:15px;background:rgba(255,209,102,0.1);border-radius:10px;border:2px solid var(--warning);">👑 Jefe derrotado</div></div>` : ''}<div style="text-align:center;margin-top:30px;"><button class="ff-button" onclick="window.showScreen('daily')" style="background:var(--warning);"><i class="fas fa-calendar-day"></i> DIARIAS</button></div></div>`;
+        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('world')" style="margin-bottom:20px;">← VOLVER</button><div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:30px;flex-wrap:wrap;"><div style="font-size:50px;color:${rg.color};">${rg.icon}</div><div><h2 style="color:${rg.color};">${t}</h2><p style="color:#666;font-size:12px;">${rg.name} | Dificultad: ${rg.boss.difficulty}</p><p style="color:var(--info);font-size:11px;margin-top:5px;">${c.filter(m => m).length}/7 misiones</p>${h ? '<p style="color:var(--warning);font-size:11px;margin-top:5px;">🌙 Misión completada hoy</p>' : ''}${!h && n !== -1 ? `<p style="color:var(--warning);font-size:11px;margin-top:5px;">🔥 Hoy: Día ${n+1}</p>` : ''}${n === -1 && c.length === 7 ? '<p style="color:var(--primary);font-size:11px;margin-top:5px;">🏆 ¡Enfréntate al jefe!</p>' : ''}</div></div><h3 style="color:var(--primary);margin-bottom:20px;text-align:center;">MISIONES DE LA SEMANA</h3><div class="mission-list">${Array.from({length:7}).map((_,i) => { const ic = c[i]; const isNext = i === n; const can = !h && !ic && isNext; const mt = PathSystem.getMissionText(r, i); let s = ''; if (ic) s = '<div style="color:var(--primary);font-size:10px;">✅ +25 EXP</div>'; else if (can) s = '<div style="color:var(--warning);font-size:10px;">🔥 DISPONIBLE</div>'; else if (isNext && h) s = '<div style="color:var(--warning);font-size:10px;">🌙 Vuelve mañana</div>'; else if (isNext) s = '<div style="color:var(--info);font-size:10px;">⏳ Mañana</div>'; else if (!ic && i < n) s = '<div style="color:var(--primary);font-size:10px;">✅ Completada</div>'; else if (!ic && i > n) s = '<div style="color:#aaa;font-size:10px;">🔒 Anteriores</div>'; return `<div class="mission-item ${ic ? 'completed' : ''} ${can ? 'today' : ''}" onclick="${can ? `window.startRegionTask(${r},${i})` : ''}"><div style="width:24px;height:24px;border:2px solid ${rg.color};border-radius:5px;display:flex;align-items:center;justify-content:center;background:${ic ? rg.color : 'transparent'};">${ic ? '✓' : isNext ? '🔥' : (rg.missionTypes[i] === 'timer' ? '⏰' : '📝')}</div><div style="flex:1;"><div style="color:${ic ? rg.color : (can ? 'var(--warning)' : 'white')};">Día ${i+1}: ${mt}</div>${s}</div></div>`; }).join('')}</div>${c.length === 7 && !GameState.isBossDefeated(r) ? `<div class="button-container" style="margin-top:30px;"><button class="ff-button" onclick="window.startCombat(${r})" style="background:var(--danger);">⚔️ DESAFIAR A ${rg.boss.name}</button></div>` : ''}${c.length === 7 && GameState.isBossDefeated(r) ? `<div style="text-align:center;margin-top:30px;"><div style="color:var(--warning);padding:15px;background:rgba(255,209,102,0.1);border-radius:10px;border:2px solid var(--warning);">👑 Jefe derrotado</div></div>` : ''}<div class="button-container" style="margin-top:30px;"><button class="ff-button" onclick="window.showScreen('daily')" style="background:var(--warning);"><i class="fas fa-calendar-day"></i> DIARIAS</button></div></div>`;
     },
     
     renderCombatScreen() {
         if (!GameState.currentCombat) { this.showScreen('world'); return ''; }
         const c = GameState.currentCombat;
         const r = GAME_DATA.regions.find(x => x.id === c.regionId);
-        return `<div class="game-screen active"><button class="ff-button" onclick="window.fleeCombat()" style="margin-bottom:20px;">🏃 HUIR</button><div class="combat-arena"><div class="combat-context">⚔️ Hoy enfrentas tu miedo. ⚔️</div><h2 style="color:var(--danger);text-align:center;">VS ${r.boss.name}</h2><div style="display:flex;justify-content:space-around;margin:30px 0;"><div style="text-align:center;"><div style="font-size:60px;">${GameState.character?.icon}</div><div>${GameState.character?.name}</div><div class="stat-bar hp-bar"><div class="stat-fill" style="width:${(c.playerHp/GameState.stats.maxHp)*100}%;"><div class="stat-text">${c.playerHp}/${GameState.stats.maxHp}</div></div></div></div><div style="font-size:40px;color:var(--danger);">⚔️</div><div style="text-align:center;"><div style="font-size:60px;">${r.boss.sprite}</div><div>${r.boss.name}</div><div class="stat-bar hp-bar"><div class="stat-fill" style="width:${(c.enemy.currentHp/c.enemy.hp)*100}%;"><div class="stat-text">${c.enemy.currentHp}/${c.enemy.hp}</div></div></div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;"><button class="ff-button" onclick="window.performAttack('weak')">⚡ DÉBIL<br><small>10+EXP/10</small></button><button class="ff-button" onclick="window.performAttack('medium')">💥 MEDIO<br><small>20+EXP/5</small></button><button class="ff-button" onclick="window.performAttack('strong')">🔥 FUERTE<br><small>30+EXP/3</small></button></div></div></div>`;
+        return `<div class="game-screen active"><button class="ff-button" onclick="window.fleeCombat()" style="margin-bottom:20px;">🏃 HUIR</button><div class="combat-arena"><div class="combat-context">⚔️ Hoy enfrentas tu miedo. ⚔️</div><h2 style="color:var(--danger);text-align:center;">VS ${r.boss.name}</h2><div style="display:flex;justify-content:space-around;margin:30px 0;flex-wrap:wrap;"><div style="text-align:center;"><div style="font-size:60px;">${GameState.character?.icon}</div><div>${GameState.character?.name}</div><div class="stat-bar hp-bar"><div class="stat-fill" style="width:${(c.playerHp/GameState.stats.maxHp)*100}%;"><div class="stat-text">${c.playerHp}/${GameState.stats.maxHp}</div></div></div></div><div style="font-size:40px;color:var(--danger);">⚔️</div><div style="text-align:center;"><div style="font-size:60px;">${r.boss.sprite}</div><div>${r.boss.name}</div><div class="stat-bar hp-bar"><div class="stat-fill" style="width:${(c.enemy.currentHp/c.enemy.hp)*100}%;"><div class="stat-text">${c.enemy.currentHp}/${c.enemy.hp}</div></div></div></div></div><div class="button-container" style="grid-template-columns:repeat(3,1fr);"><button class="ff-button" onclick="window.performAttack('weak')">⚡ DÉBIL<br><small>10+EXP/10</small></button><button class="ff-button" onclick="window.performAttack('medium')">💥 MEDIO<br><small>20+EXP/5</small></button><button class="ff-button" onclick="window.performAttack('strong')">🔥 FUERTE<br><small>30+EXP/3</small></button></div></div></div>`;
     },
     
     renderRestScreen() {
@@ -1234,10 +1421,11 @@ window.restAction = () => { const r = GameState.rest(); PathSystem.showClassNoti
 window.changeDailyGoal = (g) => { GameState.stats.dailyTasksGoal = parseInt(g); GameState.save(); RenderEngine.showScreen('settings'); };
 window.resetGame = () => { if (GameState.reset()) RenderEngine.showScreen('start'); };
 
-// ==================== INICIALIZACIÓN (CON MÚSICA Y CORRUPCIÓN) ====================
+// ==================== INICIALIZACIÓN ====================
 window.GameState = GameState;
 window.ParticleSystem = ParticleSystem;
 window.MusicSystem = MusicSystem;
+window.AerilSystem = AerilSystem;
 window.CORRUPTION_LEVELS = CORRUPTION_LEVELS;
 
 document.addEventListener('DOMContentLoaded', () => {
