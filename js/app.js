@@ -3,9 +3,7 @@
 // ============================================================
 
 // ==================== SISTEMA DE CORRUPCIÓN DIGITAL ====================
-async function signIn(email) {
-  await supabase.auth.signInWithOtp({ email });
-}
+
 
 const CORRUPTION_LEVELS = {
     0: { name: 'ESTABLE', color: '#4dff91', particles: 0, musicVol: 1.0, filter: 0, bgDarkness: 0 },
