@@ -1,127 +1,7 @@
+
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 4.3 - CON AUTH Y CLOUD SAVE (HÍBRIDO)
+// Versión: 4.2 - CON AERIL CORREGIDO
 // ============================================================
-
-// ==================== AUTH + CLOUD (CAMINO 2 / HÍBRIDO) ====================
-const AuthSystem = {
-  user: null,
-
-  hasClient() {
-    return !!window.supabaseClient;
-  },
-
-  async init() {
-    if (!this.hasClient()) return;
-
-    try {
-      const { data } = await window.supabaseClient.auth.getUser();
-      this.user = data?.user || null;
-
-      window.supabaseClient.auth.onAuthStateChange((_event, session) => {
-        this.user = session?.user || null;
-        if (GameState.currentScreen === 'settings') {
-          RenderEngine.showScreen('settings');
-        }
-      });
-    } catch (e) {
-      console.warn("AuthSystem.init error:", e);
-      this.user = null;
-    }
-  },
-
-  async signInOtp(email) {
-    if (!this.hasClient()) {
-      alert("Supabase no está configurado todavía.");
-      return;
-    }
-    if (!email || !email.includes("@")) {
-      alert("Escribe un correo válido.");
-      return;
-    }
-    try {
-      await window.supabaseClient.auth.signInWithOtp({ email });
-      alert("Listo. Revisa tu correo para el link de inicio de sesión.");
-    } catch (e) {
-      console.error(e);
-      alert("No se pudo enviar el login. Revisa consola.");
-    }
-  },
-
-  async signOut() {
-    if (!this.hasClient()) return;
-    try {
-      await window.supabaseClient.auth.signOut();
-      this.user = null;
-      alert("Sesión cerrada.");
-    } catch (e) {
-      console.error(e);
-      alert("No se pudo cerrar sesión.");
-    }
-  }
-};
-
-const CloudSave = {
-  table: "goalquest_saves",
-
-  enabled() {
-    return AuthSystem.hasClient() && !!AuthSystem.user;
-  },
-
-  async push(stateObj) {
-    if (!this.enabled()) {
-      alert("Inicia sesión para guardar en la nube.");
-      return false;
-    }
-
-    try {
-      const payload = {
-        user_id: AuthSystem.user.id,
-        save_data: stateObj,
-        updated_at: new Date().toISOString()
-      };
-
-      const { error } = await window.supabaseClient
-        .from(this.table)
-        .upsert(payload, { onConflict: "user_id" });
-
-      if (error) throw error;
-
-      alert("✅ Guardado en nube exitoso.");
-      return true;
-    } catch (e) {
-      console.error("CloudSave.push error:", e);
-      alert("❌ No se pudo guardar en nube. Revisa consola.");
-      return false;
-    }
-  },
-
-  async pull() {
-    if (!this.enabled()) {
-      alert("Inicia sesión para cargar desde la nube.");
-      return null;
-    }
-
-    try {
-      const { data, error } = await window.supabaseClient
-        .from(this.table)
-        .select("save_data, updated_at")
-        .eq("user_id", AuthSystem.user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data?.save_data) {
-        alert("No hay guardado en nube todavía.");
-        return null;
-      }
-
-      return data.save_data;
-    } catch (e) {
-      console.error("CloudSave.pull error:", e);
-      alert("❌ No se pudo cargar de nube. Revisa consola.");
-      return null;
-    }
-  }
-};
 
 // ==================== SISTEMA DE CORRUPCIÓN DIGITAL ====================
 const CORRUPTION_LEVELS = {
@@ -169,8 +49,9 @@ const AerilSystem = {
         this.aerilElement = document.createElement('div');
         this.aerilElement.className = 'aeril-guardian';
         
+        // Intentar cargar la imagen
         const aerilImg = document.createElement('img');
-        aerilImg.src = 'assets/classes/Aerial.png';
+        aerilImg.src = 'assets/classes/Aerial.png'; // CORREGIDO
         aerilImg.alt = 'Aeril';
         aerilImg.className = 'aeril-sprite';
         aerilImg.style.width = '80px';
@@ -178,6 +59,7 @@ const AerilSystem = {
         aerilImg.style.objectFit = 'contain';
         aerilImg.style.imageRendering = 'pixelated';
         
+        // Fallback por si no carga
         aerilImg.onerror = function() {
             console.log('Usando emoji como fallback');
             this.style.display = 'none';
@@ -927,52 +809,6 @@ const GameState = {
         if (c) { this.character = c; this.save(); PathSystem.showClassNotification(`Has elegido el ${PathSystem.getPathName()}`, '🎮'); return true; }
         return false;
     },
-
-    // ========== NUEVOS MÉTODOS PARA EXPORT/IMPORT ==========
-    exportSaveObject() {
-        return {
-            character: this.character,
-            stats: this.stats,
-            unlockedRegions: this.unlockedRegions,
-            completedMissions: this.completedMissions,
-            defeatedBosses: this.defeatedBosses,
-            completedRegions: this.completedRegions,
-            lastPlayedDate: this.lastPlayedDate,
-            todayCompleted: this.todayCompleted,
-            dailyMissionsState: this.dailyMissionsState,
-            achievements: this.achievements,
-            corruptionLevel: this.corruptionLevel,
-            lastLoginDate: this.lastLoginDate,
-            saveDate: new Date().toISOString(),
-            version: "4.3-hybrid"
-        };
-    },
-
-    importSaveObject(d) {
-        if (!d || typeof d !== "object") return false;
-
-        this.character = d.character || null;
-        this.stats = { ...this.stats, ...(d.stats || {}) };
-        this.unlockedRegions = d.unlockedRegions || [1];
-        this.completedMissions = d.completedMissions || {};
-        this.defeatedBosses = d.defeatedBosses || [];
-        this.completedRegions = d.completedRegions || {};
-        this.lastPlayedDate = d.lastPlayedDate || null;
-        this.todayCompleted = d.todayCompleted || false;
-        this.dailyMissionsState = d.dailyMissionsState || { lastGeneratedDate: null, availableMissions: [], completedDailyMissions: [] };
-        this.achievements = d.achievements || {};
-
-        this.corruptionLevel = d.corruptionLevel || 0;
-        this.lastLoginDate = d.lastLoginDate || null;
-
-        // Backward compatibility
-        if (this.stats.lastRegionMissionDate === undefined) this.stats.lastRegionMissionDate = null;
-        if (this.stats.lastCompletedRegionDay === undefined) this.stats.lastCompletedRegionDay = null;
-        if (this.stats.totalTasksCompleted === undefined) this.stats.totalTasksCompleted = 0;
-        if (this.stats.daysCompleted === undefined) this.stats.daysCompleted = 0;
-
-        return true;
-    },
     
     init() {
         console.log("Initialized GameState...");
@@ -1000,18 +836,40 @@ const GameState = {
         if (s) {
             try {
                 const d = JSON.parse(s);
-                const ok = this.importSaveObject(d);
-                if (ok && this.character) {
-                    this.checkDailyReset();
-                    PathSystem.showClassNotification('Partida cargada', '💾');
-                }
+                this.character = d.character;
+                this.stats = { ...this.stats, ...d.stats };
+                this.unlockedRegions = d.unlockedRegions || [1];
+                this.completedMissions = d.completedMissions || {};
+                this.defeatedBosses = d.defeatedBosses || [];
+                this.completedRegions = d.completedRegions || {};
+                this.lastPlayedDate = d.lastPlayedDate;
+                this.todayCompleted = d.todayCompleted || false;
+                this.dailyMissionsState = d.dailyMissionsState || { lastGeneratedDate: null, availableMissions: [], completedDailyMissions: [] };
+                this.achievements = d.achievements || {};
+                
+                this.corruptionLevel = d.corruptionLevel || 0;
+                this.lastLoginDate = d.lastLoginDate || null;
+                
+                if (this.stats.lastRegionMissionDate === undefined) this.stats.lastRegionMissionDate = null;
+                if (this.stats.lastCompletedRegionDay === undefined) this.stats.lastCompletedRegionDay = null;
+                if (this.stats.totalTasksCompleted === undefined) this.stats.totalTasksCompleted = 0;
+                if (this.stats.daysCompleted === undefined) this.stats.daysCompleted = 0;
+                if (this.character) { this.checkDailyReset(); PathSystem.showClassNotification('Partida cargada', '💾'); }
             } catch (e) { console.error('Error cargando:', e); }
         }
     },
     
     save() {
-        const obj = this.exportSaveObject();
-        localStorage.setItem('goalquest_save', JSON.stringify(obj));
+        localStorage.setItem('goalquest_save', JSON.stringify({
+            character: this.character, stats: this.stats, unlockedRegions: this.unlockedRegions,
+            completedMissions: this.completedMissions, defeatedBosses: this.defeatedBosses,
+            completedRegions: this.completedRegions, lastPlayedDate: this.lastPlayedDate,
+            todayCompleted: this.todayCompleted, dailyMissionsState: this.dailyMissionsState,
+            achievements: this.achievements,
+            corruptionLevel: this.corruptionLevel,
+            lastLoginDate: this.lastLoginDate,
+            saveDate: new Date().toISOString()
+        }));
     },
     
     calculateCorruptionLevel() {
@@ -1541,57 +1399,7 @@ const RenderEngine = {
     },
     
     renderSettingsScreen() {
-        const logged = !!AuthSystem.user;
-        const emailBox = !logged ? `
-            <div style="margin-top:20px;padding:15px;border:2px solid var(--primary);background:rgba(0,0,0,0.25);">
-                <div style="color:var(--primary);margin-bottom:10px;">🔐 Iniciar sesión (Cloud Save)</div>
-                <input id="loginEmail" type="email" placeholder="tu@email.com"
-                    style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:#111;color:#fff;margin-bottom:10px;">
-                <button class="ff-button" onclick="window.loginOtp()" style="width:100%;">📩 Enviar link mágico</button>
-                <div style="color:#aaa;font-size:10px;margin-top:8px;">
-                    Si Supabase no está configurado, esto no hace nada (pero el juego sigue con LocalStorage).
-                </div>
-            </div>
-        ` : `
-            <div style="margin-top:20px;padding:15px;border:2px solid var(--gold);background:rgba(255,215,0,0.06);">
-                <div style="color:var(--gold);margin-bottom:10px;">✅ Sesión activa</div>
-                <div style="color:#aaa;font-size:10px;margin-bottom:12px;">${AuthSystem.user.email || AuthSystem.user.id}</div>
-
-                <button class="ff-button" onclick="window.cloudSaveNow()" style="width:100%;background:var(--primary);margin-bottom:10px;">
-                    ☁️ Guardar en nube (manual)
-                </button>
-
-                <button class="ff-button" onclick="window.cloudLoadNow()" style="width:100%;background:var(--warning);margin-bottom:10px;">
-                    ☁️ Cargar de nube (reemplaza local)
-                </button>
-
-                <button class="ff-button" onclick="window.logoutNow()" style="width:100%;background:var(--danger);">
-                    🔓 Cerrar sesión
-                </button>
-            </div>
-        `;
-
-        return `
-            <div class="game-screen active">
-                <button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom:20px;">← VOLVER</button>
-
-                <h2 style="color:var(--primary);margin:30px 0;">CONFIGURACIÓN</h2>
-
-                <div class="ff-menu">
-                    <div style="margin:20px 0;">
-                        <div style="color:var(--primary);">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div>
-                        <input type="range" min="3" max="10" value="${GameState.stats.dailyTasksGoal}"
-                            onchange="window.changeDailyGoal(this.value)" style="width:100%;">
-                    </div>
-
-                    ${emailBox}
-
-                    <button class="ff-button" onclick="window.resetGame()" style="width:100%;background:var(--danger);margin-top:20px;">
-                        🔄 REINICIAR
-                    </button>
-                </div>
-            </div>
-        `;
+        return `<div class="game-screen active"><button class="ff-button" onclick="window.showScreen('start')" style="margin-bottom:20px;">← VOLVER</button><h2 style="color:var(--primary);margin:30px 0;">CONFIGURACIÓN</h2><div class="ff-menu"><div style="margin:20px 0;"><div style="color:var(--primary);">TAREAS DIARIAS (${GameState.stats.dailyTasksGoal})</div><input type="range" min="3" max="10" value="${GameState.stats.dailyTasksGoal}" onchange="window.changeDailyGoal(this.value)" style="width:100%;"></div><button class="ff-button" onclick="window.resetGame()" style="width:100%;background:var(--danger);">🔄 REINICIAR</button></div></div>`;
     }
 };
 
@@ -1614,34 +1422,6 @@ window.restAction = () => { const r = GameState.rest(); PathSystem.showClassNoti
 window.changeDailyGoal = (g) => { GameState.stats.dailyTasksGoal = parseInt(g); GameState.save(); RenderEngine.showScreen('settings'); };
 window.resetGame = () => { if (GameState.reset()) RenderEngine.showScreen('start'); };
 
-// ========== NUEVAS FUNCIONES PARA AUTH Y CLOUD ==========
-window.loginOtp = () => {
-    const email = document.getElementById("loginEmail")?.value || "";
-    AuthSystem.signInOtp(email.trim());
-};
-
-window.logoutNow = () => AuthSystem.signOut();
-
-window.cloudSaveNow = async () => {
-    const obj = GameState.exportSaveObject();
-    await CloudSave.push(obj);
-};
-
-window.cloudLoadNow = async () => {
-    const data = await CloudSave.pull();
-    if (!data) return;
-
-    const ok = GameState.importSaveObject(data);
-    if (!ok) {
-        alert("No se pudo aplicar el save de nube.");
-        return;
-    }
-
-    GameState.save(); // persistimos local también
-    alert("✅ Save de nube aplicado. Se recargará la pantalla actual.");
-    RenderEngine.showScreen(GameState.currentScreen === 'region' ? 'world' : GameState.currentScreen);
-};
-
 // ==================== INICIALIZACIÓN ====================
 window.GameState = GameState;
 window.ParticleSystem = ParticleSystem;
@@ -1649,10 +1429,7 @@ window.MusicSystem = MusicSystem;
 window.AerilSystem = AerilSystem;
 window.CORRUPTION_LEVELS = CORRUPTION_LEVELS;
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Init Auth primero (no rompe si no hay Supabase)
-    await AuthSystem.init();
-
+document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const ls = document.getElementById('loading-screen');
         if (ls) {
