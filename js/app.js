@@ -1,6 +1,5 @@
-
 // ==================== GOALQUEST - APP.JS ====================
-// Versión: 4.2 - CON AERIL CORREGIDO
+// Versión: 4.2 - CON AERIL CORREGIDO (orden de botones ajustado)
 // ============================================================
 
 // ==================== SISTEMA DE CORRUPCIÓN DIGITAL ====================
@@ -1347,7 +1346,44 @@ const RenderEngine = {
     
     renderStartScreen() {
         const p = GameState.character ? PathSystem.getPathName() : '';
-        return `<div class="game-screen active"><h1 class="game-title">GOALQUEST</h1><p style="text-align:center;color:var(--warning);margin:20px 0;">RPG de Transformación Psicológica</p>${GameState.character ? `<div style="text-align:center;margin-bottom:20px;"><div style="font-size:40px;color:${GameState.character.color}">${GameState.character.icon}</div><div style="color:${GameState.character.color};font-size:16px;margin-top:10px;">${p}</div><div style="color:#aaa;font-size:12px;margin-top:5px;">${PathSystem.getPathDescription()}</div></div>` : ''}<div class="ff-menu"><button class="menu-option" onclick="window.showScreen('characters')"><i class="fas fa-gamepad"></i><span>▶ JUGAR AHORA</span></button>${GameState.character ? `<button class="menu-option" onclick="window.showScreen('daily')"><i class="fas fa-calendar-day"></i><span>MISIONES DIARIAS (${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal})</span></button><button class="menu-option" onclick="window.showScreen('world')"><i class="fas fa-play"></i><span>CONTINUAR AVENTURA</span></button>` : ''}<button class="menu-option" onclick="window.showScreen('settings')"><i class="fas fa-cog"></i><span>CONFIGURACIÓN</span></button></div>${GameState.character && GameState.stats.dailyStreak > 0 ? `<div style="text-align:center;color:var(--warning);margin-top:30px;">🔥 Racha: ${GameState.stats.dailyStreak} días</div>` : ''}<div style="position:absolute;bottom:20px;width:100%;text-align:center;color:#666;font-size:10px;">© 2024 GOALQUEST</div></div>`;
+        const hasCharacter = !!GameState.character;
+        
+        // Construcción del menú según si hay personaje o no
+        let menuButtons = '';
+        if (hasCharacter) {
+            menuButtons = `
+                <button class="menu-option" onclick="window.showScreen('world')"><i class="fas fa-play"></i><span>CONTINUAR AVENTURA</span></button>
+                <button class="menu-option" onclick="window.showScreen('daily')"><i class="fas fa-calendar-day"></i><span>MISIONES DIARIAS (${GameState.stats.dailyTasksCompleted}/${GameState.stats.dailyTasksGoal})</span></button>
+                <button class="menu-option" onclick="window.showScreen('characters')"><i class="fas fa-gamepad"></i><span>JUGAR AHORA (cambiar clase)</span></button>
+                <button class="menu-option" onclick="window.showScreen('settings')"><i class="fas fa-cog"></i><span>CONFIGURACIÓN</span></button>
+            `;
+        } else {
+            menuButtons = `
+                <button class="menu-option" onclick="window.showScreen('characters')"><i class="fas fa-gamepad"></i><span>▶ JUGAR AHORA</span></button>
+                <button class="menu-option" onclick="window.showScreen('settings')"><i class="fas fa-cog"></i><span>CONFIGURACIÓN</span></button>
+            `;
+        }
+
+        return `
+            <div class="game-screen active">
+                <h1 class="game-title">GOALQUEST</h1>
+                <p style="text-align:center;color:var(--warning);margin:20px 0;">RPG de Transformación Psicológica</p>
+                ${hasCharacter ? `
+                    <div style="text-align:center;margin-bottom:20px;">
+                        <div style="font-size:40px;color:${GameState.character.color}">${GameState.character.icon}</div>
+                        <div style="color:${GameState.character.color};font-size:16px;margin-top:10px;">${p}</div>
+                        <div style="color:#aaa;font-size:12px;margin-top:5px;">${PathSystem.getPathDescription()}</div>
+                    </div>
+                ` : ''}
+                <div class="ff-menu">
+                    ${menuButtons}
+                </div>
+                ${hasCharacter && GameState.stats.dailyStreak > 0 ? `
+                    <div style="text-align:center;color:var(--warning);margin-top:30px;">🔥 Racha: ${GameState.stats.dailyStreak} días</div>
+                ` : ''}
+                <div style="position:absolute;bottom:20px;width:100%;text-align:center;color:#666;font-size:10px;">© 2024 GOALQUEST</div>
+            </div>
+        `;
     },
     
     renderCharacterScreen() {
