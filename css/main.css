@@ -1,5 +1,5 @@
 /* ==================== GOALQUEST - MAIN.CSS ====================
-   Versión: 4.1 - CON AERIL (SIN OJOS)
+   Version: 4.1 - WITH AERIL (NO EYES)
    ============================================================ */
 
 :root {
@@ -35,7 +35,7 @@ body {
     transition: background-color 0.5s ease;
 }
 
-/* ==================== PARTÍCULAS ==================== */
+/* ==================== PARTICLES ==================== */
 .particle-container {
     position: fixed;
     top: 0;
@@ -74,7 +74,7 @@ body {
     }
 }
 
-/* ==================== CORRUPCIÓN - OVERLAYS ==================== */
+/* ==================== CORRUPTION OVERLAYS ==================== */
 .corruption-overlay {
     position: fixed;
     top: 0;
@@ -176,7 +176,7 @@ body.corruption-bg-3 {
     margin-right: auto;
 }
 
-/* ==================== TIPOGRAFÍA CENTRADA ==================== */
+/* ==================== CENTERED TYPOGRAPHY ==================== */
 .game-screen h1,
 .game-screen h2,
 .game-screen h3,
@@ -238,7 +238,7 @@ body.corruption-bg-3 {
     }
 }
 
-/* ==================== MENÚ PRINCIPAL ==================== */
+/* ==================== MAIN MENU ==================== */
 .ff-menu {
     display: flex;
     flex-direction: column;
@@ -329,7 +329,7 @@ body.corruption-bg-3 {
     text-shadow: 0 0 5px black;
 }
 
-/* ==================== PROGRESO DIARIO ==================== */
+/* ==================== DAILY PROGRESS ==================== */
 .daily-progress-container {
     width: 100%;
     max-width: 600px;
@@ -436,7 +436,7 @@ body.corruption-bg-3 {
     filter: grayscale(1);
 }
 
-/* ==================== MISIONES ==================== */
+/* ==================== QUESTS ==================== */
 .mission-list {
     width: 100%;
     max-width: 800px;
@@ -478,7 +478,7 @@ body.corruption-bg-3 {
     box-shadow: 0 0 15px var(--warning);
 }
 
-/* ==================== MISIONES DIARIAS ==================== */
+/* ==================== DAILY QUESTS ==================== */
 .daily-mission-list {
     width: 100%;
     max-width: 800px;
@@ -623,7 +623,7 @@ body.corruption-bg-3 {
     50% { opacity: 0.5; }
 }
 
-/* ==================== AERIL - GUARDIÁN DEL PORTAL (SIN OJOS) ==================== */
+/* ==================== AERIL - PORTAL GUARDIAN (SIN OJOS) ==================== */
 .aeril-guardian {
     position: fixed;
     bottom: 30px;
@@ -654,7 +654,7 @@ body.corruption-bg-3 {
     filter: drop-shadow(0 0 10px var(--primary));
 }
 
-/* Estados de corrupción */
+/* Corruption states */
 .aeril-guardian.corrupt-1 {
     filter: drop-shadow(0 0 10px var(--corrupt-1));
     opacity: 0.85;
@@ -676,7 +676,7 @@ body.corruption-bg-3 {
     filter: brightness(0.7);
 }
 
-/* Efecto glitch momentáneo */
+/* Brief glitch effect */
 .aeril-guardian.glitch {
     animation: aerilGlitch 0.15s ease-in-out 3;
 }
@@ -712,7 +712,7 @@ body.corruption-bg-3 {
     100% { transform: translateY(0) rotate(0deg); }
 }
 
-/* Recuperación */
+/* Recovery */
 .aeril-guardian.recovering {
     animation: aerilRecover 1.2s ease-out;
 }
@@ -827,7 +827,7 @@ body.corruption-bg-3 {
     align-items: center;
 }
 
-/* ==================== HEADER DE MISIONES DIARIAS ==================== */
+/* ==================== DAILY QUESTS HEADER ==================== */
 .daily-missions-header {
     display: flex;
     align-items: center;
@@ -934,7 +934,7 @@ body.corruption-bg-3 {
         padding: 10px;
     }
 }
-/* ==================== BOTÓN DE FEEDBACK ==================== */
+/* ==================== FEEDBACK BUTTON ==================== */
 .feedback-button {
     position: fixed;
     bottom: 20px;
@@ -952,16 +952,16 @@ body.corruption-bg-3 {
     text-decoration: none;
     display: inline-block;
     transition: all 0.3s ease;
-    border: 2px solid var(--primary); /* para que combine con el borde neón */
+    border: 2px solid var(--primary); /* matches the neon border */
 }
 
 .feedback-button:hover {
     transform: scale(1.05);
     box-shadow: 0 0 20px var(--primary);
-    background: #5a5e79; /* un tono más claro al pasar el ratón */
+    background: #5a5e79; /* a lighter shade on hover */
 }
 
-/* Responsive: en móviles puede ser más pequeño */
+/* Responsive: smaller on mobile */
 @media (max-width: 768px) {
     .feedback-button {
         bottom: 10px;
