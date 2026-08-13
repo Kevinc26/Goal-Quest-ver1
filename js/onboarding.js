@@ -1,57 +1,57 @@
-// ==================== GOALQUEST - SISTEMA DE ONBOARDING ====================
-// Versión: 1.0
-// Primera impresión. Identidad. Llamado a la aventura.
+// ==================== GOALQUEST - ONBOARDING SYSTEM ====================
+// Version: 1.0
+// First impression. Identity. Call to adventure.
 // ============================================================================
 
 const OnboardingSystem = {
-    // Flag en localStorage
+    // localStorage flag
     STORAGE_KEY: 'goalquest_onboarding_seen',
     
-    // Textos épicos - NO MODIFICAR SIN CONVICCIÓN
+    // Core onboarding copy
     screens: [
         {
             icon: '⚔️',
-            title: '¿QUÉ ES GOALQUEST?',
-            text: '<span class="onboarding-highlight">Un RPG de vida real.</span><br>Tus objetivos son misiones. Tu progreso es real. No es un juego. Es tu historia.'
+            title: 'WHAT IS GOALQUEST?',
+            text: '<span class="onboarding-highlight">A real-life RPG.</span><br>Turn your goals into quests and make real progress. This is your story.'
         },
         {
             icon: '📜',
-            title: 'CÓMO FUNCIONA',
-            text: 'Eliges una clase que resuena contigo. Recibes misiones reales. Las cumples.<br><span class="onboarding-highlight">Ganas EXP. Subes nivel. Te conviertes.</span>'
+            title: 'HOW IT WORKS',
+            text: 'Choose a class, take on real-world quests, and complete them.<br><span class="onboarding-highlight">Earn XP. Level up. Keep growing.</span>'
         },
         {
             icon: '🦁',
-            title: 'IDENTIDAD',
-            text: 'No se trata de lo que haces.<br>Se trata de <span class="onboarding-highlight">quien eliges ser</span>.<br>Cada misión no es una tarea. Es un paso hacia tu nueva identidad.'
+            title: 'BUILD YOUR HERO',
+            text: 'Every completed quest builds the person you choose to become.<br><span class="onboarding-highlight">Small wins shape your new identity.</span>'
         },
         {
             icon: '🌅',
-            title: 'EL MUNDO TE ESPERA',
-            text: 'El caos reina cuando dejamos de avanzar.<br>La fortuna sonríe a los valientes.<br><span class="onboarding-highlight" style="font-size: 20px;">Hoy empiezas.</span>'
+            title: 'YOUR ADVENTURE AWAITS',
+            text: 'Complete daily quests to build streaks. Earn XP, level up, and unlock new regions.<br><span class="onboarding-highlight" style="font-size: 20px;">Your journey begins today.</span>'
         }
     ],
 
-    // Verificar si ya vio onboarding
+    // Check whether onboarding has been seen
     hasSeenOnboarding() {
         return localStorage.getItem(this.STORAGE_KEY) === 'true';
     },
 
-    // Marcar como visto
+    // Mark as seen
     markAsSeen() {
         localStorage.setItem(this.STORAGE_KEY, 'true');
     },
 
-    // Reiniciar onboarding (para pruebas)
+    // Reset onboarding (for testing)
     reset() {
         localStorage.removeItem(this.STORAGE_KEY);
     },
 
-    // Renderizar pantalla actual
+    // Render the current screen
     renderScreen(index) {
         const screen = this.screens[index];
         const total = this.screens.length;
         
-        // Crear dots de progreso
+        // Create progress dots
         let dots = '';
         for (let i = 0; i < total; i++) {
             dots += `<div class="onboarding-dot ${i === index ? 'active' : ''}"></div>`;
@@ -72,14 +72,14 @@ const OnboardingSystem = {
                     
                     ${index < total - 1 ? `
                         <button class="onboarding-button" onclick="OnboardingSystem.next()">
-                            CONTINUAR
+                            CONTINUE
                         </button>
                         <div class="onboarding-skip" onclick="OnboardingSystem.skip()">
-                            Omitir introducción
+                            Skip intro
                         </div>
                     ` : `
                         <button class="onboarding-button" onclick="OnboardingSystem.start()">
-                            COMENZAR MI CAMINO
+                            BEGIN MY ADVENTURE
                         </button>
                     `}
                 </div>
@@ -87,7 +87,7 @@ const OnboardingSystem = {
         `;
     },
 
-    // Siguiente pantalla
+    // Next screen
     next() {
         const currentHash = window.location.hash;
         const currentIndex = parseInt(currentHash.replace('#onboarding-', '')) || 0;
@@ -99,13 +99,13 @@ const OnboardingSystem = {
         }
     },
 
-    // Saltar onboarding
+    // Skip onboarding
     skip() {
         this.markAsSeen();
         window.location.hash = '';
         this.destroy();
         
-        // Iniciar el juego normalmente
+        // Start the game normally
         if (typeof GameState !== 'undefined' && GameState.character) {
             RenderEngine.showScreen('world');
         } else {
@@ -113,25 +113,25 @@ const OnboardingSystem = {
         }
     },
 
-    // Comenzar aventura
+    // Begin adventure
     start() {
         this.markAsSeen();
         window.location.hash = '';
         this.destroy();
         
-        // Ir a selección de personaje
+        // Go to character selection
         RenderEngine.showScreen('characters');
         
-        // Mensaje épico (solo primera vez)
+        // Epic message (first time only)
         setTimeout(() => {
             if (typeof PowerFeedback !== 'undefined') {
-                PowerFeedback.showMessage('Tu leyenda comienza ahora.', 'var(--warning)');
+                PowerFeedback.showMessage('Your legend begins now.', 'var(--warning)');
                 PowerFeedback.flash('rgba(255, 215, 0, 0.5)');
             }
         }, 500);
     },
 
-    // Actualizar DOM
+    // Update the DOM
     update() {
         const container = document.getElementById('game-container');
         const currentHash = window.location.hash;
@@ -142,7 +142,7 @@ const OnboardingSystem = {
         }
     },
 
-    // Destruir onboarding
+    // Remove onboarding
     destroy() {
         const overlay = document.querySelector('.onboarding-overlay');
         if (overlay) {
@@ -153,21 +153,21 @@ const OnboardingSystem = {
         }
     },
 
-    // Iniciar onboarding
+    // Initialize onboarding
     init() {
-        // Si ya vio onboarding, no mostrar
+        // Do not show onboarding again
         if (this.hasSeenOnboarding()) {
             return false;
         }
 
-        // Configurar hash inicial
+        // Set the initial hash
         window.location.hash = 'onboarding-0';
         
-        // Renderizar primera pantalla
+        // Render the first screen
         const container = document.getElementById('game-container');
         container.innerHTML = this.renderScreen(0);
         
-        // Escuchar cambios en hash
+        // Listen for hash changes
         window.addEventListener('hashchange', () => {
             this.update();
         });
@@ -176,5 +176,5 @@ const OnboardingSystem = {
     }
 };
 
-// Exponer globalmente
+// Expose globally
 window.OnboardingSystem = OnboardingSystem;
