@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const VISIBLE_MS = 5000;
+const HIDDEN_MS = 18000;
 
 export default function NextStepCard({
   title,
@@ -13,32 +16,50 @@ export default function NextStepCard({
   accent?: string;
   children?: React.ReactNode;
 }) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    setVisible(true);
+  }, [title, text]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(
+      () => setVisible((current) => !current),
+      visible ? VISIBLE_MS : HIDDEN_MS
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, [visible, title, text]);
+
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <section
+    <aside
+      className="goalquest-next-step"
       aria-label="Recommended next step"
-      style={{
-        width: "100%",
-        maxWidth: "800px",
-        margin: "0 auto 24px",
-        padding: "18px 20px",
-        border: `2px solid ${accent}`,
-        borderRadius: "14px",
-        background: "rgba(10, 10, 24, 0.78)",
-        boxShadow: "0 0 22px rgba(77, 255, 145, 0.1)",
-        textAlign: "left"
-      }}
+      style={{ "--next-step-accent": accent } as React.CSSProperties}
     >
-      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-        <div style={{ fontSize: "26px", lineHeight: 1 }}>{icon}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ color: accent, fontSize: "9px", marginBottom: "7px", letterSpacing: "1px" }}>NEXT STEP</div>
-          <h3 style={{ color: "white", fontSize: "13px", lineHeight: 1.5, marginBottom: "8px", textAlign: "left" }}>
-            {title}
-          </h3>
-          <p style={{ color: "#c8c8d4", fontSize: "10px", lineHeight: 1.8, textAlign: "left" }}>{text}</p>
-          {children ? <div style={{ marginTop: "14px" }}>{children}</div> : null}
-        </div>
+      <div className="goalquest-next-step-icon" aria-hidden="true">{icon}</div>
+
+      <div className="goalquest-next-step-copy">
+        <div className="goalquest-next-step-label">NEXT STEP</div>
+        <div className="goalquest-next-step-title">{title}</div>
+        <div className="goalquest-next-step-text">{text}</div>
       </div>
-    </section>
+
+      {children ? <div className="goalquest-next-step-actions">{children}</div> : null}
+
+      <button
+        type="button"
+        className="goalquest-next-step-close"
+        onClick={() => setVisible(false)}
+        aria-label="Hide next step"
+        title="Hide for now"
+      >
+        ×
+      </button>
+    </aside>
   );
 }
