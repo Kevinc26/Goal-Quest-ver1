@@ -8,12 +8,15 @@ export type ClassCombatMove = {
   action: CombatAction;
 };
 
+type ActionExtras = Pick<CombatAction, "defensePower" | "healPower" | "effect">;
+
 const move = (
   attackType: LegacyAttackType,
   icon: string,
   name: string,
   mpCost: number,
-  power: number
+  power: number,
+  extras: ActionExtras = {}
 ): ClassCombatMove => ({
   attackType,
   icon,
@@ -21,59 +24,82 @@ const move = (
     id: `${attackType}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
     name,
     mpCost,
-    power
+    power,
+    ...extras
   }
 });
 
 /**
- * Combat V1 loadouts.
+ * Combat V1 class identities.
  *
- * The UI can use these names immediately while the current persisted combat
- * state still routes through the legacy weak/medium/strong store actions.
- * The embedded CombatAction values are intentionally ready for the reusable
- * combat engine, so the next integration step does not need to redesign the
- * class-facing move list again.
+ * Every class keeps one zero-MP basic action so a player can never become
+ * unable to act. Medium and strong skills now express class identity through
+ * mechanics already supported by CombatEngine: healing, guard and debuffs.
+ * The current legacy combat UI can continue mapping weak/medium/strong safely;
+ * these richer fields become active as soon as the reusable engine is wired
+ * into the persisted combat session.
  */
 const CLASS_LOADOUTS: Record<number, ClassCombatMove[]> = {
   1: [
     move("weak", "✨", "Arcane Bolt", 0, 10),
-    move("medium", "🧠", "Focus Lance", 6, 20),
-    move("strong", "🔥", "Mental Fireball", 12, 32)
+    move("medium", "🧠", "Focus Lance", 6, 19, {
+      effect: { id: "vulnerable", turns: 2, potency: 2 }
+    }),
+    move("strong", "🔥", "Mental Fireball", 12, 32, {
+      effect: { id: "weakened", turns: 1, potency: 2 }
+    })
   ],
   2: [
     move("weak", "⚔️", "Sword Strike", 0, 11),
-    move("medium", "💪", "Willpower Strike", 4, 21),
-    move("strong", "🛡️", "Discipline Breaker", 8, 30)
+    move("medium", "💪", "Willpower Strike", 4, 19, { defensePower: 2 }),
+    move("strong", "🛡️", "Discipline Breaker", 8, 29, {
+      defensePower: 3,
+      effect: { id: "vulnerable", turns: 1, potency: 2 }
+    })
   ],
   3: [
     move("weak", "✨", "Light Strike", 0, 9),
-    move("medium", "❤️", "Vital Pulse", 7, 18),
-    move("strong", "☀️", "Radiant Burst", 12, 28)
+    move("medium", "❤️", "Vital Pulse", 7, 12, { healPower: 16 }),
+    move("strong", "☀️", "Radiant Burst", 12, 26, { healPower: 8 })
   ],
   4: [
-    move("weak", "🛡️", "Shield Bash", 0, 10),
-    move("medium", "🧱", "Persistence Strike", 3, 19),
-    move("strong", "💥", "Fortress Breaker", 7, 28)
+    move("weak", "🛡️", "Shield Bash", 0, 10, { defensePower: 1 }),
+    move("medium", "🧱", "Persistence Strike", 3, 17, { defensePower: 5 }),
+    move("strong", "💥", "Fortress Breaker", 7, 27, { defensePower: 7 })
   ],
   5: [
     move("weak", "🏹", "Quick Shot", 0, 11),
-    move("medium", "🎯", "Focus Arrow", 5, 21),
-    move("strong", "💫", "Precision Volley", 10, 31)
+    move("medium", "🎯", "Focus Arrow", 5, 20, {
+      effect: { id: "vulnerable", turns: 2, potency: 3 }
+    }),
+    move("strong", "💫", "Precision Volley", 10, 31, {
+      effect: { id: "vulnerable", turns: 1, potency: 2 }
+    })
   ],
   6: [
     move("weak", "🙏", "Sacred Strike", 0, 9),
-    move("medium", "✨", "Clarity Ray", 6, 19),
-    move("strong", "⚖️", "Balance Judgment", 11, 29)
+    move("medium", "✨", "Clarity Ray", 6, 14, { healPower: 10, defensePower: 2 }),
+    move("strong", "⚖️", "Balance Judgment", 11, 27, { healPower: 10, defensePower: 2 })
   ],
   7: [
     move("weak", "🥷", "Swift Strike", 0, 12),
-    move("medium", "💨", "Shadow Cut", 5, 22),
-    move("strong", "⚡", "Distraction Break", 9, 31)
+    move("medium", "💨", "Shadow Cut", 5, 21, {
+      effect: { id: "weakened", turns: 2, potency: 3 }
+    }),
+    move("strong", "⚡", "Distraction Break", 9, 30, {
+      effect: { id: "weakened", turns: 2, potency: 5 }
+    })
   ],
   8: [
     move("weak", "⚗️", "Catalyst Toss", 0, 9),
-    move("medium", "🧪", "Focus Mixture", 7, 20),
-    move("strong", "💥", "Mental Transmutation", 13, 33)
+    move("medium", "🧪", "Focus Mixture", 7, 16, {
+      defensePower: 3,
+      effect: { id: "vulnerable", turns: 2, potency: 2 }
+    }),
+    move("strong", "💥", "Mental Transmutation", 13, 31, {
+      healPower: 6,
+      effect: { id: "weakened", turns: 2, potency: 3 }
+    })
   ]
 };
 
