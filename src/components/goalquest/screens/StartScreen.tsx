@@ -81,7 +81,7 @@ export default function StartScreen() {
             <button type="button" className="menu-option" onClick={() => setScreen("daily")}>
               <i className="fas fa-calendar-day" />
               <span>
-                {remainingDailies > 0 ? "NEXT → " : ""}DAILY MISSIONS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
+                {remainingDailies > 0 ? "NEXT → " : ""}DAILY QUESTS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
               </span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("characters")}>

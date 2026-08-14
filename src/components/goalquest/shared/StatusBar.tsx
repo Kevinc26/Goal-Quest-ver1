@@ -91,7 +91,7 @@ export default function StatusBar() {
           barClass="exp-bar"
         />
         <div>
-          <div style={{ fontSize: "10px", color: "var(--info)", textAlign: "center" }}>DAILY</div>
+          <div style={{ fontSize: "10px", color: "var(--info)", textAlign: "center" }}>DAILY QUESTS</div>
           <div className="daily-progress-bar" style={{ width: "120px", height: "10px" }}>
             <div className="daily-progress-fill" style={{ width: `${dailyProgress}%` }}>
               <div className="daily-progress-text">

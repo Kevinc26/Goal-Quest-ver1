@@ -18,7 +18,7 @@ export default function SettingsScreen() {
 
       <div className="ff-menu">
         <div style={{ margin: "20px 0" }}>
-          <div style={{ color: "var(--primary)" }}>DAILY TASKS ({stats.dailyTasksGoal})</div>
+          <div style={{ color: "var(--primary)" }}>DAILY QUEST GOAL ({stats.dailyTasksGoal})</div>
           <input
             type="range"
             min={3}

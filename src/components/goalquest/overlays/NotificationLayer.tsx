@@ -1,6 +1,17 @@
-﻿import React from "react";
+import React from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
+
+const toQuestTerminology = (message: string) =>
+  message
+    .replace(/\bMissions\b/g, "Quests")
+    .replace(/\bMission\b/g, "Quest")
+    .replace(/\bmissions\b/g, "quests")
+    .replace(/\bmission\b/g, "quest")
+    .replace(/\bTasks\b/g, "Quests")
+    .replace(/\bTask\b/g, "Quest")
+    .replace(/\btasks\b/g, "quests")
+    .replace(/\btask\b/g, "quest");
 
 export default function NotificationLayer() {
   const toasts = useGoalQuestStore((state) => state.toasts);
@@ -22,7 +33,7 @@ export default function NotificationLayer() {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ fontSize: "20px", color: toast.color }}>{toast.icon ?? "💡"}</div>
-            <div style={{ fontSize: "10px" }}>{toast.message}</div>
+            <div style={{ fontSize: "10px" }}>{toQuestTerminology(toast.message)}</div>
           </div>
         </div>
       ))}

@@ -91,14 +91,14 @@ export default function DailyScreen() {
       <div className="daily-missions-header">
         <div style={{ fontSize: "50px", color: "var(--warning)" }}>📅</div>
         <div>
-          <h2 style={{ color: "var(--warning)" }}>DAILY MISSIONS</h2>
+          <h2 style={{ color: "var(--warning)" }}>DAILY QUESTS</h2>
           <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} suggested quests available today</p>
         </div>
       </div>
 
       <div className="daily-progress-box">
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-          <div style={{ color: "var(--warning)" }}>PROGRESS</div>
+          <div style={{ color: "var(--warning)" }}>QUEST GOAL</div>
           <div style={{ color: "var(--warning)" }}>
             {stats.dailyTasksCompleted}/{stats.dailyTasksGoal}
           </div>
@@ -106,14 +106,14 @@ export default function DailyScreen() {
         <div className="daily-progress-bar" style={{ width: "100%" }}>
           <div className="daily-progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP bonus for completing the daily goal</div>
+        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP bonus for completing the daily quest goal</div>
       </div>
 
       {todayCompleted ? (
         <NextStepCard
           icon="🏆"
           accent="var(--primary)"
-          title="DAILY GOAL COMPLETE"
+          title="DAILY QUEST GOAL COMPLETE"
           text="You earned today's completion bonus. Your next step is to return to the world map and advance your region quest."
         >
           <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ margin: 0 }}>
@@ -159,7 +159,7 @@ export default function DailyScreen() {
               disabled={todayCompleted}
               style={todayCompleted ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
             >
-              {todayCompleted ? "DAY COMPLETE" : "⚒️ FORGE QUEST"}
+              {todayCompleted ? "QUEST GOAL COMPLETE" : "⚒️ FORGE QUEST"}
             </button>
           ) : null}
         </div>
@@ -231,7 +231,7 @@ export default function DailyScreen() {
             ) : null}
 
             <p style={{ color: "#999", fontSize: "9px", lineHeight: 1.7, margin: "18px 0 5px" }}>
-              Custom quests count toward today's progress and award the same 25 EXP as a suggested daily mission.
+              Custom quests count toward today's quest goal and award the same 25 EXP as a suggested daily quest.
             </p>
 
             <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap", marginTop: "15px" }}>
@@ -292,7 +292,7 @@ export default function DailyScreen() {
       ) : (
         <div style={{ background: "rgba(26,26,46,0.95)", padding: "40px", border: "2px solid var(--primary)" }}>
           <div style={{ fontSize: "60px", color: "var(--primary)" }}>🏆</div>
-          <h3 style={{ color: "var(--primary)" }}>ALL COMPLETED</h3>
+          <h3 style={{ color: "var(--primary)" }}>ALL QUESTS COMPLETE</h3>
         </div>
       )}
     </div>

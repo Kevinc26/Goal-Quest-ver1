@@ -57,7 +57,7 @@ export default function RegionScreen() {
           <h2 style={{ color: region.color }}>{region.name}</h2>
           <p style={{ color: "#666", fontSize: "12px" }}>Difficulty: {region.boss.difficulty}</p>
           <p style={{ color: "var(--info)", fontSize: "11px", marginTop: "5px" }}>
-            {missionFlags.filter(Boolean).length}/7 missions
+            {missionFlags.filter(Boolean).length}/7 quests
           </p>
         </div>
       </div>
@@ -105,9 +105,9 @@ export default function RegionScreen() {
         />
       ) : null}
 
-      <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>7-DAY REGION PATH</h3>
+      <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>7-DAY QUEST PATH</h3>
       <p style={{ color: "#aaa", fontSize: "10px", marginBottom: "20px" }}>
-        Complete one highlighted quest per day. Finish all 7 days to unlock the boss.
+        Complete one highlighted region quest per day. Finish all 7 quests to unlock the boss.
       </p>
 
       <div className="mission-list">
@@ -118,13 +118,13 @@ export default function RegionScreen() {
           let statusText = "";
 
           if (missionCompleted) {
-            statusText = "COMPLETED • +25 EXP";
+            statusText = "QUEST COMPLETE • +25 EXP";
           } else if (canPlay) {
-            statusText = "DO THIS TODAY • +25 EXP";
+            statusText = "DO THIS QUEST TODAY • +25 EXP";
           } else if (isNext) {
-            statusText = "NEXT • COME BACK TOMORROW";
+            statusText = "NEXT QUEST • COME BACK TOMORROW";
           } else if (index > nextMission) {
-            statusText = "LOCKED • COMPLETE PREVIOUS DAY";
+            statusText = "LOCKED • COMPLETE PREVIOUS QUEST";
           }
 
           return (

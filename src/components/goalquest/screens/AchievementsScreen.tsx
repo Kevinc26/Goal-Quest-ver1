@@ -9,7 +9,7 @@ export default function AchievementsScreen() {
   const getMotivationalMessage = useGoalQuestStore((state) => state.getMotivationalMessage);
 
   const cards = [
-    { label: "Tasks Completed", value: stats.totalTasksCompleted, color: "var(--primary)" },
+    { label: "Quests Completed", value: stats.totalTasksCompleted, color: "var(--primary)" },
     { label: "Days Completed", value: stats.daysCompleted, color: "var(--warning)" },
     { label: "Current Streak", value: stats.dailyStreak, color: "var(--info)" },
     { label: "Bosses Defeated", value: defeatedBosses.length, color: "var(--danger)" }

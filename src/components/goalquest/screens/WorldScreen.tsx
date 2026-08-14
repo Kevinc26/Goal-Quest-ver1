@@ -24,7 +24,7 @@ export default function WorldScreen() {
       <div className="game-screen active">
         <NextStepCard
           icon="🎭"
-          title="CHOOSE A CHARACTER FIRST"
+          title="CHOOSE A CLASS FIRST"
           text="Your class defines your path. Choose one before entering the world map."
         >
           <button type="button" className="ff-button" onClick={() => setScreen("characters")} style={{ margin: 0 }}>
@@ -118,7 +118,7 @@ export default function WorldScreen() {
       <div className="daily-progress-container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
           <div>
-            <div style={{ color: "var(--warning)", fontSize: "14px" }}>DAILY PROGRESS</div>
+            <div style={{ color: "var(--warning)", fontSize: "14px" }}>DAILY QUEST PROGRESS</div>
             <div style={{ color: "#aaa", fontSize: "10px" }}>
               {dailyRemaining <= 0 ? "Completed" : `${dailyRemaining} remaining`}
             </div>
@@ -136,7 +136,7 @@ export default function WorldScreen() {
 
         <div className="button-container">
           <button type="button" className="ff-button" onClick={() => setScreen("daily")} style={{ padding: "10px 20px", fontSize: "12px" }}>
-            📅 DAILIES
+            📅 DAILY QUESTS
           </button>
           <button
             type="button"
@@ -194,7 +194,7 @@ export default function WorldScreen() {
                         }}
                       />
                     </div>
-                    <div style={{ fontSize: "10px", color: "#aaa", marginTop: "5px" }}>{regionProgress}/7 missions</div>
+                    <div style={{ fontSize: "10px", color: "#aaa", marginTop: "5px" }}>{regionProgress}/7 quests</div>
                     {!completed && nextMission !== -1 ? (
                       <div style={{ fontSize: "9px", color: "var(--warning)", marginTop: "5px" }}>🔥 Next: Day {nextMission + 1}</div>
                     ) : null}
@@ -229,7 +229,7 @@ export default function WorldScreen() {
 
       <div className="button-container">
         <button type="button" className="ff-button" onClick={() => setScreen("daily")}>
-          📅 DAILIES
+          📅 DAILY QUESTS
         </button>
         <button type="button" className="ff-button" onClick={() => setScreen("rest")}>
           🔥 REST
