@@ -1,6 +1,7 @@
 import React from "react";
 
-import { useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { publicAssetPath } from "../utils";
 
 export default function StartScreen() {
   const character = useGoalQuestStore((state) => state.character);
@@ -8,6 +9,7 @@ export default function StartScreen() {
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const getPathName = useGoalQuestStore((state) => state.getPathName);
   const getPathDescription = useGoalQuestStore((state) => state.getPathDescription);
+  const characterImageSrc = character ? publicAssetPath(goalQuestAssets.classes[character.id]) : "";
 
   return (
     <div className="game-screen active start-screen">
@@ -18,7 +20,21 @@ export default function StartScreen() {
 
       {character ? (
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <div style={{ fontSize: "40px", color: character.color }}>{character.icon}</div>
+          <img
+            src={characterImageSrc}
+            alt={character.name}
+            loading="eager"
+            decoding="async"
+            style={{
+              width: "84px",
+              height: "84px",
+              objectFit: "contain",
+              imageRendering: "pixelated",
+              filter: `drop-shadow(0 0 14px ${character.color})`,
+              margin: "0 auto",
+              display: "block"
+            }}
+          />
           <div style={{ color: character.color, fontSize: "16px", marginTop: "10px" }}>{getPathName()}</div>
           <div style={{ color: "#aaa", fontSize: "12px", marginTop: "5px" }}>{getPathDescription()}</div>
         </div>

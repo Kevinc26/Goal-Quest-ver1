@@ -31,6 +31,11 @@ export default function TaskModal() {
     return null;
   }
 
+  const timerIncomplete = task.missionType === "timer" && task.secondsLeft > 0;
+  const completionLabel = timerIncomplete
+    ? `🔒 COMPLETE IN ${formatTime(task.secondsLeft)}`
+    : "✅ COMPLETE QUEST";
+
   return (
     <div className="task-popup">
       <div className="popup-content">
@@ -42,6 +47,20 @@ export default function TaskModal() {
             <h3 style={{ color: "var(--warning)", marginBottom: "20px" }}>{task.missionText}</h3>
             <div className="timer-container">
               <div className="timer-display">{formatTime(task.secondsLeft)}</div>
+              <p
+                style={{
+                  color: timerIncomplete ? "#aaa" : "var(--primary)",
+                  fontSize: "10px",
+                  lineHeight: 1.6,
+                  margin: "12px auto 16px",
+                  maxWidth: "360px"
+                }}
+                aria-live="polite"
+              >
+                {timerIncomplete
+                  ? `Complete Quest unlocks when the timer reaches 00:00. ${formatTime(task.secondsLeft)} remaining.`
+                  : "Timer complete. You can now complete this quest."}
+              </p>
               <div className="timer-buttons" style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
                 <button type="button" className="ff-button" onClick={toggleTaskTimer} style={{ background: "var(--warning)" }}>
                   {taskTimerPaused ? "▶ CONTINUE" : "⏸ PAUSE"}
@@ -67,8 +86,28 @@ export default function TaskModal() {
           </>
         )}
 
-        <button type="button" className="ff-button" onClick={completeTask} style={{ marginTop: "20px" }}>
-          ✅ COMPLETE
+        <button
+          type="button"
+          className="ff-button"
+          onClick={completeTask}
+          disabled={timerIncomplete}
+          aria-disabled={timerIncomplete}
+          style={{
+            marginTop: "20px",
+            ...(timerIncomplete
+              ? {
+                  background: "#45455a",
+                  color: "#9a9aad",
+                  cursor: "not-allowed",
+                  boxShadow: "none",
+                  filter: "none",
+                  borderBottomColor: "#303040",
+                  opacity: 0.72
+                }
+              : {})
+          }}
+        >
+          {completionLabel}
         </button>
         <button
           type="button"
