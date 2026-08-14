@@ -71,7 +71,7 @@ export default function TaskModal() {
               </div>
             </div>
           </>
-        ) : (
+        ) : task.missionType === "text" ? (
           <>
             <div className="popup-icon" style={{ color: "var(--primary)" }}>
               📝
@@ -83,6 +83,16 @@ export default function TaskModal() {
               value={task.userInput}
               onChange={(event) => setTaskInput(event.target.value)}
             />
+          </>
+        ) : (
+          <>
+            <div className="popup-icon" style={{ color: "var(--primary)" }}>
+              ⚒️
+            </div>
+            <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>{task.missionText}</h3>
+            <p style={{ color: "#bbb", fontSize: "11px", lineHeight: 1.8, maxWidth: "360px", margin: "0 auto 10px" }}>
+              Complete this quest in real life, then claim your reward below.
+            </p>
           </>
         )}
 

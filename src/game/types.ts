@@ -1,4 +1,4 @@
-﻿export type MissionType = "text" | "timer";
+export type MissionType = "text" | "timer" | "check";
 
 export type ScreenName =
   | "start"
@@ -112,5 +112,3 @@ export interface ClassPath {
   description: string;
   motivationalMessages: string[];
 }
-
-
