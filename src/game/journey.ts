@@ -101,5 +101,33 @@ export const createNextJourneyState = (current: JourneyState, completedJourney: 
   history: [...current.history, completedJourney]
 });
 
+export type AscensionProgressReset = {
+  unlockedRegions: number[];
+  completedMissions: Record<number, boolean[]>;
+  defeatedBosses: number[];
+  currentRegion: null;
+  stats: Stats;
+};
+
+/**
+ * Creates the progression reset used when an adventurer ascends into a new Journey.
+ * Lifetime progression is preserved: level, EXP, streak, total task counts and daily
+ * goal history remain intact. Only campaign-specific region/boss progress is reset,
+ * and HP/MP are restored so the next Journey starts in a playable state.
+ */
+export const createAscensionProgressReset = (stats: Stats): AscensionProgressReset => ({
+  unlockedRegions: [1],
+  completedMissions: {},
+  defeatedBosses: [],
+  currentRegion: null,
+  stats: {
+    ...stats,
+    hp: stats.maxHp,
+    mp: stats.maxMp,
+    lastRegionMissionDate: null,
+    lastCompletedRegionDay: null
+  }
+});
+
 export const getJourneyLabel = (journey: JourneyState) =>
   `Journey ${journey.journeyNumber} · Ascension ${journey.ascensionLevel}`;
