@@ -10,7 +10,7 @@ export default function StartScreen() {
   const getPathDescription = useGoalQuestStore((state) => state.getPathDescription);
 
   return (
-    <div className="game-screen active">
+    <div className="game-screen active start-screen">
       <h1 className="game-title">GOALQUEST</h1>
       <p style={{ textAlign: "center", color: "var(--warning)", margin: "20px 0" }}>
         Psychological Transformation RPG

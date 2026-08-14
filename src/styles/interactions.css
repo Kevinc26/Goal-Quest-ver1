@@ -1,6 +1,11 @@
 /* GoalQuest interaction polish
    Fast, explicit feedback for mouse, keyboard and touch without changing game logic. */
 
+/* Start screen: keep the main frame visually compact on desktop. */
+.start-screen {
+  max-width: 680px;
+}
+
 button,
 .menu-option,
 .character-card,
