@@ -3,7 +3,6 @@ import React from "react";
 import { goalQuestAssets, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { percent, publicAssetPath } from "../utils";
 import StatusBar from "../shared/StatusBar";
-import NextStepCard from "../shared/NextStepCard";
 
 const readableAccent = (color: string) => `color-mix(in srgb, ${color} 72%, white)`;
 
@@ -24,29 +23,22 @@ export default function WorldScreen() {
   if (!character) {
     return (
       <div className="game-screen active">
-        <NextStepCard
-          icon="🎭"
-          title="CHOOSE A CLASS FIRST"
-          text="Your class defines your path. Choose one before entering the world map."
-        >
-          <button type="button" className="ff-button" onClick={() => setScreen("characters")} style={{ margin: 0 }}>
+        <div style={{ textAlign: "center", maxWidth: "560px", margin: "40px auto" }}>
+          <div style={{ fontSize: "56px", marginBottom: "20px" }}>🎭</div>
+          <h2 style={{ color: "var(--primary)", marginBottom: "16px" }}>CHOOSE A CLASS FIRST</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.7, marginBottom: "24px" }}>
+            Your class defines your path. Choose one before entering the world map.
+          </p>
+          <button type="button" className="ff-button" onClick={() => setScreen("characters")}>
             CHOOSE MY CLASS
           </button>
-        </NextStepCard>
+        </div>
       </div>
     );
   }
 
   const progress = percent(stats.dailyTasksCompleted, stats.dailyTasksGoal);
   const dailyRemaining = Math.max(0, stats.dailyTasksGoal - stats.dailyTasksCompleted);
-  const regionDoneToday = stats.lastRegionMissionDate === new Date().toDateString();
-  const bossReadyRegion = goalQuestRegions.find(
-    (region) => isRegionUnlocked(region.id) && isRegionCompleted(region.id) && !isBossDefeated(region.id)
-  );
-  const recommendedRegion = [...goalQuestRegions]
-    .reverse()
-    .find((region) => isRegionUnlocked(region.id) && !isRegionCompleted(region.id) && !isBossDefeated(region.id));
-  const recommendedMission = recommendedRegion ? getNextAvailableMission(recommendedRegion.id) : -1;
 
   return (
     <div className="game-screen active">
@@ -54,68 +46,6 @@ export default function WorldScreen() {
 
       <h2 style={{ color: "var(--primary)", margin: "20px 0" }}>{getPathName()}</h2>
       <p style={{ color: "var(--text-muted)", marginBottom: "10px", fontSize: "12px", lineHeight: 1.65 }}>{getPathDescription()}</p>
-
-      {dailyRemaining > 0 ? (
-        <NextStepCard
-          icon="📅"
-          title="COMPLETE YOUR DAILY GOAL"
-          text={`Complete ${dailyRemaining} more daily quest${dailyRemaining === 1 ? "" : "s"}. Daily quests build EXP and prepare you to keep advancing your journey.`}
-        >
-          <button type="button" className="ff-button" onClick={() => setScreen("daily")} style={{ margin: 0 }}>
-            NEXT → DAILY QUESTS
-          </button>
-        </NextStepCard>
-      ) : bossReadyRegion ? (
-        <NextStepCard
-          icon="⚔️"
-          accent="var(--danger)"
-          title={`BOSS READY: ${bossReadyRegion.boss.name}`}
-          text={`You completed all 7 quests in ${bossReadyRegion.name}. Defeat the boss to finish this chapter.`}
-        >
-          <button
-            type="button"
-            className="ff-button"
-            onClick={() => startCombat(bossReadyRegion.id)}
-            style={{ margin: 0, background: "var(--danger)" }}
-          >
-            ⚔️ CHALLENGE BOSS
-          </button>
-        </NextStepCard>
-      ) : regionDoneToday ? (
-        <NextStepCard
-          icon="✅"
-          accent="var(--primary)"
-          title="TODAY'S CORE LOOP IS COMPLETE"
-          text="Your daily goal and region quest are complete. Return tomorrow for the next region step, or review achievements and rest."
-        />
-      ) : recommendedRegion ? (
-        <NextStepCard
-          icon="🗺️"
-          accent={recommendedRegion.color}
-          title={`ADVANCE ${recommendedRegion.name}`}
-          text={
-            recommendedMission >= 0
-              ? `Enter the region and complete Day ${recommendedMission + 1}. You can advance one region quest per day.`
-              : "Enter the region to continue your adventure."
-          }
-        >
-          <button
-            type="button"
-            className="ff-button"
-            onClick={() => enterRegion(recommendedRegion.id)}
-            style={{ margin: 0 }}
-          >
-            NEXT → ENTER REGION
-          </button>
-        </NextStepCard>
-      ) : (
-        <NextStepCard
-          icon="👑"
-          accent="var(--gold)"
-          title="YOUR CURRENT JOURNEY IS COMPLETE"
-          text="You have cleared every available region. Review your achievements and keep your daily streak alive."
-        />
-      )}
 
       <div className="daily-progress-container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px", gap: "12px" }}>

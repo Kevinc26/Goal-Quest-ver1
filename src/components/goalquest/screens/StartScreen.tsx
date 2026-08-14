@@ -2,7 +2,6 @@ import React from "react";
 
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { publicAssetPath } from "../utils";
-import NextStepCard from "../shared/NextStepCard";
 
 export default function StartScreen() {
   const character = useGoalQuestStore((state) => state.character);
@@ -42,34 +41,6 @@ export default function StartScreen() {
           <div style={{ color: "var(--text-muted)", fontSize: "12px", lineHeight: 1.6, marginTop: "6px" }}>{getPathDescription()}</div>
         </div>
       ) : null}
-
-      {!character ? (
-        <NextStepCard
-          icon="🎭"
-          title="CHOOSE YOUR CLASS"
-          text="Pick the class that represents the person you want to become. Your class sets your path, then the real adventure begins."
-        />
-      ) : remainingDailies > 0 ? (
-        <NextStepCard
-          icon="📅"
-          title="COMPLETE YOUR DAILY GOAL"
-          text={`Complete ${remainingDailies} more daily quest${remainingDailies === 1 ? "" : "s"}. Choose a suggested quest or forge one around something that matters to you today.`}
-        />
-      ) : regionDoneToday ? (
-        <NextStepCard
-          icon="✅"
-          accent="var(--primary)"
-          title="TODAY'S CORE LOOP IS COMPLETE"
-          text="Your daily goal and today's region quest are done. Explore your progress, rest, or return tomorrow for the next region step."
-        />
-      ) : (
-        <NextStepCard
-          icon="🗺️"
-          accent="var(--primary)"
-          title="ADVANCE YOUR REGION"
-          text="Your daily goal is complete. Enter the world and finish today's highlighted region quest to move your story forward."
-        />
-      )}
 
       <div className="ff-menu">
         {character ? (

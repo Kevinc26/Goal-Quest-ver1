@@ -2,7 +2,6 @@ import React from "react";
 
 import { regionById } from "../../../game/data";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
-import NextStepCard from "../shared/NextStepCard";
 
 const readableAccent = (color: string) => `color-mix(in srgb, ${color} 72%, white)`;
 
@@ -22,11 +21,14 @@ export default function RegionScreen() {
   if (!region) {
     return (
       <div className="game-screen active">
-        <NextStepCard icon="🗺️" title="REGION UNAVAILABLE" text="Return to the world map and choose an unlocked region.">
-          <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ margin: 0 }}>
-            BACK TO MAP
-          </button>
-        </NextStepCard>
+        <div style={{ textAlign: "center", maxWidth: "560px", margin: "40px auto" }}>
+          <div style={{ fontSize: "56px", marginBottom: "20px" }}>🗺️</div>
+          <h2 style={{ color: "var(--primary)", marginBottom: "16px" }}>REGION UNAVAILABLE</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.7, marginBottom: "24px" }}>
+            Return to the world map and choose an unlocked region.
+          </p>
+          <button type="button" className="ff-button" onClick={() => setScreen("world")}>BACK TO MAP</button>
+        </div>
       </div>
     );
   }
@@ -41,72 +43,16 @@ export default function RegionScreen() {
 
   return (
     <div className="game-screen active">
-      <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ marginBottom: "20px" }}>
-        ← BACK
-      </button>
+      <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ marginBottom: "20px" }}>← BACK</button>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "20px",
-          marginBottom: "30px",
-          flexWrap: "wrap"
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
         <div style={{ fontSize: "50px", color: region.color }}>{region.icon}</div>
         <div>
           <h2 style={{ color: regionTextAccent }}>{region.name}</h2>
           <p style={{ color: "var(--text-faint)", fontSize: "12px", lineHeight: 1.55 }}>Difficulty: {region.boss.difficulty}</p>
-          <p style={{ color: "var(--info)", fontSize: "11px", marginTop: "5px" }}>
-            {missionFlags.filter(Boolean).length}/7 quests
-          </p>
+          <p style={{ color: "var(--info)", fontSize: "11px", marginTop: "5px" }}>{missionFlags.filter(Boolean).length}/7 quests</p>
         </div>
       </div>
-
-      {bossDefeated ? (
-        <NextStepCard
-          icon="👑"
-          accent="var(--gold)"
-          title="REGION COMPLETE"
-          text="The boss has been defeated. Return to the world map and continue into the next unlocked region."
-        >
-          <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ margin: 0 }}>
-            CONTINUE JOURNEY
-          </button>
-        </NextStepCard>
-      ) : regionCompleted ? (
-        <NextStepCard
-          icon="⚔️"
-          accent="var(--danger)"
-          title={`BOSS READY: ${region.boss.name}`}
-          text="All 7 region quests are complete. Your next step is to defeat the boss and close this chapter."
-        >
-          <button
-            type="button"
-            className="ff-button"
-            onClick={() => startCombat(region.id)}
-            style={{ margin: 0, background: "var(--danger)" }}
-          >
-            ⚔️ CHALLENGE BOSS
-          </button>
-        </NextStepCard>
-      ) : regionDoneToday ? (
-        <NextStepCard
-          icon="🌙"
-          accent="var(--primary)"
-          title="TODAY'S REGION QUEST IS COMPLETE"
-          text={`You advanced ${region.name} today. Region progression is limited to one quest per day, so return tomorrow for Day ${Math.min(7, nextMission + 1)}.`}
-        />
-      ) : nextMission >= 0 ? (
-        <NextStepCard
-          icon="🔥"
-          accent={region.color}
-          title={`COMPLETE DAY ${nextMission + 1}`}
-          text={`${region.missions[nextMission]} — select the highlighted quest below to advance this region today.`}
-        />
-      ) : null}
 
       <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>7-DAY QUEST PATH</h3>
       <p style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.7, marginBottom: "20px" }}>
@@ -120,46 +66,18 @@ export default function RegionScreen() {
           const canPlay = !regionDoneToday && !missionCompleted && isNext;
           let statusText = "";
 
-          if (missionCompleted) {
-            statusText = "QUEST COMPLETE • +25 EXP";
-          } else if (canPlay) {
-            statusText = "DO THIS QUEST TODAY • +25 EXP";
-          } else if (isNext) {
-            statusText = "NEXT QUEST • COME BACK TOMORROW";
-          } else if (index > nextMission) {
-            statusText = "LOCKED • COMPLETE PREVIOUS QUEST";
-          }
+          if (missionCompleted) statusText = "QUEST COMPLETE • +25 EXP";
+          else if (canPlay) statusText = "DO THIS QUEST TODAY • +25 EXP";
+          else if (isNext) statusText = "NEXT QUEST • COME BACK TOMORROW";
+          else if (index > nextMission) statusText = "LOCKED • COMPLETE PREVIOUS QUEST";
 
           return (
-            <button
-              key={`${region.id}-${index}`}
-              type="button"
-              className={`mission-item ${missionCompleted ? "completed" : ""} ${canPlay ? "today" : ""}`}
-              onClick={() => {
-                if (canPlay) {
-                  startRegionTask(region.id, index);
-                }
-              }}
-              style={{ width: "100%", textAlign: "left", color: "white" }}
-            >
-              <div
-                style={{
-                  width: "24px",
-                  height: "24px",
-                  border: `2px solid ${region.color}`,
-                  borderRadius: "5px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: missionCompleted ? region.color : "transparent"
-                }}
-              >
+            <button key={`${region.id}-${index}`} type="button" className={`mission-item ${missionCompleted ? "completed" : ""} ${canPlay ? "today" : ""}`} onClick={() => { if (canPlay) startRegionTask(region.id, index); }} style={{ width: "100%", textAlign: "left", color: "white" }}>
+              <div style={{ width: "24px", height: "24px", border: `2px solid ${region.color}`, borderRadius: "5px", display: "flex", alignItems: "center", justifyContent: "center", background: missionCompleted ? region.color : "transparent" }}>
                 {missionCompleted ? "✓" : canPlay ? "🔥" : region.missionTypes[index] === "timer" ? "⏰" : "📝"}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: missionCompleted ? regionTextAccent : canPlay ? "var(--warning)" : "white", lineHeight: 1.55 }}>
-                  Day {index + 1}: {region.missions[index]}
-                </div>
+                <div style={{ color: missionCompleted ? regionTextAccent : canPlay ? "var(--warning)" : "white", lineHeight: 1.55 }}>Day {index + 1}: {region.missions[index]}</div>
                 {statusText ? <div style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.5, marginTop: "5px" }}>{statusText}</div> : null}
               </div>
             </button>
@@ -167,19 +85,15 @@ export default function RegionScreen() {
         })}
       </div>
 
+      {regionCompleted && !bossDefeated ? (
+        <div style={{ textAlign: "center", marginTop: "30px" }}>
+          <button type="button" className="ff-button" onClick={() => startCombat(region.id)} style={{ background: "var(--danger)" }}>⚔️ CHALLENGE BOSS</button>
+        </div>
+      ) : null}
+
       {bossDefeated ? (
         <div style={{ textAlign: "center", marginTop: "30px" }}>
-          <div
-            style={{
-              color: "var(--warning)",
-              padding: "15px",
-              background: "rgba(255,209,102,0.1)",
-              borderRadius: "10px",
-              border: "2px solid var(--warning)"
-            }}
-          >
-            👑 Boss defeated
-          </div>
+          <div style={{ color: "var(--warning)", padding: "15px", background: "rgba(255,209,102,0.1)", borderRadius: "10px", border: "2px solid var(--warning)" }}>👑 Boss defeated</div>
         </div>
       ) : null}
     </div>
