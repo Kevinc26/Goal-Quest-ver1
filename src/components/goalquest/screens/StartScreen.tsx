@@ -26,11 +26,11 @@ export default function StartScreen() {
             loading="eager"
             decoding="async"
             style={{
-              width: "84px",
-              height: "84px",
+              width: "120px",
+              height: "120px",
               objectFit: "contain",
               imageRendering: "pixelated",
-              filter: `drop-shadow(0 0 14px ${character.color})`,
+              filter: `drop-shadow(0 0 18px ${character.color})`,
               margin: "0 auto",
               display: "block"
             }}
