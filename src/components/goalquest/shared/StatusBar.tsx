@@ -1,7 +1,7 @@
 ﻿import React from "react";
 
 import { useGoalQuestStore, goalQuestAssets } from "../../../stores/goalQuestStore";
-import { percent } from "../utils";
+import { percent, publicAssetPath } from "../utils";
 
 function StatBlock({
   label,
@@ -56,7 +56,7 @@ export default function StatusBar() {
           }}
         >
           <img
-            src={goalQuestAssets.classes[character.id]}
+            src={publicAssetPath(goalQuestAssets.classes[character.id])}
             alt={character.name}
             style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
           />

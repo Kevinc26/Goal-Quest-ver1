@@ -1,5 +1,7 @@
 ﻿import React, { useEffect, useRef, useState } from "react";
 
+import { publicAssetPath } from "../utils";
+
 export default function MusicToggleButton() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [enabled, setEnabled] = useState(false);
@@ -8,7 +10,7 @@ export default function MusicToggleButton() {
     const saved = window.localStorage.getItem("goalquest_music");
     setEnabled(saved === "on");
 
-    const audio = new Audio("/assets/music/tema-inicio.mp3");
+    const audio = new Audio(publicAssetPath("/assets/music/tema-inicio.mp3"));
     audio.loop = true;
     audio.volume = 0.3;
     audioRef.current = audio;

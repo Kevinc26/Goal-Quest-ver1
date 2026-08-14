@@ -1,7 +1,7 @@
 ﻿import React from "react";
 
 import { goalQuestAssets, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
-import { percent } from "../utils";
+import { percent, publicAssetPath } from "../utils";
 import StatusBar from "../shared/StatusBar";
 
 export default function WorldScreen() {
@@ -100,7 +100,7 @@ export default function WorldScreen() {
               <div>
                 <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden", marginBottom: "10px" }}>
                   <img
-                    src={goalQuestAssets.acts[region.id]}
+                    src={publicAssetPath(goalQuestAssets.acts[region.id])}
                     alt={region.name}
                     style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
                   />

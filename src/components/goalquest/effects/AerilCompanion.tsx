@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { publicAssetPath } from "../utils";
 
 const AERIL_MESSAGES: Record<number, string[]> = {
   0: [
@@ -85,7 +86,7 @@ export default function AerilCompanion() {
       >
         {!imgError ? (
           <img
-            src="/assets/classes/Aerial.png"
+            src={publicAssetPath("/assets/classes/Aerial.png")}
             alt="Aeril"
             className="aeril-sprite"
             onError={() => setImgError(true)}

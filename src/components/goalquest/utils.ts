@@ -11,3 +11,15 @@ export const formatTime = (seconds: number) => {
 
   return `${minutes}:${rest}`;
 };
+
+export const publicAssetPath = (assetPath: string | undefined) => {
+  if (!assetPath) {
+    return "";
+  }
+
+  const cleanPath = assetPath.replace(/^\/+/, "");
+  const base = import.meta.env.BASE_URL || "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+
+  return `${normalizedBase}${cleanPath}`;
+};
