@@ -1,5 +1,6 @@
 import React from "react";
 
+import { getClassCombatLoadout } from "../../../game/combatLoadouts";
 import { regionById } from "../../../game/data";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { percent } from "../utils";
@@ -23,6 +24,8 @@ export default function CombatScreen() {
   if (!region || !character) {
     return null;
   }
+
+  const loadout = getClassCombatLoadout(character.id);
 
   return (
     <div className="game-screen active">
@@ -63,15 +66,17 @@ export default function CombatScreen() {
         </div>
 
         <div className="button-container" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
-          <button type="button" className="ff-button" onClick={() => performAttack("weak")}>
-            ⚡ WEAK
-          </button>
-          <button type="button" className="ff-button" onClick={() => performAttack("medium")}>
-            💥 MEDIUM
-          </button>
-          <button type="button" className="ff-button" onClick={() => performAttack("strong")}>
-            🔥 STRONG
-          </button>
+          {loadout.map((move) => (
+            <button
+              key={move.attackType}
+              type="button"
+              className="ff-button"
+              onClick={() => performAttack(move.attackType)}
+              title={`${move.action.name} · Combat Engine V1 action`}
+            >
+              {move.icon} {move.action.name.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
     </div>
