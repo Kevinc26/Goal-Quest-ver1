@@ -2,6 +2,14 @@
 
 import { goalQuestAssets, goalQuestCharacters, useGoalQuestStore } from "../../../stores/goalQuestStore";
 
+const resolvePublicAsset = (assetPath: string | undefined) => {
+  if (!assetPath) {
+    return "";
+  }
+
+  return assetPath.replace(/^\/+/, "./");
+};
+
 export default function CharacterScreen() {
   const selectedCharacter = useGoalQuestStore((state) => state.character);
   const setScreen = useGoalQuestStore((state) => state.setScreen);
@@ -20,6 +28,8 @@ export default function CharacterScreen() {
       <div className="character-grid">
         {goalQuestCharacters.map((character) => {
           const selected = selectedCharacter?.id === character.id;
+          const classImageSrc = resolvePublicAsset(goalQuestAssets.classes[character.id]);
+
           return (
             <button
               key={character.id}
@@ -43,8 +53,10 @@ export default function CharacterScreen() {
                   }}
                 >
                   <img
-                    src={goalQuestAssets.classes[character.id]}
+                    src={classImageSrc}
                     alt={character.name}
+                    loading="eager"
+                    decoding="async"
                     style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
                   />
                 </div>
