@@ -37,11 +37,17 @@ export type CombatAction = {
   effect?: Omit<CombatEffect, "turns"> & { turns: number };
 };
 
+export type CombatBossAttack = {
+  name: string;
+  powerMultiplier: number;
+  effect?: CombatEffect;
+};
+
 export type CombatBossDefinition = {
   name: string;
   maxHp: number;
   defense: number;
-  attacks: string[];
+  attacks: CombatBossAttack[];
   baseDamage: number;
 };
 
@@ -93,15 +99,54 @@ const effectiveDefense = (actor: CombatActor) => {
 
 const effectivePower = (basePower: number, actor: CombatActor) => {
   const weakened = getEffect(actor.effects, "weakened")?.potency ?? 0;
-  return Math.max(1, basePower - weakened);
+  const confused = getEffect(actor.effects, "confused")?.potency ?? 0;
+  return Math.max(1, basePower - weakened - confused);
 };
+
+const legacyBossAttack = (name: string): CombatBossAttack => ({
+  name,
+  powerMultiplier: 1
+});
 
 export const createBossDefinition = (boss: RegionBoss): CombatBossDefinition => ({
   name: boss.name,
   maxHp: Math.max(1, boss.hp),
   defense: Math.max(0, Math.floor(boss.difficulty * 1.5)),
-  attacks: boss.attacks.length > 0 ? boss.attacks : ["Strike"],
+  attacks: boss.attacks.length > 0 ? boss.attacks.map(legacyBossAttack) : [legacyBossAttack("Strike")],
   baseDamage: 8 + boss.difficulty * 4
+});
+
+/**
+ * First authored boss for Combat V1.
+ *
+ * The Dragon of Disorder is intentionally stronger than the legacy Region 1
+ * boss and teaches the status-effect loop without requiring bespoke combat
+ * code in the UI. Each move pressures a different part of the player's turn:
+ * Confusion reduces outgoing power, Procrastination weakens follow-up attacks,
+ * and Distraction lowers defense for the next incoming hit.
+ */
+export const createDragonOfDisorderDefinition = (boss: RegionBoss): CombatBossDefinition => ({
+  name: boss.name,
+  maxHp: Math.max(180, boss.hp),
+  defense: 2,
+  baseDamage: 12,
+  attacks: [
+    {
+      name: "Confusion",
+      powerMultiplier: 0.75,
+      effect: { id: "confused", turns: 2, potency: 3 }
+    },
+    {
+      name: "Procrastination",
+      powerMultiplier: 0.9,
+      effect: { id: "weakened", turns: 2, potency: 4 }
+    },
+    {
+      name: "Distraction",
+      powerMultiplier: 1.1,
+      effect: { id: "vulnerable", turns: 2, potency: 3 }
+    }
+  ]
 });
 
 export const createCombatSession = ({
@@ -234,12 +279,18 @@ export const resolveBossTurn = ({
   }
 
   const roll = clamp(random(), 0, 0.999999);
-  const attackName = boss.attacks[Math.floor(roll * boss.attacks.length)] ?? "Strike";
-  const bossPower = effectivePower(boss.baseDamage, session.boss);
+  const attack = boss.attacks[Math.floor(roll * boss.attacks.length)] ?? legacyBossAttack("Strike");
+  const bossPower = Math.max(1, Math.floor(effectivePower(boss.baseDamage, session.boss) * attack.powerMultiplier));
   const damage = Math.max(1, bossPower - effectiveDefense(session.player));
   const nextHp = Math.max(0, session.player.currentHp - damage);
   const outcome: CombatOutcome = nextHp <= 0 ? "defeat" : "active";
-  const log = [...session.log, `${boss.name} uses ${attackName} for ${damage} damage.`];
+  const log = [...session.log, `${boss.name} uses ${attack.name} for ${damage} damage.`];
+  let playerEffects = session.player.effects;
+
+  if (attack.effect && outcome === "active") {
+    playerEffects = upsertEffect(playerEffects, attack.effect);
+    log.push(`${attack.effect.id.toUpperCase()} affects you for ${attack.effect.turns} turns.`);
+  }
 
   if (outcome === "defeat") {
     log.push("You were defeated.");
@@ -252,7 +303,7 @@ export const resolveBossTurn = ({
     player: {
       ...session.player,
       currentHp: nextHp,
-      effects: tickEffects(session.player.effects)
+      effects: tickEffects(playerEffects)
     },
     boss: {
       ...session.boss,
@@ -276,7 +327,10 @@ export const resolveCombatRound = ({
   random?: () => number;
 }) => {
   const afterPlayer = resolvePlayerAction({ session, action, attackMultiplier });
-  if (afterPlayer.outcome !== "active" || afterPlayer.player.currentMp === session.player.currentMp && action.mpCost > session.player.currentMp) {
+  if (
+    afterPlayer.outcome !== "active" ||
+    (afterPlayer.player.currentMp === session.player.currentMp && action.mpCost > session.player.currentMp)
+  ) {
     return afterPlayer;
   }
 
