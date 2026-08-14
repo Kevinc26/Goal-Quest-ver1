@@ -12,13 +12,14 @@ const createQuestId = () =>
 
 const fieldStyle: React.CSSProperties = {
   width: "100%",
-  background: "rgba(0, 0, 0, 0.3)",
+  background: "rgba(0, 0, 0, 0.36)",
   border: "2px solid var(--primary)",
   borderRadius: "10px",
   padding: "14px",
   color: "white",
   fontFamily: "'Press Start 2P', cursive",
   fontSize: "10px",
+  lineHeight: 1.5,
   outline: "none"
 };
 
@@ -92,7 +93,7 @@ export default function DailyScreen() {
         <div style={{ fontSize: "50px", color: "var(--warning)" }}>📅</div>
         <div>
           <h2 style={{ color: "var(--warning)" }}>DAILY QUESTS</h2>
-          <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} suggested quests available today</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "12px" }}>{availableMissions.length} suggested quests available today</p>
         </div>
       </div>
 
@@ -106,7 +107,7 @@ export default function DailyScreen() {
         <div className="daily-progress-bar" style={{ width: "100%" }}>
           <div className="daily-progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP bonus for completing the daily quest goal</div>
+        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px", lineHeight: 1.55 }}>+50 EXP bonus for completing the daily quest goal</div>
       </div>
 
       {todayCompleted ? (
@@ -136,7 +137,7 @@ export default function DailyScreen() {
           padding: "20px",
           border: "2px solid var(--primary)",
           borderRadius: "15px",
-          background: "rgba(77, 255, 145, 0.06)",
+          background: "rgba(10, 10, 24, 0.78)",
           boxShadow: "0 0 20px rgba(77, 255, 145, 0.08)"
         }}
       >
@@ -146,7 +147,7 @@ export default function DailyScreen() {
             <h3 style={{ color: "var(--primary)", fontSize: "14px", marginBottom: "8px", textAlign: "left" }}>
               FORGE YOUR OWN QUEST
             </h3>
-            <p style={{ color: "#bbb", fontSize: "10px", lineHeight: 1.7, textAlign: "left" }}>
+            <p style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.75, textAlign: "left" }}>
               Create a quest around what actually matters to you today. It counts exactly like a suggested daily quest.
             </p>
           </div>
@@ -157,7 +158,7 @@ export default function DailyScreen() {
               className="ff-button"
               onClick={() => setForgeOpen(true)}
               disabled={todayCompleted}
-              style={todayCompleted ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
+              style={todayCompleted ? { opacity: 0.68, cursor: "not-allowed" } : undefined}
             >
               {todayCompleted ? "QUEST GOAL COMPLETE" : "⚒️ FORGE QUEST"}
             </button>
@@ -165,7 +166,7 @@ export default function DailyScreen() {
         </div>
 
         {forgeOpen ? (
-          <form onSubmit={forgeCustomQuest} style={{ marginTop: "22px", borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: "20px" }}>
+          <form onSubmit={forgeCustomQuest} style={{ marginTop: "22px", borderTop: "1px solid rgba(255,255,255,0.18)", paddingTop: "20px" }}>
             <label style={{ display: "block", color: "var(--warning)", fontSize: "10px", marginBottom: "10px", textAlign: "left" }}>
               WHAT WILL YOU DO?
             </label>
@@ -178,7 +179,7 @@ export default function DailyScreen() {
               autoFocus
               style={fieldStyle}
             />
-            <div style={{ color: "#777", fontSize: "8px", marginTop: "7px", textAlign: "right" }}>
+            <div style={{ color: "var(--text-faint)", fontSize: "9px", marginTop: "8px", textAlign: "right" }}>
               {customQuestText.length}/100
             </div>
 
@@ -192,7 +193,7 @@ export default function DailyScreen() {
                   style={{
                     flex: "1 1 220px",
                     background: customQuestMode === "check" ? "var(--primary)" : "#39394f",
-                    color: customQuestMode === "check" ? "#111" : "#ddd",
+                    color: customQuestMode === "check" ? "#111" : "#f2f2f5",
                     borderBottomColor: customQuestMode === "check" ? "#2a8c5e" : "#242436"
                   }}
                 >
@@ -205,7 +206,7 @@ export default function DailyScreen() {
                   style={{
                     flex: "1 1 220px",
                     background: customQuestMode === "timer" ? "var(--warning)" : "#39394f",
-                    color: customQuestMode === "timer" ? "#111" : "#ddd",
+                    color: customQuestMode === "timer" ? "#111" : "#f2f2f5",
                     borderBottomColor: customQuestMode === "timer" ? "#b8862c" : "#242436"
                   }}
                 >
@@ -230,7 +231,7 @@ export default function DailyScreen() {
               </div>
             ) : null}
 
-            <p style={{ color: "#999", fontSize: "9px", lineHeight: 1.7, margin: "18px 0 5px" }}>
+            <p style={{ color: "var(--text-subtle)", fontSize: "10px", lineHeight: 1.75, margin: "18px 0 5px" }}>
               Custom quests count toward today's quest goal and award the same 25 EXP as a suggested daily quest.
             </p>
 
@@ -239,7 +240,7 @@ export default function DailyScreen() {
                 type="submit"
                 className="ff-button"
                 disabled={!canForgeQuest}
-                style={!canForgeQuest ? { opacity: 0.5, cursor: "not-allowed", boxShadow: "none" } : undefined}
+                style={!canForgeQuest ? { opacity: 0.68, cursor: "not-allowed", boxShadow: "none" } : undefined}
               >
                 ⚒️ START QUEST
               </button>
@@ -252,7 +253,7 @@ export default function DailyScreen() {
       </section>
 
       <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>SUGGESTED QUESTS</h3>
-      <p style={{ color: "#aaa", fontSize: "10px", marginBottom: "20px" }}>Select any quest below to start it immediately.</p>
+      <p style={{ color: "var(--text-muted)", fontSize: "10px", marginBottom: "20px" }}>Select any quest below to start it immediately.</p>
 
       {availableMissions.length > 0 ? (
         <div className="daily-mission-list">
@@ -263,7 +264,7 @@ export default function DailyScreen() {
               className="daily-mission-item available"
               onClick={() => startDailyTask(index)}
               disabled={todayCompleted}
-              style={{ width: "100%", textAlign: "left", color: "white", ...(todayCompleted ? { opacity: 0.5, cursor: "not-allowed" } : {}) }}
+              style={{ width: "100%", textAlign: "left", color: "white", ...(todayCompleted ? { opacity: 0.68, cursor: "not-allowed" } : {}) }}
             >
               <div
                 style={{
@@ -279,12 +280,12 @@ export default function DailyScreen() {
                 {mission.type === "timer" ? "⏰" : "📝"}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "var(--warning)", fontSize: "12px" }}>
+                <div style={{ color: "var(--warning)", fontSize: "12px", lineHeight: 1.6 }}>
                   {mission.text}
                   {mission.type === "timer" ? ` (${mission.time} min)` : ""}
                 </div>
-                <div style={{ color: mission.categoryColor }}>{mission.category}</div>
-                <div style={{ color: "#888", fontSize: "8px", marginTop: "5px" }}>SELECT TO START • +25 EXP</div>
+                <div style={{ color: mission.categoryColor, marginTop: "4px" }}>{mission.category}</div>
+                <div style={{ color: "var(--text-faint)", fontSize: "9px", lineHeight: 1.45, marginTop: "6px" }}>SELECT TO START • +25 EXP</div>
               </div>
             </button>
           ))}

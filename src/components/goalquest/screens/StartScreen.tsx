@@ -39,7 +39,7 @@ export default function StartScreen() {
             }}
           />
           <div style={{ color: character.color, fontSize: "16px", marginTop: "10px" }}>{getPathName()}</div>
-          <div style={{ color: "#aaa", fontSize: "12px", marginTop: "5px" }}>{getPathDescription()}</div>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", lineHeight: 1.6, marginTop: "6px" }}>{getPathDescription()}</div>
         </div>
       ) : null}
 
@@ -114,7 +114,7 @@ export default function StartScreen() {
       ) : null}
 
       <div
-        style={{ position: "absolute", bottom: "20px", width: "100%", textAlign: "center", color: "#666", fontSize: "10px" }}
+        style={{ position: "absolute", bottom: "20px", width: "100%", textAlign: "center", color: "var(--text-faint)", fontSize: "10px" }}
       >
         © 2026 GOALQUEST
       </div>

@@ -5,6 +5,8 @@ import { percent, publicAssetPath } from "../utils";
 import StatusBar from "../shared/StatusBar";
 import NextStepCard from "../shared/NextStepCard";
 
+const readableAccent = (color: string) => `color-mix(in srgb, ${color} 72%, white)`;
+
 export default function WorldScreen() {
   const character = useGoalQuestStore((state) => state.character);
   const stats = useGoalQuestStore((state) => state.stats);
@@ -51,7 +53,7 @@ export default function WorldScreen() {
       <StatusBar />
 
       <h2 style={{ color: "var(--primary)", margin: "20px 0" }}>{getPathName()}</h2>
-      <p style={{ color: "#aaa", marginBottom: "10px", fontSize: "12px" }}>{getPathDescription()}</p>
+      <p style={{ color: "var(--text-muted)", marginBottom: "10px", fontSize: "12px", lineHeight: 1.65 }}>{getPathDescription()}</p>
 
       {dailyRemaining > 0 ? (
         <NextStepCard
@@ -116,10 +118,10 @@ export default function WorldScreen() {
       )}
 
       <div className="daily-progress-container">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px", gap: "12px" }}>
           <div>
             <div style={{ color: "var(--warning)", fontSize: "14px" }}>DAILY QUEST PROGRESS</div>
-            <div style={{ color: "#aaa", fontSize: "10px" }}>
+            <div style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.5, marginTop: "4px" }}>
               {dailyRemaining <= 0 ? "Completed" : `${dailyRemaining} remaining`}
             </div>
           </div>
@@ -149,7 +151,9 @@ export default function WorldScreen() {
         </div>
       </div>
 
-      <p style={{ color: "#aaa", marginBottom: "30px" }}>Region rule: complete one quest per day. Finish all 7 to unlock that region's boss.</p>
+      <p style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.7, marginBottom: "30px" }}>
+        Region rule: complete one quest per day. Finish all 7 to unlock that region's boss.
+      </p>
 
       <div className="map-grid">
         {goalQuestRegions.map((region) => {
@@ -158,6 +162,7 @@ export default function WorldScreen() {
           const completed = isRegionCompleted(region.id);
           const bossDefeated = isBossDefeated(region.id);
           const nextMission = getNextAvailableMission(region.id);
+          const regionTextAccent = readableAccent(region.color);
 
           return (
             <div
@@ -171,20 +176,20 @@ export default function WorldScreen() {
               aria-hidden="true"
             >
               <div>
-                <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden", marginBottom: "10px" }}>
+                <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden", marginBottom: "10px", background: "rgba(0,0,0,0.35)" }}>
                   <img
                     src={publicAssetPath(goalQuestAssets.acts[region.id])}
                     alt={region.name}
                     style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
                   />
                 </div>
-                <h4 style={{ color: region.color }}>{region.name}</h4>
+                <h4 style={{ color: regionTextAccent, lineHeight: 1.5 }}>{region.name}</h4>
               </div>
 
               {unlocked ? (
                 <>
                   <div style={{ margin: "15px 0" }}>
-                    <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: "5px", height: "8px" }}>
+                    <div style={{ background: "rgba(0,0,0,0.45)", borderRadius: "5px", height: "8px" }}>
                       <div
                         style={{
                           height: "100%",
@@ -194,9 +199,9 @@ export default function WorldScreen() {
                         }}
                       />
                     </div>
-                    <div style={{ fontSize: "10px", color: "#aaa", marginTop: "5px" }}>{regionProgress}/7 quests</div>
+                    <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "6px" }}>{regionProgress}/7 quests</div>
                     {!completed && nextMission !== -1 ? (
-                      <div style={{ fontSize: "9px", color: "var(--warning)", marginTop: "5px" }}>🔥 Next: Day {nextMission + 1}</div>
+                      <div style={{ fontSize: "9px", color: "var(--warning)", lineHeight: 1.45, marginTop: "6px" }}>🔥 Next: Day {nextMission + 1}</div>
                     ) : null}
                   </div>
 
@@ -219,7 +224,7 @@ export default function WorldScreen() {
               ) : (
                 <>
                   <div style={{ fontSize: "30px", margin: "10px 0" }}>🔒</div>
-                  <div style={{ fontSize: "10px", color: "#aaa" }}>Complete the previous region</div>
+                  <div style={{ fontSize: "10px", color: "var(--text-muted)", lineHeight: 1.5 }}>Complete the previous region</div>
                 </>
               )}
             </div>

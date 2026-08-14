@@ -21,7 +21,7 @@ export default function RestScreen() {
         </button>
       </div>
 
-      <div style={{ background: "rgba(26,26,46,0.95)", borderRadius: "20px", padding: "30px", border: "3px solid var(--primary)" }}>
+      <div style={{ background: "rgba(10,10,24,0.88)", borderRadius: "20px", padding: "30px", border: "3px solid var(--primary)" }}>
         <h3 style={{ color: "var(--warning)", textAlign: "center" }}>STATUS</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "20px" }}>
           <div style={{ textAlign: "center" }}>
@@ -41,7 +41,7 @@ export default function RestScreen() {
             <div style={{ fontSize: "24px" }}>{stats.level}</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: "var(--secondary)" }}>STREAK</div>
+            <div style={{ color: "var(--secondary-readable)" }}>STREAK</div>
             <div style={{ fontSize: "24px" }}>{stats.dailyStreak} days</div>
           </div>
         </div>

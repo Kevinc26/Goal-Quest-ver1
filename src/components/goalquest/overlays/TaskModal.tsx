@@ -44,14 +44,14 @@ export default function TaskModal() {
             <div className="popup-icon" style={{ color: "var(--warning)" }}>
               ⏰
             </div>
-            <h3 style={{ color: "var(--warning)", marginBottom: "20px" }}>{task.missionText}</h3>
+            <h3 style={{ color: "var(--warning)", marginBottom: "20px", lineHeight: 1.55 }}>{task.missionText}</h3>
             <div className="timer-container">
               <div className="timer-display">{formatTime(task.secondsLeft)}</div>
               <p
                 style={{
-                  color: timerIncomplete ? "#aaa" : "var(--primary)",
+                  color: timerIncomplete ? "var(--text-muted)" : "var(--primary)",
                   fontSize: "10px",
-                  lineHeight: 1.6,
+                  lineHeight: 1.65,
                   margin: "12px auto 16px",
                   maxWidth: "360px"
                 }}
@@ -76,7 +76,7 @@ export default function TaskModal() {
             <div className="popup-icon" style={{ color: "var(--primary)" }}>
               📝
             </div>
-            <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>{task.missionText}</h3>
+            <h3 style={{ color: "var(--primary)", marginBottom: "20px", lineHeight: 1.55 }}>{task.missionText}</h3>
             <textarea
               className="task-textarea"
               placeholder="Write here..."
@@ -89,8 +89,8 @@ export default function TaskModal() {
             <div className="popup-icon" style={{ color: "var(--primary)" }}>
               ⚒️
             </div>
-            <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>{task.missionText}</h3>
-            <p style={{ color: "#bbb", fontSize: "11px", lineHeight: 1.8, maxWidth: "360px", margin: "0 auto 10px" }}>
+            <h3 style={{ color: "var(--primary)", marginBottom: "20px", lineHeight: 1.55 }}>{task.missionText}</h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "11px", lineHeight: 1.8, maxWidth: "360px", margin: "0 auto 10px" }}>
               Complete this quest in real life, then claim your reward below.
             </p>
           </>
@@ -107,12 +107,12 @@ export default function TaskModal() {
             ...(timerIncomplete
               ? {
                   background: "#45455a",
-                  color: "#9a9aad",
+                  color: "var(--text-disabled)",
                   cursor: "not-allowed",
                   boxShadow: "none",
                   filter: "none",
                   borderBottomColor: "#303040",
-                  opacity: 0.72
+                  opacity: 0.78
                 }
               : {})
           }}

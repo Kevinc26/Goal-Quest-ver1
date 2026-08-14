@@ -1,0 +1,131 @@
+/* GoalQuest readability pass
+   Keeps the pixel-RPG identity while improving small text, muted states and contrast. */
+
+:root {
+  --text-muted: #c4c4d0;
+  --text-subtle: #b8b8c7;
+  --text-faint: #a6a6b6;
+  --text-disabled: #c2c2ce;
+  --secondary-readable: #8f88ff;
+}
+
+body {
+  line-height: 1.55;
+}
+
+.game-screen p,
+.popup-content p,
+.notification,
+.aeril-message {
+  line-height: 1.65;
+}
+
+/* Press Start 2P loses legibility quickly below 9px. */
+.stat-text,
+.daily-progress-text {
+  font-size: 9px;
+}
+
+.notification {
+  line-height: 1.55;
+}
+
+.notification > div > div:last-child {
+  line-height: 1.55;
+}
+
+.task-textarea {
+  line-height: 1.65;
+}
+
+/* Completed/locked content should read as secondary, not disappear. */
+.region-tile.locked {
+  opacity: 0.68;
+  filter: grayscale(0.8);
+}
+
+.mission-item.completed,
+.daily-mission-item.completed {
+  opacity: 0.72;
+  filter: grayscale(0.35);
+}
+
+button:disabled,
+.ff-button:disabled {
+  opacity: 0.7;
+}
+
+/* Compact NEXT STEP HUD: keep it compact, but never microscopic. */
+.goalquest-next-step-label {
+  color: color-mix(in srgb, var(--next-step-accent) 68%, white);
+  font-size: 8px;
+}
+
+.goalquest-next-step-title {
+  font-size: 10px;
+}
+
+.goalquest-next-step-text {
+  color: var(--text-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.goalquest-next-step-actions .ff-button {
+  font-size: 9px;
+}
+
+.goalquest-next-step-close {
+  color: var(--text-muted);
+}
+
+/* Onboarding secondary action was too dim on the dark panel. */
+.onboarding-skip {
+  color: var(--text-faint);
+}
+
+.onboarding-skip:hover,
+.onboarding-skip:focus-visible {
+  color: #f0f0f5;
+}
+
+/* Aeril should remain ambient without becoming unreadable. */
+.aeril-message {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .menu-option {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .aeril-message {
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .goalquest-next-step-title {
+    font-size: 10px;
+  }
+
+  .goalquest-next-step-text {
+    font-size: 8px;
+    line-height: 1.45;
+  }
+
+  .goalquest-next-step-actions .ff-button {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .aeril-message {
+    font-size: 9px;
+  }
+
+  .goalquest-next-step-label,
+  .goalquest-next-step-text {
+    font-size: 8px;
+  }
+}

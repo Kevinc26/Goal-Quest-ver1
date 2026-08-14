@@ -48,8 +48,8 @@ export default function StatusBar() {
             height: "48px",
             borderRadius: "12px",
             overflow: "hidden",
-            border: "2px solid rgba(255,255,255,0.2)",
-            background: "rgba(0,0,0,0.25)",
+            border: "2px solid rgba(255,255,255,0.25)",
+            background: "rgba(0,0,0,0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center"
@@ -63,8 +63,8 @@ export default function StatusBar() {
         </div>
         <div>
           <div style={{ color: "var(--primary)", fontWeight: "bold" }}>{character.name}</div>
-          <div style={{ fontSize: "10px", color: "#aaa" }}>{getPathName()}</div>
-          <div style={{ fontSize: "10px", color: "var(--warning)" }}>Level {stats.level}</div>
+          <div style={{ fontSize: "10px", color: "var(--text-muted)", lineHeight: 1.5 }}>{getPathName()}</div>
+          <div style={{ fontSize: "10px", color: "var(--warning)", marginTop: "3px" }}>Level {stats.level}</div>
         </div>
       </div>
 

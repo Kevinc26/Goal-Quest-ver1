@@ -100,7 +100,7 @@ export default function AerilCompanion() {
 
       <div className="aeril-message" style={{ borderLeftColor: BORDER_BY_LEVEL[corruptionLevel] }}>
         🔮 Aeril: "{message}"
-        <div style={{ marginTop: "8px", color: "#aaa", fontSize: "9px" }}>{getMotivationalMessage()}</div>
+        <div style={{ marginTop: "8px", color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.6 }}>{getMotivationalMessage()}</div>
       </div>
     </>
   );

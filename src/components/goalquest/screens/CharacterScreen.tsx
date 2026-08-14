@@ -10,6 +10,8 @@ const resolvePublicAsset = (assetPath: string | undefined) => {
   return assetPath.replace(/^\/+/, "./");
 };
 
+const readableAccent = (color: string) => `color-mix(in srgb, ${color} 72%, white)`;
+
 export default function CharacterScreen() {
   const selectedCharacter = useGoalQuestStore((state) => state.character);
   const setScreen = useGoalQuestStore((state) => state.setScreen);
@@ -29,6 +31,7 @@ export default function CharacterScreen() {
         {goalQuestCharacters.map((character) => {
           const selected = selectedCharacter?.id === character.id;
           const classImageSrc = resolvePublicAsset(goalQuestAssets.classes[character.id]);
+          const textAccent = readableAccent(character.color);
 
           return (
             <button
@@ -61,17 +64,17 @@ export default function CharacterScreen() {
                   />
                 </div>
                 <div>
-                  <h3 style={{ color: character.color }}>{character.name}</h3>
-                  <p style={{ fontSize: "10px", color: "#aaa" }}>{character.skill}</p>
+                  <h3 style={{ color: textAccent }}>{character.name}</h3>
+                  <p style={{ fontSize: "10px", color: "var(--text-muted)", lineHeight: 1.55 }}>{character.skill}</p>
                   {selected ? (
-                    <p style={{ fontSize: "8px", color: character.color, marginTop: "5px" }}>{getPathName()}</p>
+                    <p style={{ fontSize: "9px", color: textAccent, lineHeight: 1.5, marginTop: "6px" }}>{getPathName()}</p>
                   ) : null}
                 </div>
               </div>
 
-              <p style={{ margin: "15px 0", fontSize: "12px", color: "#ccc", flexGrow: 1 }}>{character.description}</p>
+              <p style={{ margin: "15px 0", fontSize: "12px", lineHeight: 1.65, color: "#ddd", flexGrow: 1 }}>{character.description}</p>
 
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "auto", gap: "12px" }}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ color: "var(--danger)", fontSize: "11px" }}>HP</div>
                   <div style={{ fontSize: "14px" }}>{character.hp}</div>
@@ -82,7 +85,7 @@ export default function CharacterScreen() {
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ color: "var(--warning)", fontSize: "11px" }}>SKILL</div>
-                  <div style={{ fontSize: "10px" }}>{character.abilities[0]}</div>
+                  <div style={{ fontSize: "10px", lineHeight: 1.45 }}>{character.abilities[0]}</div>
                 </div>
               </div>
             </button>

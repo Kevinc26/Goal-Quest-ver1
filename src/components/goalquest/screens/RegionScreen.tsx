@@ -4,6 +4,8 @@ import { regionById } from "../../../game/data";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 import NextStepCard from "../shared/NextStepCard";
 
+const readableAccent = (color: string) => `color-mix(in srgb, ${color} 72%, white)`;
+
 export default function RegionScreen() {
   const currentRegion = useGoalQuestStore((state) => state.currentRegion);
   const completedMissions = useGoalQuestStore((state) => state.completedMissions);
@@ -35,6 +37,7 @@ export default function RegionScreen() {
   const regionCompleted = isRegionCompleted(region.id);
   const bossDefeated = isBossDefeated(region.id);
   const regionDoneToday = stats.lastRegionMissionDate === today;
+  const regionTextAccent = readableAccent(region.color);
 
   return (
     <div className="game-screen active">
@@ -54,8 +57,8 @@ export default function RegionScreen() {
       >
         <div style={{ fontSize: "50px", color: region.color }}>{region.icon}</div>
         <div>
-          <h2 style={{ color: region.color }}>{region.name}</h2>
-          <p style={{ color: "#666", fontSize: "12px" }}>Difficulty: {region.boss.difficulty}</p>
+          <h2 style={{ color: regionTextAccent }}>{region.name}</h2>
+          <p style={{ color: "var(--text-faint)", fontSize: "12px", lineHeight: 1.55 }}>Difficulty: {region.boss.difficulty}</p>
           <p style={{ color: "var(--info)", fontSize: "11px", marginTop: "5px" }}>
             {missionFlags.filter(Boolean).length}/7 quests
           </p>
@@ -106,7 +109,7 @@ export default function RegionScreen() {
       ) : null}
 
       <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>7-DAY QUEST PATH</h3>
-      <p style={{ color: "#aaa", fontSize: "10px", marginBottom: "20px" }}>
+      <p style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.7, marginBottom: "20px" }}>
         Complete one highlighted region quest per day. Finish all 7 quests to unlock the boss.
       </p>
 
@@ -154,10 +157,10 @@ export default function RegionScreen() {
                 {missionCompleted ? "✓" : canPlay ? "🔥" : region.missionTypes[index] === "timer" ? "⏰" : "📝"}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: missionCompleted ? region.color : canPlay ? "var(--warning)" : "white" }}>
+                <div style={{ color: missionCompleted ? regionTextAccent : canPlay ? "var(--warning)" : "white", lineHeight: 1.55 }}>
                   Day {index + 1}: {region.missions[index]}
                 </div>
-                {statusText ? <div style={{ color: "#aaa", fontSize: "10px", marginTop: "4px" }}>{statusText}</div> : null}
+                {statusText ? <div style={{ color: "var(--text-muted)", fontSize: "10px", lineHeight: 1.5, marginTop: "5px" }}>{statusText}</div> : null}
               </div>
             </button>
           );
