@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import type { CurrentTask, DailyMission, MissionType } from "../../../game/types";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { percent } from "../utils";
+import NextStepCard from "../shared/NextStepCard";
 
 type CustomQuestMode = Extract<MissionType, "check" | "timer">;
 
@@ -35,6 +36,7 @@ export default function DailyScreen() {
 
   const availableMissions = getAvailableDailyMissions();
   const progress = percent(stats.dailyTasksCompleted, stats.dailyTasksGoal);
+  const remaining = Math.max(0, stats.dailyTasksGoal - stats.dailyTasksCompleted);
   const cleanQuestText = customQuestText.trim().replace(/\s+/g, " ");
   const canForgeQuest = cleanQuestText.length >= 3 && !todayCompleted;
 
@@ -90,7 +92,7 @@ export default function DailyScreen() {
         <div style={{ fontSize: "50px", color: "var(--warning)" }}>📅</div>
         <div>
           <h2 style={{ color: "var(--warning)" }}>DAILY MISSIONS</h2>
-          <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} available today</p>
+          <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} suggested quests available today</p>
         </div>
       </div>
 
@@ -104,8 +106,27 @@ export default function DailyScreen() {
         <div className="daily-progress-bar" style={{ width: "100%" }}>
           <div className="daily-progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP for completing the day</div>
+        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP bonus for completing the daily goal</div>
       </div>
+
+      {todayCompleted ? (
+        <NextStepCard
+          icon="🏆"
+          accent="var(--primary)"
+          title="DAILY GOAL COMPLETE"
+          text="You earned today's completion bonus. Your next step is to return to the world map and advance your region quest."
+        >
+          <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ margin: 0 }}>
+            NEXT → WORLD MAP
+          </button>
+        </NextStepCard>
+      ) : (
+        <NextStepCard
+          icon="🎯"
+          title={`COMPLETE ${remaining} MORE QUEST${remaining === 1 ? "" : "S"}`}
+          text="Pick any Suggested Quest below or Forge Your Own Quest. Every completed daily quest gives 25 EXP and moves this progress bar forward."
+        />
+      )}
 
       <section
         style={{
@@ -126,7 +147,7 @@ export default function DailyScreen() {
               FORGE YOUR OWN QUEST
             </h3>
             <p style={{ color: "#bbb", fontSize: "10px", lineHeight: 1.7, textAlign: "left" }}>
-              Create a quest around what actually matters to you today.
+              Create a quest around what actually matters to you today. It counts exactly like a suggested daily quest.
             </p>
           </div>
 
@@ -230,7 +251,8 @@ export default function DailyScreen() {
         ) : null}
       </section>
 
-      <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>SUGGESTED QUESTS</h3>
+      <h3 style={{ color: "var(--primary)", marginBottom: "8px" }}>SUGGESTED QUESTS</h3>
+      <p style={{ color: "#aaa", fontSize: "10px", marginBottom: "20px" }}>Select any quest below to start it immediately.</p>
 
       {availableMissions.length > 0 ? (
         <div className="daily-mission-list">
@@ -240,7 +262,8 @@ export default function DailyScreen() {
               type="button"
               className="daily-mission-item available"
               onClick={() => startDailyTask(index)}
-              style={{ width: "100%", textAlign: "left", color: "white" }}
+              disabled={todayCompleted}
+              style={{ width: "100%", textAlign: "left", color: "white", ...(todayCompleted ? { opacity: 0.5, cursor: "not-allowed" } : {}) }}
             >
               <div
                 style={{
@@ -261,6 +284,7 @@ export default function DailyScreen() {
                   {mission.type === "timer" ? ` (${mission.time} min)` : ""}
                 </div>
                 <div style={{ color: mission.categoryColor }}>{mission.category}</div>
+                <div style={{ color: "#888", fontSize: "8px", marginTop: "5px" }}>SELECT TO START • +25 EXP</div>
               </div>
             </button>
           ))}

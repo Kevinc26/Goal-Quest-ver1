@@ -33,13 +33,18 @@ export default function OnboardingOverlay({
             <button type="button" className="onboarding-button" onClick={onNext}>
               CONTINUE
             </button>
-            <div className="onboarding-skip" onClick={onSkip} aria-hidden="true">
+            <button
+              type="button"
+              className="onboarding-skip"
+              onClick={onSkip}
+              style={{ background: "transparent", border: "none", padding: 0, fontFamily: "inherit" }}
+            >
               Skip introduction
-            </div>
+            </button>
           </>
         ) : (
           <button type="button" className="onboarding-button" onClick={onStart}>
-            BEGIN MY PATH
+            CHOOSE MY CLASS
           </button>
         )}
       </div>

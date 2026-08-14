@@ -2,6 +2,7 @@ import React from "react";
 
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { publicAssetPath } from "../utils";
+import NextStepCard from "../shared/NextStepCard";
 
 export default function StartScreen() {
   const character = useGoalQuestStore((state) => state.character);
@@ -10,6 +11,8 @@ export default function StartScreen() {
   const getPathName = useGoalQuestStore((state) => state.getPathName);
   const getPathDescription = useGoalQuestStore((state) => state.getPathDescription);
   const characterImageSrc = character ? publicAssetPath(goalQuestAssets.classes[character.id]) : "";
+  const remainingDailies = Math.max(0, stats.dailyTasksGoal - stats.dailyTasksCompleted);
+  const regionDoneToday = stats.lastRegionMissionDate === new Date().toDateString();
 
   return (
     <div className="game-screen active start-screen">
@@ -40,22 +43,50 @@ export default function StartScreen() {
         </div>
       ) : null}
 
+      {!character ? (
+        <NextStepCard
+          icon="🎭"
+          title="CHOOSE YOUR CLASS"
+          text="Pick the class that represents the person you want to become. Your class sets your path, then the real adventure begins."
+        />
+      ) : remainingDailies > 0 ? (
+        <NextStepCard
+          icon="📅"
+          title="COMPLETE YOUR DAILY GOAL"
+          text={`Complete ${remainingDailies} more daily quest${remainingDailies === 1 ? "" : "s"}. Choose a suggested quest or forge one around something that matters to you today.`}
+        />
+      ) : regionDoneToday ? (
+        <NextStepCard
+          icon="✅"
+          accent="var(--primary)"
+          title="TODAY'S CORE LOOP IS COMPLETE"
+          text="Your daily goal and today's region quest are done. Explore your progress, rest, or return tomorrow for the next region step."
+        />
+      ) : (
+        <NextStepCard
+          icon="🗺️"
+          accent="var(--primary)"
+          title="ADVANCE YOUR REGION"
+          text="Your daily goal is complete. Enter the world and finish today's highlighted region quest to move your story forward."
+        />
+      )}
+
       <div className="ff-menu">
         {character ? (
           <>
             <button type="button" className="menu-option" onClick={() => setScreen("world")}>
               <i className="fas fa-play" />
-              <span>CONTINUE ADVENTURE</span>
+              <span>{remainingDailies === 0 && !regionDoneToday ? "NEXT → CONTINUE ADVENTURE" : "CONTINUE ADVENTURE"}</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("daily")}>
               <i className="fas fa-calendar-day" />
               <span>
-                DAILY MISSIONS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
+                {remainingDailies > 0 ? "NEXT → " : ""}DAILY MISSIONS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
               </span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
               <i className="fas fa-gamepad" />
-              <span>PLAY NOW (change class)</span>
+              <span>CHANGE CLASS</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
               <i className="fas fa-cog" />
@@ -66,7 +97,7 @@ export default function StartScreen() {
           <>
             <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
               <i className="fas fa-gamepad" />
-              <span>PLAY NOW</span>
+              <span>NEXT → CHOOSE YOUR CLASS</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
               <i className="fas fa-cog" />
