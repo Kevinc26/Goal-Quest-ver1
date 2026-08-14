@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import CorruptionVisuals from "./effects/CorruptionVisuals";
 import ParticleBackground from "./effects/ParticleBackground";
@@ -50,12 +50,6 @@ export default function GoalQuestApp() {
     }
   };
 
-  const feedbackLink = useMemo(
-    () =>
-      "https://docs.google.com/forms/d/e/1FAIpQLSddZHn0fSLOE05UlB1SfzmgHjOTHwzEfnkaH0oi36x8EQBYpg/viewform?usp=dialog",
-    []
-  );
-
   return (
     <>
       {!showLoading ? (
@@ -83,9 +77,6 @@ export default function GoalQuestApp() {
           <NotificationLayer />
           <MusicToggleButton />
           <AerilCompanion />
-          <a href={feedbackLink} target="_blank" rel="noopener noreferrer" className="feedback-button">
-            📝 Feedback
-          </a>
         </>
       ) : null}
 

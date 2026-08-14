@@ -1,0 +1,161 @@
+/* GoalQuest interaction polish
+   Fast, explicit feedback for mouse, keyboard and touch without changing game logic. */
+
+button,
+.menu-option,
+.character-card,
+.region-tile,
+.mission-item,
+.daily-mission-item,
+.onboarding-button,
+.onboarding-skip {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button {
+  user-select: none;
+}
+
+button:focus-visible,
+.menu-option:focus-visible,
+.character-card:focus-visible,
+.region-tile:focus-visible,
+.mission-item:focus-visible,
+.daily-mission-item:focus-visible,
+.onboarding-button:focus-visible {
+  outline: 3px solid var(--warning);
+  outline-offset: 3px;
+}
+
+/* Main/menu controls */
+.menu-option {
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    border-color 120ms ease-out,
+    filter 120ms ease-out;
+}
+
+.menu-option:active {
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(1.12);
+  box-shadow: 0 0 12px var(--primary);
+}
+
+/* Character, region and quest cards */
+.character-card,
+.region-tile,
+.mission-item,
+.daily-mission-item {
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    border-color 120ms ease-out,
+    background-color 120ms ease-out,
+    filter 120ms ease-out;
+}
+
+.character-card:active {
+  transform: translateY(-1px) scale(0.99);
+  filter: brightness(1.1);
+}
+
+.region-tile:active:not(.locked) {
+  transform: scale(0.99);
+  filter: brightness(1.1);
+}
+
+.mission-item:active:not(.completed),
+.daily-mission-item.available:active {
+  transform: scale(0.99);
+  background: rgba(77, 255, 145, 0.16);
+  border-color: var(--warning);
+  filter: brightness(1.08);
+}
+
+/* Primary action buttons */
+.ff-button {
+  transition:
+    transform 100ms ease-out,
+    filter 100ms ease-out,
+    box-shadow 100ms ease-out,
+    border-color 100ms ease-out;
+}
+
+.ff-button:active:not(:disabled) {
+  transform: translateY(2px) scale(0.985);
+  filter: brightness(1.16);
+  box-shadow: 0 0 10px var(--primary);
+  border-bottom-width: 4px;
+}
+
+/* Buttons without a GoalQuest-specific class (for example the music toggle). */
+button:active:not(:disabled) {
+  transition-duration: 80ms;
+}
+
+/* Onboarding should also acknowledge a press immediately. */
+.onboarding-button {
+  transition:
+    transform 120ms ease-out,
+    background-color 120ms ease-out,
+    color 120ms ease-out,
+    box-shadow 120ms ease-out,
+    border-color 120ms ease-out;
+}
+
+.onboarding-button:active {
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(1.1);
+}
+
+.onboarding-skip {
+  transition: color 120ms ease-out, opacity 120ms ease-out;
+}
+
+.onboarding-skip:active {
+  opacity: 0.65;
+}
+
+/* Task modal: visible immediately, then finishes a very short entrance animation. */
+.task-popup {
+  animation: goalquestModalBackdropIn 100ms ease-out both;
+}
+
+.popup-content {
+  animation: goalquestModalPanelIn 120ms ease-out both;
+}
+
+@keyframes goalquestModalBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes goalquestModalPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Avoid unnecessary motion for users who request reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .menu-option,
+  .character-card,
+  .region-tile,
+  .mission-item,
+  .daily-mission-item,
+  .ff-button,
+  .onboarding-button,
+  .onboarding-skip,
+  .task-popup,
+  .popup-content {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
