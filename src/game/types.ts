@@ -100,6 +100,24 @@ export interface CombatState {
   log: string[];
 }
 
+export interface JourneyRecord {
+  journeyNumber: number;
+  ascensionLevel: number;
+  completedAt: string;
+  characterId: number | null;
+  characterLevel: number;
+  totalTasksCompleted: number;
+  dailyStreak: number;
+  bossesDefeated: number;
+}
+
+export interface JourneyState {
+  journeyNumber: number;
+  ascensionLevel: number;
+  startedAt: string;
+  history: JourneyRecord[];
+}
+
 export interface Toast {
   id: string;
   message: string;
