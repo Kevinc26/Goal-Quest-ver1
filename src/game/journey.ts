@@ -9,12 +9,68 @@ export const createInitialJourneyState = (): JourneyState => ({
   history: []
 });
 
+const isJourneyRecord = (value: unknown): value is JourneyRecord => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const record = value as Partial<JourneyRecord>;
+  return (
+    typeof record.journeyNumber === "number" &&
+    Number.isFinite(record.journeyNumber) &&
+    typeof record.ascensionLevel === "number" &&
+    Number.isFinite(record.ascensionLevel) &&
+    typeof record.completedAt === "string" &&
+    (record.characterId === null || typeof record.characterId === "number") &&
+    typeof record.characterLevel === "number" &&
+    typeof record.totalTasksCompleted === "number" &&
+    typeof record.dailyStreak === "number" &&
+    typeof record.bossesDefeated === "number"
+  );
+};
+
+/**
+ * Converts persisted/unknown journey data into a safe JourneyState.
+ * Existing Goal Quest saves do not contain journey data yet, so callers can
+ * pass undefined and receive Journey 1 without disturbing any other progress.
+ */
+export const normalizeJourneyState = (value: unknown): JourneyState => {
+  if (!value || typeof value !== "object") {
+    return createInitialJourneyState();
+  }
+
+  const persisted = value as Partial<JourneyState>;
+  const journeyNumber =
+    typeof persisted.journeyNumber === "number" && Number.isFinite(persisted.journeyNumber)
+      ? Math.max(1, Math.floor(persisted.journeyNumber))
+      : 1;
+  const ascensionLevel =
+    typeof persisted.ascensionLevel === "number" && Number.isFinite(persisted.ascensionLevel)
+      ? Math.max(0, Math.floor(persisted.ascensionLevel))
+      : Math.max(0, journeyNumber - 1);
+  const startedAt =
+    typeof persisted.startedAt === "string" && persisted.startedAt.trim().length > 0
+      ? persisted.startedAt
+      : new Date().toISOString();
+  const history = Array.isArray(persisted.history) ? persisted.history.filter(isJourneyRecord) : [];
+
+  return {
+    journeyNumber,
+    ascensionLevel,
+    startedAt,
+    history
+  };
+};
+
 export const isJourneyComplete = (defeatedBosses: number[], totalRegions: number) => {
   if (totalRegions <= 0) {
     return false;
   }
 
-  return new Set(defeatedBosses).size >= totalRegions;
+  const validBossIds = new Set(
+    defeatedBosses.filter((regionId) => Number.isInteger(regionId) && regionId >= 1 && regionId <= totalRegions)
+  );
+  return validBossIds.size >= totalRegions;
 };
 
 export const createJourneyRecord = ({
