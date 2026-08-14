@@ -40,6 +40,7 @@ export default function MusicToggleButton() {
   return (
     <button
       type="button"
+      className="music-toggle-button"
       onClick={() => setEnabled((value) => !value)}
       style={{
         position: "fixed",
