@@ -16,22 +16,15 @@ export default function GoalQuestApp() {
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const isBootstrapped = useGoalQuestStore((state) => state.isBootstrapped);
 
-  const [showLoading, setShowLoading] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState<number | null>(null);
+  const showLoading = !isBootstrapped;
 
   useEffect(() => {
-    const loadingTimeout = window.setTimeout(() => {
-      setShowLoading(false);
-      initGame();
-    }, 1500);
-
-    return () => {
-      window.clearTimeout(loadingTimeout);
-    };
+    initGame();
   }, [initGame]);
 
   useEffect(() => {
-    if (showLoading || !isBootstrapped) {
+    if (!isBootstrapped) {
       return;
     }
 
@@ -39,7 +32,7 @@ export default function GoalQuestApp() {
     if (!seen) {
       setOnboardingStep(0);
     }
-  }, [showLoading, isBootstrapped]);
+  }, [isBootstrapped]);
 
   const closeOnboarding = (goToCharacters: boolean) => {
     window.localStorage.setItem("goalquest_onboarding_seen", "true");
