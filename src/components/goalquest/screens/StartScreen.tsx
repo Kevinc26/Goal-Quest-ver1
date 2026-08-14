@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 
@@ -13,7 +13,7 @@ export default function StartScreen() {
     <div className="game-screen active">
       <h1 className="game-title">GOALQUEST</h1>
       <p style={{ textAlign: "center", color: "var(--warning)", margin: "20px 0" }}>
-        RPG de Transformacion Psicologica
+        Psychological Transformation RPG
       </p>
 
       {character ? (
@@ -29,32 +29,32 @@ export default function StartScreen() {
           <>
             <button type="button" className="menu-option" onClick={() => setScreen("world")}>
               <i className="fas fa-play" />
-              <span>CONTINUAR AVENTURA</span>
+              <span>CONTINUE ADVENTURE</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("daily")}>
               <i className="fas fa-calendar-day" />
               <span>
-                MISIONES DIARIAS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
+                DAILY MISSIONS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
               </span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
               <i className="fas fa-gamepad" />
-              <span>JUGAR AHORA (cambiar clase)</span>
+              <span>PLAY NOW (change class)</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
               <i className="fas fa-cog" />
-              <span>CONFIGURACION</span>
+              <span>SETTINGS</span>
             </button>
           </>
         ) : (
           <>
             <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
               <i className="fas fa-gamepad" />
-              <span>JUGAR AHORA</span>
+              <span>PLAY NOW</span>
             </button>
             <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
               <i className="fas fa-cog" />
-              <span>CONFIGURACION</span>
+              <span>SETTINGS</span>
             </button>
           </>
         )}
@@ -62,7 +62,7 @@ export default function StartScreen() {
 
       {character && stats.dailyStreak > 0 ? (
         <div style={{ textAlign: "center", color: "var(--warning)", marginTop: "30px" }}>
-          🔥 Racha: {stats.dailyStreak} dias
+          🔥 Streak: {stats.dailyStreak} days
         </div>
       ) : null}
 

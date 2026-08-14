@@ -1,28 +1,28 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { publicAssetPath } from "../utils";
 
 const AERIL_MESSAGES: Record<number, string[]> = {
   0: [
-    "El portal esta estable.",
-    "Todo esta en equilibrio.",
-    "Tu presencia fortalece el vinculo."
+    "The portal is stable.",
+    "Everything is in balance.",
+    "Your presence strengthens the bond."
   ],
   1: [
-    "Siento interferencia...",
-    "El sistema necesita atencion.",
-    "Hay estatica en el aire."
+    "I can feel interference...",
+    "The system needs attention.",
+    "There is static in the air."
   ],
   2: [
-    "La corrupcion se esta filtrando.",
-    "El portal no resistira mucho.",
-    "Te necesitamos."
+    "The corruption is seeping through.",
+    "The portal will not hold much longer.",
+    "We need you."
   ],
   3: [
-    "Estamos perdiendo estabilidad.",
-    "No tardes.",
-    "El mundo depende de ti."
+    "We are losing stability.",
+    "Do not wait too long.",
+    "The world depends on you."
   ]
 };
 
@@ -38,25 +38,25 @@ export default function AerilCompanion() {
   const dailyStreak = useGoalQuestStore((state) => state.stats.dailyStreak);
   const getMotivationalMessage = useGoalQuestStore((state) => state.getMotivationalMessage);
 
-  const [message, setMessage] = useState("Has regresado.");
+  const [message, setMessage] = useState("You have returned.");
   const [glitch, setGlitch] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const pool = useMemo(() => AERIL_MESSAGES[corruptionLevel] ?? AERIL_MESSAGES[0], [corruptionLevel]);
 
   useEffect(() => {
-    const next = pool[Math.floor(Math.random() * pool.length)] ?? "Seguimos en contacto.";
+    const next = pool[Math.floor(Math.random() * pool.length)] ?? "We are still connected.";
     setMessage(next);
   }, [pool, dailyStreak]);
 
   useEffect(() => {
     if (dailyStreak >= 30) {
-      setMessage("El viaje ya te esta transformando.");
+      setMessage("The journey is already transforming you.");
       return;
     }
 
     if (dailyStreak >= 7) {
-      setMessage("Tu presencia fortalece el portal.");
+      setMessage("Your presence strengthens the portal.");
     }
   }, [dailyStreak]);
 

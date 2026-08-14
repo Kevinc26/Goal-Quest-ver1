@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { publicAssetPath } from "../utils";
 
@@ -57,7 +57,7 @@ export default function MusicToggleButton() {
         boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
       }}
     >
-      {enabled ? "🎵 Musica: ON" : "🎵 Musica: OFF"}
+      {enabled ? "🎵 Music: ON" : "🎵 Music: OFF"}
     </button>
   );
 }

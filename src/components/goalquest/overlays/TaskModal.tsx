@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { formatTime } from "../utils";
@@ -44,10 +44,10 @@ export default function TaskModal() {
               <div className="timer-display">{formatTime(task.secondsLeft)}</div>
               <div className="timer-buttons" style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
                 <button type="button" className="ff-button" onClick={toggleTaskTimer} style={{ background: "var(--warning)" }}>
-                  {taskTimerPaused ? "▶ CONTINUAR" : "⏸ PAUSAR"}
+                  {taskTimerPaused ? "▶ CONTINUE" : "⏸ PAUSE"}
                 </button>
                 <button type="button" className="ff-button" onClick={resetTaskTimer} style={{ background: "var(--danger)" }}>
-                  🔄 REINICIAR
+                  🔄 RESET
                 </button>
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function TaskModal() {
             <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>{task.missionText}</h3>
             <textarea
               className="task-textarea"
-              placeholder="Escribe aqui..."
+              placeholder="Write here..."
               value={task.userInput}
               onChange={(event) => setTaskInput(event.target.value)}
             />
@@ -68,7 +68,7 @@ export default function TaskModal() {
         )}
 
         <button type="button" className="ff-button" onClick={completeTask} style={{ marginTop: "20px" }}>
-          ✅ COMPLETAR
+          ✅ COMPLETE
         </button>
         <button
           type="button"
@@ -76,7 +76,7 @@ export default function TaskModal() {
           onClick={closeTask}
           style={{ marginTop: "15px", background: "var(--danger)" }}
         >
-          ❌ CANCELAR
+          ❌ CANCEL
         </button>
       </div>
     </div>

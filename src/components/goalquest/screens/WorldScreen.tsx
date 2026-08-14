@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { goalQuestAssets, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { percent, publicAssetPath } from "../utils";
@@ -21,10 +21,10 @@ export default function WorldScreen() {
   if (!character) {
     return (
       <div className="game-screen active">
-        <h2 style={{ color: "var(--warning)" }}>Primero elige un personaje</h2>
+        <h2 style={{ color: "var(--warning)" }}>Choose a character first</h2>
         <div className="button-container">
           <button type="button" className="ff-button" onClick={() => setScreen("characters")}>
-            IR A PERSONAJES
+            GO TO CHARACTERS
           </button>
         </div>
       </div>
@@ -43,11 +43,11 @@ export default function WorldScreen() {
       <div className="daily-progress-container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
           <div>
-            <div style={{ color: "var(--warning)", fontSize: "14px" }}>PROGRESO DIARIO</div>
+            <div style={{ color: "var(--warning)", fontSize: "14px" }}>DAILY PROGRESS</div>
             <div style={{ color: "#aaa", fontSize: "10px" }}>
               {stats.dailyTasksGoal - stats.dailyTasksCompleted <= 0
-                ? "Completado"
-                : `${stats.dailyTasksGoal - stats.dailyTasksCompleted} restantes`}
+                ? "Completed"
+                : `${stats.dailyTasksGoal - stats.dailyTasksCompleted} remaining`}
             </div>
           </div>
           <div style={{ color: "var(--warning)", fontSize: "16px" }}>
@@ -63,7 +63,7 @@ export default function WorldScreen() {
 
         <div className="button-container">
           <button type="button" className="ff-button" onClick={() => setScreen("daily")} style={{ padding: "10px 20px", fontSize: "12px" }}>
-            📅 DIARIAS
+            📅 DAILIES
           </button>
           <button
             type="button"
@@ -71,12 +71,12 @@ export default function WorldScreen() {
             onClick={() => setScreen("achievements")}
             style={{ padding: "10px 20px", fontSize: "12px", background: "var(--gold)" }}
           >
-            🏆 LOGROS
+            🏆 ACHIEVEMENTS
           </button>
         </div>
       </div>
 
-      <p style={{ color: "#aaa", marginBottom: "30px" }}>7 misiones por region para desbloquear al jefe</p>
+      <p style={{ color: "#aaa", marginBottom: "30px" }}>Complete 7 missions in each region to unlock the boss</p>
 
       <div className="map-grid">
         {goalQuestRegions.map((region) => {
@@ -121,9 +121,9 @@ export default function WorldScreen() {
                         }}
                       />
                     </div>
-                    <div style={{ fontSize: "10px", color: "#aaa", marginTop: "5px" }}>{regionProgress}/7 misiones</div>
+                    <div style={{ fontSize: "10px", color: "#aaa", marginTop: "5px" }}>{regionProgress}/7 missions</div>
                     {!completed && nextMission !== -1 ? (
-                      <div style={{ fontSize: "9px", color: "var(--warning)", marginTop: "5px" }}>🔥 Hoy: Dia {nextMission + 1}</div>
+                      <div style={{ fontSize: "9px", color: "var(--warning)", marginTop: "5px" }}>🔥 Today: Day {nextMission + 1}</div>
                     ) : null}
                   </div>
 
@@ -137,16 +137,16 @@ export default function WorldScreen() {
                       }}
                       style={{ padding: "8px 15px", fontSize: "11px", background: "var(--danger)", margin: "5px 0" }}
                     >
-                      ⚔️ JEFE
+                      ⚔️ BOSS
                     </button>
                   ) : null}
 
-                  {bossDefeated ? <div style={{ color: "var(--warning)", fontSize: "12px", marginTop: "10px" }}>👑 Derrotado</div> : null}
+                  {bossDefeated ? <div style={{ color: "var(--warning)", fontSize: "12px", marginTop: "10px" }}>👑 Defeated</div> : null}
                 </>
               ) : (
                 <>
                   <div style={{ fontSize: "30px", margin: "10px 0" }}>🔒</div>
-                  <div style={{ fontSize: "10px", color: "#aaa" }}>Completa region anterior</div>
+                  <div style={{ fontSize: "10px", color: "#aaa" }}>Complete the previous region</div>
                 </>
               )}
             </div>
@@ -156,10 +156,10 @@ export default function WorldScreen() {
 
       <div className="button-container">
         <button type="button" className="ff-button" onClick={() => setScreen("daily")}>
-          📅 DIARIAS
+          📅 DAILIES
         </button>
         <button type="button" className="ff-button" onClick={() => setScreen("rest")}>
-          🔥 DESCANSAR
+          🔥 REST
         </button>
         <button type="button" className="ff-button" onClick={() => setScreen("start")}>
           🏠 MENU

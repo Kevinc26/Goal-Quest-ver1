@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { regionById } from "../../../game/data";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
@@ -19,9 +19,9 @@ export default function RegionScreen() {
   if (!region) {
     return (
       <div className="game-screen active">
-        <h2 style={{ color: "var(--warning)" }}>Region no disponible</h2>
+        <h2 style={{ color: "var(--warning)" }}>Region unavailable</h2>
         <button type="button" className="ff-button" onClick={() => setScreen("world")}>
-          VOLVER AL MAPA
+          BACK TO MAP
         </button>
       </div>
     );
@@ -35,7 +35,7 @@ export default function RegionScreen() {
   return (
     <div className="game-screen active">
       <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ marginBottom: "20px" }}>
-        ← VOLVER
+        ← BACK
       </button>
 
       <div
@@ -51,23 +51,23 @@ export default function RegionScreen() {
         <div style={{ fontSize: "50px", color: region.color }}>{region.icon}</div>
         <div>
           <h2 style={{ color: region.color }}>{region.name}</h2>
-          <p style={{ color: "#666", fontSize: "12px" }}>Dificultad: {region.boss.difficulty}</p>
+          <p style={{ color: "#666", fontSize: "12px" }}>Difficulty: {region.boss.difficulty}</p>
           <p style={{ color: "var(--info)", fontSize: "11px", marginTop: "5px" }}>
-            {missionFlags.filter(Boolean).length}/7 misiones
+            {missionFlags.filter(Boolean).length}/7 missions
           </p>
           {stats.lastRegionMissionDate === new Date().toDateString() ? (
             <p style={{ color: "var(--warning)", fontSize: "11px", marginTop: "5px" }}>
-              🌙 Mision de region completada hoy
+              🌙 Region mission completed today
             </p>
           ) : (
             <p style={{ color: "var(--warning)", fontSize: "11px", marginTop: "5px" }}>
-              🔥 Hoy: Dia {nextMission + 1}
+              🔥 Today: Day {nextMission + 1}
             </p>
           )}
         </div>
       </div>
 
-      <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>MISIONES DE LA SEMANA</h3>
+      <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>WEEKLY MISSIONS</h3>
 
       <div className="mission-list">
         {Array.from({ length: 7 }).map((_, index) => {
@@ -79,11 +79,11 @@ export default function RegionScreen() {
           if (missionCompleted) {
             statusText = "+25 EXP";
           } else if (canPlay) {
-            statusText = "DISPONIBLE";
+            statusText = "AVAILABLE";
           } else if (isNext) {
-            statusText = "Vuelve manana";
+            statusText = "Come back tomorrow";
           } else if (index > nextMission) {
-            statusText = "Bloqueada";
+            statusText = "Locked";
           }
 
           return (
@@ -114,7 +114,7 @@ export default function RegionScreen() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ color: missionCompleted ? region.color : canPlay ? "var(--warning)" : "white" }}>
-                  Dia {index + 1}: {region.missions[index]}
+                  Day {index + 1}: {region.missions[index]}
                 </div>
                 {statusText ? <div style={{ color: "#aaa", fontSize: "10px" }}>{statusText}</div> : null}
               </div>
@@ -131,7 +131,7 @@ export default function RegionScreen() {
             onClick={() => startCombat(region.id)}
             style={{ background: "var(--danger)" }}
           >
-            ⚔️ DESAFIAR A {region.boss.name}
+            ⚔️ CHALLENGE {region.boss.name}
           </button>
         </div>
       ) : null}
@@ -147,7 +147,7 @@ export default function RegionScreen() {
               border: "2px solid var(--warning)"
             }}
           >
-            👑 Jefe derrotado
+            👑 Boss defeated
           </div>
         </div>
       ) : null}

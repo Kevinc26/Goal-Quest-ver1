@@ -1,4 +1,3 @@
-﻿
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -147,6 +146,11 @@ const pickRandomDailyMissions = () => {
 
   return selected;
 };
+
+const CURRENT_DAILY_MISSION_TEXTS = new Set(
+  DAILY_CATEGORIES.flatMap((category) => category.missions.map((mission) => mission.text))
+);
+
 export const useGoalQuestStore = create<GoalQuestStore>()(
   persist(
     (set, get) => {
@@ -184,7 +188,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           }
         }));
 
-        addToast("Nivel " + get().stats.level + " alcanzado", "⭐", "var(--warning)");
+        addToast("Level " + get().stats.level + " reached", "⭐", "var(--warning)");
       };
 
       const completeDailyMission = (missionId: string) => {
@@ -223,10 +227,10 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
         checkLevelUp();
 
         if (get().todayCompleted) {
-          addToast("Dia completado", "🏆", "var(--warning)");
+          addToast("Day completed", "🏆", "var(--warning)");
         } else {
           const remaining = Math.max(0, get().stats.dailyTasksGoal - get().stats.dailyTasksCompleted);
-          addToast("Mision completada. Restan " + remaining, "✅", "var(--primary)");
+          addToast("Mission completed. " + remaining + " remaining", "✅", "var(--primary)");
         }
       };
 
@@ -235,13 +239,13 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
         const today = todayKey();
 
         if (state.stats.lastRegionMissionDate === today) {
-          addToast("Ya completaste una mision de region hoy", "🌙", "var(--warning)");
+          addToast("You already completed a region mission today", "🌙", "var(--warning)");
           return;
         }
 
         const nextMissionIndex = state.getNextAvailableMission(regionId);
         if (nextMissionIndex !== missionIndex) {
-          addToast("Hoy: Dia " + (nextMissionIndex + 1), "📅", "var(--warning)");
+          addToast("Today: Day " + (nextMissionIndex + 1), "📅", "var(--warning)");
           return;
         }
 
@@ -282,7 +286,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
         });
 
         checkLevelUp();
-        addToast("Dia " + (missionIndex + 1) + " completado", "✅", "var(--primary)");
+        addToast("Day " + (missionIndex + 1) + " completed", "✅", "var(--primary)");
       };
 
       return {
@@ -309,6 +313,20 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
         initGame: () => {
           const today = todayKey();
           const state = get();
+
+          if (state.character) {
+            const refreshedCharacter = characterById(state.character.id);
+            if (refreshedCharacter) {
+              set({ character: refreshedCharacter });
+            }
+          }
+
+          if (
+            state.dailyMissionDate === today &&
+            state.availableDailyMissions.some((mission) => !CURRENT_DAILY_MISSION_TEXTS.has(mission.text))
+          ) {
+            set({ availableDailyMissions: pickRandomDailyMissions() });
+          }
 
           if (state.lastPlayedDate !== today) {
             set((current) => {
@@ -349,7 +367,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           });
 
           if (corruption.level > 0) {
-            addToast("Interferencia detectada. Completa una mision para estabilizar.", "⚠️", "#b388ff");
+            addToast("Interference detected. Complete a mission to stabilize the portal.", "⚠️", "#b388ff");
           }
         },
 
@@ -357,7 +375,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
 
         enterRegion: (regionId) => {
           if (!get().isRegionUnlocked(regionId)) {
-            addToast("Region bloqueada", "🔒", "var(--warning)");
+            addToast("Region locked", "🔒", "var(--warning)");
             return;
           }
 
@@ -371,17 +389,17 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           }
 
           set({ character });
-          addToast("Elegiste " + character.name, "🎮", character.color);
+          addToast("You chose " + character.name, "🎮", character.color);
         },
 
         startAdventure: () => {
           if (!get().character) {
-            addToast("Selecciona un personaje", "❌", "var(--danger)");
+            addToast("Select a character", "❌", "var(--danger)");
             return;
           }
 
           set({ screen: "world" });
-          addToast("Tu aventura comienza", "🚀", "var(--warning)");
+          addToast("Your adventure begins", "🚀", "var(--warning)");
         },
 
         generateDailyMissions: (force = false) => {
@@ -401,7 +419,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           const state = get();
 
           if (state.todayCompleted) {
-            addToast("Ya completaste tu dia", "🏆", "var(--warning)");
+            addToast("You already completed your day", "🏆", "var(--warning)");
             return;
           }
 
@@ -409,7 +427,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           const mission = available[index];
 
           if (!mission) {
-            addToast("Mision no disponible", "❌", "var(--danger)");
+            addToast("Mission unavailable", "❌", "var(--danger)");
             return;
           }
 
@@ -433,7 +451,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           const state = get();
 
           if (state.stats.lastRegionMissionDate === todayKey()) {
-            addToast("Hoy ya hiciste una mision de region", "🌙", "var(--warning)");
+            addToast("You already completed a region mission today", "🌙", "var(--warning)");
             return;
           }
 
@@ -444,14 +462,14 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
 
           const nextMissionIndex = state.getNextAvailableMission(regionId);
           if (nextMissionIndex !== missionIndex) {
-            addToast("Hoy: Dia " + (nextMissionIndex + 1), "📅", "var(--warning)");
+            addToast("Today: Day " + (nextMissionIndex + 1), "📅", "var(--warning)");
             return;
           }
 
-          const missionText = region.missions[missionIndex] ?? "Mision " + (missionIndex + 1);
+          const missionText = region.missions[missionIndex] ?? "Mission " + (missionIndex + 1);
           const missionType = region.missionTypes[missionIndex] ?? "text";
 
-          const timerMatch = missionText.match(/(\d+)\s*minutos?/i);
+          const timerMatch = missionText.match(/(\d+)\s*minutes?/i);
           const initialSeconds = missionType === "timer" ? (timerMatch ? Number(timerMatch[1]) : 5) * 60 : 0;
 
           set({
@@ -535,12 +553,12 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           }
 
           if (task.missionType === "timer" && task.secondsLeft > 0) {
-            addToast("Completa el tiempo primero", "⏰", "var(--warning)");
+            addToast("Finish the timer first", "⏰", "var(--warning)");
             return;
           }
 
           if (task.missionType === "text" && task.userInput.trim().length < 5) {
-            addToast("Escribe al menos 5 caracteres", "📝", "var(--warning)");
+            addToast("Write at least 5 characters", "📝", "var(--warning)");
             return;
           }
 
@@ -554,6 +572,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
 
           set({ currentTask: null, taskTimerPaused: false });
         },
+
         rest: () => {
           set((state) => ({
             stats: {
@@ -563,7 +582,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
             }
           }));
 
-          addToast("Descanso completado (+30 HP, +10 MP)", "💤", "var(--warning)");
+          addToast("Rest complete (+30 HP, +10 MP)", "💤", "var(--warning)");
         },
 
         changeDailyGoal: (goal) => {
@@ -599,18 +618,18 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           });
 
           get().initGame();
-          addToast("Juego reiniciado", "🔄", "var(--danger)");
+          addToast("Game reset", "🔄", "var(--danger)");
         },
 
         startCombat: (regionId) => {
           const state = get();
           if (!state.isRegionCompleted(regionId)) {
-            addToast("Completa las 7 misiones primero", "❌", "var(--danger)");
+            addToast("Complete all 7 missions first", "❌", "var(--danger)");
             return;
           }
 
           if (state.isBossDefeated(regionId)) {
-            addToast("Jefe ya derrotado", "🏆", "var(--warning)");
+            addToast("Boss already defeated", "🏆", "var(--warning)");
             return;
           }
 
@@ -625,7 +644,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
               enemyCurrentHp: region.boss.hp,
               playerHp: current.stats.hp,
               turn: 0,
-              log: ["Comienza combate contra " + region.boss.name]
+              log: ["Battle begins against " + region.boss.name]
             },
             screen: "combat"
           }));
@@ -651,7 +670,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
                 : 30 + Math.floor(attackBoost / 3);
 
           const enemyCurrentHp = Math.max(0, state.currentCombat.enemyCurrentHp - playerDamage);
-          const log = [...state.currentCombat.log, "Atacas por " + playerDamage];
+          const log = [...state.currentCombat.log, "You attack for " + playerDamage];
 
           if (enemyCurrentHp <= 0) {
             const reward = 100 * region.boss.difficulty;
@@ -667,13 +686,13 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
             }));
 
             checkLevelUp();
-            addToast("Victoria. +" + reward + " EXP", "👑", "var(--gold)");
+            addToast("Victory. +" + reward + " EXP", "👑", "var(--gold)");
             return;
           }
 
           const enemyDamage = 10 + region.boss.difficulty * 5;
           const nextPlayerHp = Math.max(0, state.currentCombat.playerHp - enemyDamage);
-          log.push(region.boss.name + " golpea por " + enemyDamage);
+          log.push(region.boss.name + " hits for " + enemyDamage);
 
           set((current) => ({
             currentCombat:
@@ -694,7 +713,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
           }));
 
           if (nextPlayerHp <= 0) {
-            addToast("Has sido derrotado", "💀", "var(--danger)");
+            addToast("You were defeated", "💀", "var(--danger)");
           }
         },
 
@@ -708,7 +727,7 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
             screen: "world"
           }));
 
-          addToast("Huiste del combate (-10% EXP)", "🏃", "var(--warning)");
+          addToast("You fled the battle (-10% EXP)", "🏃", "var(--warning)");
         },
 
         dismissToast: (id) => {
@@ -750,31 +769,31 @@ export const useGoalQuestStore = create<GoalQuestStore>()(
         getPathName: () => {
           const character = get().character;
           if (!character) {
-            return "CAMINO DEL AVENTURERO";
+            return "PATH OF THE ADVENTURER";
           }
 
           const pathKey = CLASS_TO_PATH[character.id];
-          return CLASS_PATHS[pathKey]?.name ?? "CAMINO DEL AVENTURERO";
+          return CLASS_PATHS[pathKey]?.name ?? "PATH OF THE ADVENTURER";
         },
 
         getPathDescription: () => {
           const character = get().character;
           if (!character) {
-            return "Transforma tu vida a traves de la aventura";
+            return "Transform your life through adventure";
           }
 
           const pathKey = CLASS_TO_PATH[character.id];
-          return CLASS_PATHS[pathKey]?.description ?? "Transforma tu vida a traves de la aventura";
+          return CLASS_PATHS[pathKey]?.description ?? "Transform your life through adventure";
         },
 
         getMotivationalMessage: () => {
           const character = get().character;
           if (!character) {
-            return "Sigue adelante, aventurero";
+            return "Keep going, adventurer";
           }
 
           const pathKey = CLASS_TO_PATH[character.id];
-          const messages = CLASS_PATHS[pathKey]?.motivationalMessages ?? ["Sigue adelante, aventurero"];
+          const messages = CLASS_PATHS[pathKey]?.motivationalMessages ?? ["Keep going, adventurer"];
           return messages[Math.floor(Math.random() * messages.length)];
         }
       };

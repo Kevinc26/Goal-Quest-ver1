@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { useGoalQuestStore, goalQuestAssets } from "../../../stores/goalQuestStore";
 import { percent, publicAssetPath } from "../utils";
@@ -64,7 +64,7 @@ export default function StatusBar() {
         <div>
           <div style={{ color: "var(--primary)", fontWeight: "bold" }}>{character.name}</div>
           <div style={{ fontSize: "10px", color: "#aaa" }}>{getPathName()}</div>
-          <div style={{ fontSize: "10px", color: "var(--warning)" }}>Nivel {stats.level}</div>
+          <div style={{ fontSize: "10px", color: "var(--warning)" }}>Level {stats.level}</div>
         </div>
       </div>
 
@@ -91,7 +91,7 @@ export default function StatusBar() {
           barClass="exp-bar"
         />
         <div>
-          <div style={{ fontSize: "10px", color: "var(--info)", textAlign: "center" }}>DIARIO</div>
+          <div style={{ fontSize: "10px", color: "var(--info)", textAlign: "center" }}>DAILY</div>
           <div className="daily-progress-bar" style={{ width: "120px", height: "10px" }}>
             <div className="daily-progress-fill" style={{ width: `${dailyProgress}%` }}>
               <div className="daily-progress-text">

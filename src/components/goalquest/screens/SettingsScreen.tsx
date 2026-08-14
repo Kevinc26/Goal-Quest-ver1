@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
 
@@ -11,14 +11,14 @@ export default function SettingsScreen() {
   return (
     <div className="game-screen active">
       <button type="button" className="ff-button" onClick={() => setScreen("start")} style={{ marginBottom: "20px" }}>
-        ← VOLVER
+        ← BACK
       </button>
 
-      <h2 style={{ color: "var(--primary)", margin: "30px 0" }}>CONFIGURACION</h2>
+      <h2 style={{ color: "var(--primary)", margin: "30px 0" }}>SETTINGS</h2>
 
       <div className="ff-menu">
         <div style={{ margin: "20px 0" }}>
-          <div style={{ color: "var(--primary)" }}>TAREAS DIARIAS ({stats.dailyTasksGoal})</div>
+          <div style={{ color: "var(--primary)" }}>DAILY TASKS ({stats.dailyTasksGoal})</div>
           <input
             type="range"
             min={3}
@@ -30,7 +30,7 @@ export default function SettingsScreen() {
         </div>
 
         <button type="button" className="ff-button" onClick={resetGame} style={{ width: "100%", background: "var(--danger)" }}>
-          🔄 REINICIAR
+          🔄 RESET
         </button>
       </div>
     </div>

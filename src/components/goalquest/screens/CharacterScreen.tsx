@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { goalQuestAssets, goalQuestCharacters, useGoalQuestStore } from "../../../stores/goalQuestStore";
 
@@ -20,10 +20,10 @@ export default function CharacterScreen() {
   return (
     <div className="game-screen active">
       <button type="button" className="ff-button" onClick={() => setScreen("start")} style={{ marginBottom: "20px" }}>
-        ← VOLVER
+        ← BACK
       </button>
 
-      <h2 style={{ color: "var(--primary)", margin: "20px 0" }}>SELECCIONA TU PERSONAJE</h2>
+      <h2 style={{ color: "var(--primary)", margin: "20px 0" }}>SELECT YOUR CHARACTER</h2>
 
       <div className="character-grid">
         {goalQuestCharacters.map((character) => {
@@ -81,7 +81,7 @@ export default function CharacterScreen() {
                   <div style={{ fontSize: "14px" }}>{character.mp}</div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ color: "var(--warning)", fontSize: "11px" }}>HAB.</div>
+                  <div style={{ color: "var(--warning)", fontSize: "11px" }}>SKILL</div>
                   <div style={{ fontSize: "10px" }}>{character.abilities[0]}</div>
                 </div>
               </div>
@@ -93,11 +93,11 @@ export default function CharacterScreen() {
       {selectedCharacter ? (
         <div style={{ textAlign: "center", marginTop: "30px" }}>
           <button type="button" className="ff-button" onClick={startAdventure}>
-            <i className="fas fa-play" /> COMENZAR
+            <i className="fas fa-play" /> START
           </button>
         </div>
       ) : (
-        <div style={{ textAlign: "center", color: "var(--warning)", marginTop: "30px" }}>Selecciona un personaje</div>
+        <div style={{ textAlign: "center", color: "var(--warning)", marginTop: "30px" }}>Select a character</div>
       )}
     </div>
   );

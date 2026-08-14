@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import type { DailyMission } from "../../../game/types";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
@@ -16,20 +16,20 @@ export default function DailyScreen() {
   return (
     <div className="game-screen active">
       <button type="button" className="ff-button" onClick={() => setScreen("world")} style={{ marginBottom: "20px" }}>
-        ← VOLVER
+        ← BACK
       </button>
 
       <div className="daily-missions-header">
         <div style={{ fontSize: "50px", color: "var(--warning)" }}>📅</div>
         <div>
-          <h2 style={{ color: "var(--warning)" }}>MISIONES DIARIAS</h2>
-          <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} disponibles hoy</p>
+          <h2 style={{ color: "var(--warning)" }}>DAILY MISSIONS</h2>
+          <p style={{ color: "#aaa", fontSize: "12px" }}>{availableMissions.length} available today</p>
         </div>
       </div>
 
       <div className="daily-progress-box">
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-          <div style={{ color: "var(--warning)" }}>PROGRESO</div>
+          <div style={{ color: "var(--warning)" }}>PROGRESS</div>
           <div style={{ color: "var(--warning)" }}>
             {stats.dailyTasksCompleted}/{stats.dailyTasksGoal}
           </div>
@@ -37,10 +37,10 @@ export default function DailyScreen() {
         <div className="daily-progress-bar" style={{ width: "100%" }}>
           <div className="daily-progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP al completar el dia</div>
+        <div style={{ color: "var(--info)", marginTop: "10px", fontSize: "12px" }}>+50 EXP for completing the day</div>
       </div>
 
-      <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>MISIONES DE HOY</h3>
+      <h3 style={{ color: "var(--primary)", marginBottom: "20px" }}>TODAY'S MISSIONS</h3>
 
       {availableMissions.length > 0 ? (
         <div className="daily-mission-list">
@@ -78,7 +78,7 @@ export default function DailyScreen() {
       ) : (
         <div style={{ background: "rgba(26,26,46,0.95)", padding: "40px", border: "2px solid var(--primary)" }}>
           <div style={{ fontSize: "60px", color: "var(--primary)" }}>🏆</div>
-          <h3 style={{ color: "var(--primary)" }}>TODAS COMPLETADAS</h3>
+          <h3 style={{ color: "var(--primary)" }}>ALL COMPLETED</h3>
         </div>
       )}
     </div>

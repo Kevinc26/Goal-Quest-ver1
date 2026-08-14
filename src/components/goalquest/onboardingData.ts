@@ -1,22 +1,22 @@
-﻿export const onboardingScreens = [
+export const onboardingScreens = [
   {
     icon: "⚔️",
-    title: "QUE ES GOALQUEST?",
-    text: "Un RPG de vida real. Tus objetivos son misiones y tu progreso es real."
+    title: "WHAT IS GOALQUEST?",
+    text: "A real-life RPG. Your goals are missions, and your progress is real."
   },
   {
     icon: "📜",
-    title: "COMO FUNCIONA",
-    text: "Eliges una clase, completas misiones reales, ganas EXP y subes de nivel."
+    title: "HOW IT WORKS",
+    text: "Choose a class, complete real-world missions, earn EXP, and level up."
   },
   {
     icon: "🦁",
-    title: "IDENTIDAD",
-    text: "No se trata solo de lo que haces. Se trata de quien eliges ser."
+    title: "IDENTITY",
+    text: "It is not only about what you do. It is about who you choose to become."
   },
   {
     icon: "🌅",
-    title: "EL MUNDO TE ESPERA",
-    text: "Hoy empiezas. Una mision a la vez, construyes una nueva version de ti."
+    title: "THE WORLD AWAITS",
+    text: "Today is your starting point. One mission at a time, build a new version of yourself."
   }
 ] as const;

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import CorruptionVisuals from "./effects/CorruptionVisuals";
 import ParticleBackground from "./effects/ParticleBackground";
@@ -69,7 +69,7 @@ export default function GoalQuestApp() {
         <div id="loading-screen">
           <div className="loading-spinner" />
           <h2 style={{ color: "var(--primary)", marginTop: "20px" }}>GOALQUEST RPG</h2>
-          <p style={{ color: "var(--warning)", marginTop: "10px" }}>Cargando aventura...</p>
+          <p style={{ color: "var(--warning)", marginTop: "10px" }}>Loading adventure...</p>
         </div>
       ) : null}
 

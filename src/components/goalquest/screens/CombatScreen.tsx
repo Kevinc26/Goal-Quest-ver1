@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { regionById } from "../../../game/data";
 import { useGoalQuestStore } from "../../../stores/goalQuestStore";
@@ -14,7 +14,7 @@ export default function CombatScreen() {
   if (!combat) {
     return (
       <div className="game-screen active">
-        <h2 style={{ color: "var(--warning)" }}>No hay combate activo</h2>
+        <h2 style={{ color: "var(--warning)" }}>No active battle</h2>
       </div>
     );
   }
@@ -27,11 +27,11 @@ export default function CombatScreen() {
   return (
     <div className="game-screen active">
       <button type="button" className="ff-button" onClick={fleeCombat} style={{ marginBottom: "20px" }}>
-        🏃 HUIR
+        🏃 FLEE
       </button>
 
       <div className="combat-arena">
-        <div className="combat-context">Hoy enfrentas tu miedo.</div>
+        <div className="combat-context">Today you face your fear.</div>
         <h2 style={{ color: "var(--danger)", textAlign: "center" }}>VS {region.boss.name}</h2>
 
         <div style={{ display: "flex", justifyContent: "space-around", margin: "30px 0", flexWrap: "wrap" }}>
@@ -64,13 +64,13 @@ export default function CombatScreen() {
 
         <div className="button-container" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
           <button type="button" className="ff-button" onClick={() => performAttack("weak")}>
-            ⚡ DEBIL
+            ⚡ WEAK
           </button>
           <button type="button" className="ff-button" onClick={() => performAttack("medium")}>
-            💥 MEDIO
+            💥 MEDIUM
           </button>
           <button type="button" className="ff-button" onClick={() => performAttack("strong")}>
-            🔥 FUERTE
+            🔥 STRONG
           </button>
         </div>
       </div>

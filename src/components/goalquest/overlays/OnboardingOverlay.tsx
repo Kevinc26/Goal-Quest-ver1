@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 import { onboardingScreens } from "../onboardingData";
 
@@ -31,15 +31,15 @@ export default function OnboardingOverlay({
         {step < onboardingScreens.length - 1 ? (
           <>
             <button type="button" className="onboarding-button" onClick={onNext}>
-              CONTINUAR
+              CONTINUE
             </button>
             <div className="onboarding-skip" onClick={onSkip} aria-hidden="true">
-              Omitir introduccion
+              Skip introduction
             </div>
           </>
         ) : (
           <button type="button" className="onboarding-button" onClick={onStart}>
-            COMENZAR MI CAMINO
+            BEGIN MY PATH
           </button>
         )}
       </div>
