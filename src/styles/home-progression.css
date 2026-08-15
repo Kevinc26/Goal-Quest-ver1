@@ -1,0 +1,9 @@
+/* Home-screen integration for visible progression rewards. */
+.start-secondary-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.start-gear-action { border-color: rgba(255, 211, 78, 0.42) !important; }
+.start-gear-action i { color: #ffd34e !important; }
+.start-gear-action:hover { border-color: rgba(255, 211, 78, 0.78) !important; box-shadow: 0 0 12px rgba(255, 211, 78, 0.14) !important; }
+.start-gear-summary { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 7px 9px; border: 1px solid rgba(255, 211, 78, 0.32); border-radius: 6px; background: rgba(255, 211, 78, 0.035); color: #d9d5bd; font-family: 'Press Start 2P', cursive; font-size: 7px; line-height: 1.35; cursor: pointer; }
+.start-gear-summary > span:first-child { color: #ffd34e; }
+.start-gear-summary:hover, .start-gear-summary:focus-visible { border-color: rgba(255, 211, 78, 0.66); background: rgba(255, 211, 78, 0.07); color: #fff; box-shadow: 0 0 10px rgba(255, 211, 78, 0.1); }
+@media (max-width: 560px) { .start-secondary-actions { grid-template-columns: minmax(0, 1fr); } }
