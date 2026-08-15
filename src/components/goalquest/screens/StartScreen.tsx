@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
+import { getEquippedItems, loadEquipment, type EquippedGear } from "../../../game/gear";
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import HeroGearVisuals from "../gear/HeroGearVisuals";
 import { publicAssetPath } from "../utils";
+
+const EMPTY_EQUIPMENT: EquippedGear = {
+  weapon: null,
+  armor: null,
+  relic: null,
+  aura: null
+};
 
 export default function StartScreen() {
   const character = useGoalQuestStore((state) => state.character);
@@ -9,7 +18,18 @@ export default function StartScreen() {
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const getPathName = useGoalQuestStore((state) => state.getPathName);
   const getPathDescription = useGoalQuestStore((state) => state.getPathDescription);
+  const [equipment, setEquipment] = useState<EquippedGear>(EMPTY_EQUIPMENT);
+
+  useEffect(() => {
+    if (!character) {
+      setEquipment(EMPTY_EQUIPMENT);
+      return;
+    }
+    setEquipment(loadEquipment(character.id, stats));
+  }, [character, stats.level]);
+
   const characterImageSrc = character ? publicAssetPath(goalQuestAssets.classes[character.id]) : "";
+  const equippedItems = character ? getEquippedItems(character.id, stats, equipment) : [];
   const remainingDailies = Math.max(0, stats.dailyTasksGoal - stats.dailyTasksCompleted);
   const regionDoneToday = stats.lastRegionMissionDate === new Date().toDateString();
   const dailyProgress = stats.dailyTasksGoal > 0
@@ -28,7 +48,8 @@ export default function StartScreen() {
 
       {character ? (
         <section className="start-character-panel" aria-label="Current character progress">
-          <div className="start-character-stage">
+          <div className="start-character-stage" style={{ "--gear-accent": character.color } as React.CSSProperties}>
+            <HeroGearVisuals items={equippedItems} compact />
             <img
               className="start-character-image"
               src={characterImageSrc}
@@ -46,6 +67,13 @@ export default function StartScreen() {
             </div>
             <div className="start-path-name">{getPathName()}</div>
             <p className="start-path-description">{getPathDescription()}</p>
+
+            {equippedItems.length > 0 ? (
+              <button type="button" className="start-gear-summary" onClick={() => setScreen("gear")}>
+                <span>◆ GEAR</span>
+                <span>{equippedItems.length}/4 EQUIPPED</span>
+              </button>
+            ) : null}
 
             <div className="start-xp-row" aria-hidden="true">
               <span>XP</span>
@@ -95,6 +123,14 @@ export default function StartScreen() {
             </button>
 
             <div className="start-secondary-actions">
+              <button
+                type="button"
+                className="menu-option start-secondary-action start-gear-action"
+                onClick={() => setScreen("gear")}
+              >
+                <i className="fas fa-gem" aria-hidden="true" />
+                <span>GEAR</span>
+              </button>
               <button
                 type="button"
                 className="menu-option start-secondary-action"
