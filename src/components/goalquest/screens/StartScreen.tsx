@@ -12,66 +12,123 @@ export default function StartScreen() {
   const characterImageSrc = character ? publicAssetPath(goalQuestAssets.classes[character.id]) : "";
   const remainingDailies = Math.max(0, stats.dailyTasksGoal - stats.dailyTasksCompleted);
   const regionDoneToday = stats.lastRegionMissionDate === new Date().toDateString();
+  const dailyProgress = stats.dailyTasksGoal > 0
+    ? Math.min(100, Math.round((stats.dailyTasksCompleted / stats.dailyTasksGoal) * 100))
+    : 0;
+  const xpProgress = stats.nextLevelExp > 0
+    ? Math.min(100, Math.round((stats.exp / stats.nextLevelExp) * 100))
+    : 0;
 
   return (
     <div className="game-screen active start-screen">
-      <h1 className="game-title">GOALQUEST</h1>
-      <p style={{ textAlign: "center", color: "var(--warning)", margin: "20px 0" }}>
-        Psychological Transformation RPG
-      </p>
+      <header className="start-header">
+        <h1 className="game-title">GOALQUEST</h1>
+        <p className="start-tagline">Turn your goals into an adventure</p>
+      </header>
 
       {character ? (
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <img
-            src={characterImageSrc}
-            alt={character.name}
-            loading="eager"
-            decoding="async"
-            style={{
-              width: "120px",
-              height: "120px",
-              objectFit: "contain",
-              imageRendering: "pixelated",
-              filter: `drop-shadow(0 0 18px ${character.color})`,
-              margin: "0 auto",
-              display: "block"
-            }}
-          />
-          <div style={{ color: character.color, fontSize: "16px", marginTop: "10px" }}>{getPathName()}</div>
-          <div style={{ color: "var(--text-muted)", fontSize: "12px", lineHeight: 1.6, marginTop: "6px" }}>{getPathDescription()}</div>
-        </div>
+        <section className="start-character-panel" aria-label="Current character progress">
+          <div className="start-character-stage">
+            <img
+              className="start-character-image"
+              src={characterImageSrc}
+              alt={character.name}
+              loading="eager"
+              decoding="async"
+              style={{ filter: `drop-shadow(0 0 10px ${character.color})` }}
+            />
+            <span className="start-character-platform" aria-hidden="true" />
+          </div>
+
+          <div className="start-character-meta">
+            <div className="start-character-class">
+              LV. {stats.level} • {character.name.toUpperCase()}
+            </div>
+            <div className="start-path-name">{getPathName()}</div>
+            <p className="start-path-description">{getPathDescription()}</p>
+
+            <div className="start-xp-row" aria-hidden="true">
+              <span>XP</span>
+              <span>{stats.exp} / {stats.nextLevelExp}</span>
+            </div>
+            <div
+              className="start-xp-track"
+              role="progressbar"
+              aria-label="Experience progress"
+              aria-valuemin={0}
+              aria-valuemax={stats.nextLevelExp}
+              aria-valuenow={Math.min(stats.exp, stats.nextLevelExp)}
+            >
+              <span className="start-xp-fill" style={{ width: `${xpProgress}%` }} />
+            </div>
+          </div>
+        </section>
       ) : null}
 
-      <div className="ff-menu">
+      <div className="ff-menu start-menu">
         {character ? (
           <>
-            <button type="button" className="menu-option" onClick={() => setScreen("world")}>
-              <i className="fas fa-play" />
+            <button
+              type="button"
+              className="menu-option start-primary-action"
+              onClick={() => setScreen("world")}
+            >
+              <i className="fas fa-play" aria-hidden="true" />
               <span>{remainingDailies === 0 && !regionDoneToday ? "NEXT → CONTINUE ADVENTURE" : "CONTINUE ADVENTURE"}</span>
             </button>
-            <button type="button" className="menu-option" onClick={() => setScreen("daily")}>
-              <i className="fas fa-calendar-day" />
-              <span>
-                {remainingDailies > 0 ? "NEXT → " : ""}DAILY QUESTS ({stats.dailyTasksCompleted}/{stats.dailyTasksGoal})
+
+            <button
+              type="button"
+              className="menu-option start-daily-action"
+              onClick={() => setScreen("daily")}
+            >
+              <i className="fas fa-calendar-day" aria-hidden="true" />
+              <span className="start-daily-copy">
+                <span className="start-daily-topline">
+                  <span>{remainingDailies > 0 ? "NEXT → DAILY QUESTS" : "DAILY QUESTS"}</span>
+                  <span className="start-daily-count">{stats.dailyTasksCompleted}/{stats.dailyTasksGoal}</span>
+                </span>
+                <span className="start-daily-progress-track" aria-hidden="true">
+                  <span className="start-daily-progress-fill" style={{ width: `${dailyProgress}%` }} />
+                </span>
               </span>
             </button>
-            <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
-              <i className="fas fa-gamepad" />
-              <span>CHANGE CLASS</span>
-            </button>
-            <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
-              <i className="fas fa-cog" />
-              <span>SETTINGS</span>
-            </button>
+
+            <div className="start-secondary-actions">
+              <button
+                type="button"
+                className="menu-option start-secondary-action"
+                onClick={() => setScreen("characters")}
+              >
+                <i className="fas fa-gamepad" aria-hidden="true" />
+                <span>CHANGE CLASS</span>
+              </button>
+              <button
+                type="button"
+                className="menu-option start-secondary-action"
+                onClick={() => setScreen("settings")}
+              >
+                <i className="fas fa-cog" aria-hidden="true" />
+                <span>SETTINGS</span>
+              </button>
+            </div>
           </>
         ) : (
           <>
-            <button type="button" className="menu-option" onClick={() => setScreen("characters")}>
-              <i className="fas fa-gamepad" />
+            <button
+              type="button"
+              className="menu-option start-primary-action"
+              onClick={() => setScreen("characters")}
+            >
+              <i className="fas fa-gamepad" aria-hidden="true" />
               <span>NEXT → CHOOSE YOUR CLASS</span>
             </button>
-            <button type="button" className="menu-option" onClick={() => setScreen("settings")}>
-              <i className="fas fa-cog" />
+            <button
+              type="button"
+              className="menu-option start-secondary-action"
+              onClick={() => setScreen("settings")}
+            >
+              <i className="fas fa-cog" aria-hidden="true" />
               <span>SETTINGS</span>
             </button>
           </>
@@ -79,16 +136,10 @@ export default function StartScreen() {
       </div>
 
       {character && stats.dailyStreak > 0 ? (
-        <div style={{ textAlign: "center", color: "var(--warning)", marginTop: "30px" }}>
-          🔥 Streak: {stats.dailyStreak} days
-        </div>
+        <div className="start-streak">🔥 {stats.dailyStreak} DAY{stats.dailyStreak === 1 ? "" : "S"} STREAK</div>
       ) : null}
 
-      <div
-        style={{ position: "absolute", bottom: "20px", width: "100%", textAlign: "center", color: "var(--text-faint)", fontSize: "10px" }}
-      >
-        © 2026 GOALQUEST
-      </div>
+      <footer className="start-footer">© 2026 GOALQUEST</footer>
     </div>
   );
 }
