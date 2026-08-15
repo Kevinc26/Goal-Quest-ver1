@@ -1,0 +1,516 @@
+/* Compact character carousel for GoalQuest.
+   One hero gets the spotlight while neighboring classes stay visible as previews. */
+
+.character-carousel-screen {
+  max-width: 820px;
+  padding: 24px 28px 26px;
+  overflow: hidden;
+}
+
+.character-carousel-header {
+  margin-top: 0;
+}
+
+.character-carousel-header p {
+  max-width: 560px;
+}
+
+.character-carousel {
+  --class-accent: #4dff91;
+  position: relative;
+  width: min(100%, 720px);
+  min-height: 468px;
+  display: grid;
+  grid-template-columns: 150px minmax(300px, 1fr) 150px;
+  align-items: center;
+  justify-items: center;
+  gap: 18px;
+  margin: 18px auto 0;
+  padding: 14px 42px 8px;
+  touch-action: pan-y;
+}
+
+.character-carousel::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 360px;
+  height: 360px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--class-accent) 11%, transparent), transparent 68%);
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+.character-carousel-active {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 340px;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 18px 16px;
+  border: 3px solid var(--class-accent);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 26%, color-mix(in srgb, var(--class-accent) 8%, transparent), transparent 34%),
+    linear-gradient(180deg, rgba(16, 22, 44, 0.995), rgba(10, 15, 32, 0.995));
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--class-accent) 62%, transparent),
+    0 0 28px color-mix(in srgb, var(--class-accent) 26%, transparent),
+    0 18px 46px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px color-mix(in srgb, var(--class-accent) 20%, transparent);
+}
+
+.character-carousel-active::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--class-accent) 38%, transparent);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.character-carousel-selected-label {
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  color: var(--class-accent);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.8px;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--class-accent) 65%, transparent);
+}
+
+.character-carousel-hero-stage {
+  position: relative;
+  width: 230px;
+  height: 205px;
+  display: grid;
+  place-items: center;
+  margin-top: 2px;
+  isolation: isolate;
+}
+
+.character-carousel-hero-glow {
+  position: absolute;
+  left: 50%;
+  top: 49%;
+  width: 150px;
+  height: 150px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--class-accent) 24%, transparent), transparent 70%);
+  filter: blur(9px);
+  opacity: 0.9;
+}
+
+.character-carousel-main-sprite {
+  position: relative;
+  z-index: 2;
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transform: scale(1.08);
+  transform-origin: center;
+  filter:
+    drop-shadow(0 10px 6px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--class-accent) 44%, transparent));
+}
+
+.character-carousel-platform {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 16px;
+  width: 128px;
+  height: 11px;
+  transform: translateX(-50%);
+  border-top: 2px solid color-mix(in srgb, var(--class-accent) 68%, transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--class-accent) 16%, transparent), transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--class-accent) 22%, transparent);
+}
+
+.character-carousel-copy {
+  width: 100%;
+  text-align: center;
+}
+
+.character-carousel-copy h3 {
+  margin: 0 0 6px;
+  color: var(--class-accent);
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--class-accent) 30%, transparent);
+}
+
+.character-carousel-role {
+  margin: 0 !important;
+  color: #eeeeF6 !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+}
+
+.character-carousel-path {
+  margin: 7px 0 0 !important;
+  color: color-mix(in srgb, var(--class-accent) 70%, #a8a8bc) !important;
+  font-size: 7px !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.6px;
+}
+
+.character-carousel-description {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 8px !important;
+  color: #d5d5df !important;
+  font-size: 9px !important;
+  line-height: 1.55 !important;
+}
+
+.character-carousel-stats {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(140, 159, 190, 0.24);
+  text-align: left;
+}
+
+.character-carousel-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.character-carousel-stat > span {
+  font-size: 13px;
+}
+
+.character-carousel-stat strong {
+  color: #f7f7fb;
+  font-size: 9px;
+  font-weight: normal;
+}
+
+.character-carousel-stat small {
+  color: #81859a;
+  font-size: 6px;
+}
+
+.character-carousel-stat--hp > span {
+  color: #ff6170;
+  text-shadow: 0 0 7px rgba(255, 97, 112, 0.35);
+}
+
+.character-carousel-stat--mp > span {
+  color: #49c7f4;
+  text-shadow: 0 0 7px rgba(73, 199, 244, 0.3);
+}
+
+.character-carousel-stat--skill {
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.character-carousel-stat--skill > span {
+  flex: 0 0 auto;
+  color: #ffd65d;
+  text-shadow: 0 0 7px rgba(255, 214, 93, 0.35);
+}
+
+.character-carousel-stat--skill strong {
+  min-width: 0;
+  font-size: 8px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.character-carousel-side {
+  --class-accent: #4dff91;
+  position: relative;
+  z-index: 2;
+  width: 150px;
+  min-height: 228px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 10px;
+  border: 1px solid color-mix(in srgb, var(--class-accent) 34%, rgba(77, 255, 145, 0.24));
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(16, 21, 42, 0.78), rgba(10, 15, 32, 0.78));
+  color: color-mix(in srgb, var(--class-accent) 66%, #a7aabc);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  line-height: 1.35;
+  cursor: pointer;
+  opacity: 0.48;
+  filter: saturate(0.72);
+  transform: scale(0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease,
+    border-color 140ms ease,
+    filter 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.character-carousel-side:hover,
+.character-carousel-side:focus-visible {
+  opacity: 0.78;
+  filter: saturate(0.95);
+  transform: scale(0.96) translateY(-2px);
+  border-color: color-mix(in srgb, var(--class-accent) 64%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--class-accent) 17%, transparent);
+}
+
+.character-carousel-side-sprite {
+  width: 118px;
+  height: 118px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter:
+    drop-shadow(0 7px 5px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 7px color-mix(in srgb, var(--class-accent) 20%, transparent));
+}
+
+.character-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  width: 38px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid rgba(77, 255, 145, 0.34);
+  border-radius: 8px;
+  background: rgba(8, 13, 29, 0.78);
+  color: #93eeb4;
+  font-family: monospace;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.78;
+  box-shadow: 0 0 10px rgba(77, 255, 145, 0.08);
+  transition: opacity 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.character-carousel-arrow:hover,
+.character-carousel-arrow:focus-visible {
+  opacity: 1;
+  color: #fff;
+  border-color: rgba(77, 255, 145, 0.74);
+}
+
+.character-carousel-arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.character-carousel-arrow--left {
+  left: 0;
+}
+
+.character-carousel-arrow--right {
+  right: 0;
+}
+
+.character-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.character-carousel-dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 1px solid rgba(120, 142, 166, 0.55);
+  border-radius: 50%;
+  background: rgba(86, 99, 123, 0.28);
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.character-carousel-dots button:hover {
+  transform: scale(1.2);
+}
+
+.character-carousel-dots button.active {
+  transform: scale(1.28);
+  border-color: #46c7e8;
+  background: #46c7e8;
+  box-shadow: 0 0 8px rgba(70, 199, 232, 0.6);
+}
+
+.character-carousel-counter {
+  margin-top: 8px;
+  color: #73798e;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.character-carousel-start-area {
+  margin-top: 16px;
+}
+
+.character-carousel-start-button {
+  min-width: 300px;
+  max-width: min(100%, 420px);
+  min-height: 50px;
+  padding-inline: 20px;
+}
+
+.character-carousel-help {
+  margin: 12px 0 0 !important;
+  color: #656b80 !important;
+  font-size: 7px !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+}
+
+/* The healer asset still has a light matte in the source file. Keep the blend workaround in the carousel too. */
+.character-carousel-main-sprite.character-select-sprite--blend,
+.character-carousel-side-sprite.character-select-sprite--blend {
+  mix-blend-mode: multiply;
+  filter:
+    brightness(1.55)
+    saturate(1.35)
+    drop-shadow(0 8px 5px rgba(0, 0, 0, 0.34));
+}
+
+@media (max-width: 900px) {
+  .character-carousel-screen {
+    max-width: 720px;
+  }
+
+  .character-carousel {
+    width: min(100%, 630px);
+    grid-template-columns: 128px minmax(280px, 1fr) 128px;
+    gap: 12px;
+    padding-inline: 36px;
+  }
+
+  .character-carousel-side {
+    width: 128px;
+  }
+
+  .character-carousel-side-sprite {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 700px) {
+  .character-carousel-screen {
+    max-width: 520px;
+    padding: 18px 14px 24px;
+  }
+
+  .character-carousel {
+    width: 100%;
+    min-height: 430px;
+    display: block;
+    margin-top: 14px;
+    padding: 4px 42px 0;
+  }
+
+  .character-carousel::before {
+    width: 310px;
+    height: 310px;
+  }
+
+  .character-carousel-active {
+    max-width: 350px;
+    min-height: 408px;
+    margin: 0 auto;
+    padding: 12px 16px 14px;
+  }
+
+  .character-carousel-side {
+    display: none;
+  }
+
+  .character-carousel-arrow {
+    width: 34px;
+    height: 48px;
+  }
+
+  .character-carousel-hero-stage {
+    width: 210px;
+    height: 185px;
+  }
+
+  .character-carousel-main-sprite {
+    width: 176px;
+    height: 176px;
+  }
+
+  .character-carousel-copy h3 {
+    font-size: 18px;
+  }
+
+  .character-carousel-start-button {
+    min-width: 0;
+    width: min(100%, 350px);
+    font-size: 9px;
+    line-height: 1.45;
+  }
+
+  .character-carousel-help {
+    display: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .character-carousel {
+    padding-inline: 34px;
+  }
+
+  .character-carousel-active {
+    min-height: 390px;
+    border-width: 2px;
+  }
+
+  .character-carousel-hero-stage {
+    width: 188px;
+    height: 166px;
+  }
+
+  .character-carousel-main-sprite {
+    width: 158px;
+    height: 158px;
+  }
+
+  .character-carousel-description {
+    min-height: 38px;
+    font-size: 8px !important;
+  }
+
+  .character-carousel-stats {
+    gap: 7px;
+  }
+
+  .character-carousel-stat--skill strong {
+    font-size: 7px;
+  }
+}
