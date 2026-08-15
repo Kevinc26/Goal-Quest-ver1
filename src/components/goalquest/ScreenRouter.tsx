@@ -6,6 +6,7 @@ import AchievementsScreen from "./screens/AchievementsScreen";
 import CharacterScreen from "./screens/CharacterScreen";
 import CombatScreen from "./screens/CombatScreen";
 import DailyScreen from "./screens/DailyScreen";
+import GearScreen from "./screens/GearScreen";
 import RegionScreen from "./screens/RegionScreen";
 import RestScreen from "./screens/RestScreen";
 import SettingsScreen from "./screens/SettingsScreen";
@@ -18,6 +19,7 @@ export default function ScreenRouter() {
   const componentByScreen: Record<ScreenName, React.ReactNode> = {
     start: <StartScreen />,
     characters: <CharacterScreen />,
+    gear: <GearScreen />,
     world: <WorldScreen />,
     region: <RegionScreen />,
     daily: <DailyScreen />,
