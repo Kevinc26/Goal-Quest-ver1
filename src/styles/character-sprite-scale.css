@@ -1,0 +1,54 @@
+/* Character selection: increase sprite presence without changing card information hierarchy. */
+
+.character-select-card {
+  min-height: 346px;
+}
+
+.character-sprite-stage {
+  width: 154px;
+  height: 146px;
+  flex: 0 0 146px;
+  margin-bottom: 7px;
+  overflow: visible;
+}
+
+.character-sprite-stage::before {
+  inset: 18px 18px 10px;
+}
+
+.character-select-card.selected .character-sprite-stage::before {
+  inset: 10px 8px 4px;
+}
+
+.character-select-sprite {
+  width: 132px;
+  height: 132px;
+  transform: scale(1.36);
+  transform-origin: center;
+}
+
+.character-select-card.selected .character-select-sprite {
+  transform: scale(1.5);
+}
+
+@media (max-width: 768px) {
+  .character-select-card {
+    min-height: 330px;
+  }
+
+  .character-sprite-stage {
+    width: 142px;
+    height: 134px;
+    flex-basis: 134px;
+  }
+
+  .character-select-sprite {
+    width: 120px;
+    height: 120px;
+    transform: scale(1.32);
+  }
+
+  .character-select-card.selected .character-select-sprite {
+    transform: scale(1.43);
+  }
+}
