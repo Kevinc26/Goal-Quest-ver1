@@ -12,22 +12,36 @@ type ParticleMeta = {
   size: number;
 };
 
+const weightedEdgePosition = () => {
+  const roll = Math.random();
+
+  if (roll < 0.32) {
+    return Math.random() * 20;
+  }
+
+  if (roll < 0.64) {
+    return 80 + Math.random() * 20;
+  }
+
+  return 20 + Math.random() * 60;
+};
+
 const createParticles = (count: number): ParticleMeta[] =>
   Array.from({ length: count }, (_, index) => ({
     id: `particle-${index}`,
-    left: Math.random() * 100,
-    top: Math.random() * 100,
+    left: weightedEdgePosition(),
+    top: weightedEdgePosition(),
     duration: 8 + Math.random() * 16,
     delay: Math.random() * 8,
-    opacity: 0.25 + Math.random() * 0.65,
-    size: 1 + Math.random() * 2
+    opacity: 0.2 + Math.random() * 0.55,
+    size: 1 + Math.random() * 1.7
   }));
 
 export default function ParticleBackground() {
   const corruptionLevel = useGoalQuestStore((state) => state.corruptionLevel);
 
   const particles = useMemo(() => {
-    const base = 50;
+    const base = 46;
     const extra = corruptionLevel * 16;
     return createParticles(base + extra);
   }, [corruptionLevel]);
