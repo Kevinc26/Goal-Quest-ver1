@@ -37,28 +37,18 @@ export default function MusicToggleButton() {
     }
   }, [enabled]);
 
+  const label = enabled ? "Music on" : "Music off";
+
   return (
     <button
       type="button"
       className="music-toggle-button"
       onClick={() => setEnabled((value) => !value)}
-      style={{
-        position: "fixed",
-        bottom: "20px",
-        right: "20px",
-        background: "#4a4e69",
-        color: "white",
-        border: "2px solid var(--primary)",
-        borderRadius: "30px",
-        padding: "10px 20px",
-        fontFamily: "'Press Start 2P', cursive",
-        fontSize: "10px",
-        cursor: "pointer",
-        zIndex: 10000,
-        boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
-      }}
+      aria-label={label}
+      aria-pressed={enabled}
+      title={label}
     >
-      {enabled ? "🎵 Music: ON" : "🎵 Music: OFF"}
+      ♫ {enabled ? "ON" : "OFF"}
     </button>
   );
 }
