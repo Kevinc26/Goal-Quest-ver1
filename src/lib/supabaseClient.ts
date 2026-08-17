@@ -29,9 +29,11 @@ type AuthPayload = Record<string, unknown> & {
 };
 
 const SESSION_KEY = "goalquest_supabase_session_v1";
+const DEFAULT_SUPABASE_URL = "https://bonaosyyyxakxkehoixo.supabase.co";
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_nS-8whaNu3bAsEVihyGvtA_ckUMVomu";
 
-const supabaseUrl = (import.meta.env.PUBLIC_SUPABASE_URL ?? "").trim().replace(/\/$/, "");
-const publishableKey = (import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "").trim();
+const supabaseUrl = (import.meta.env.PUBLIC_SUPABASE_URL ?? DEFAULT_SUPABASE_URL).trim().replace(/\/$/, "");
+const publishableKey = (import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? DEFAULT_SUPABASE_PUBLISHABLE_KEY).trim();
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && publishableKey);
 
