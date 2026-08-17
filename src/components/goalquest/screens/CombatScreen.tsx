@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { bossSceneForRegion, classBattleFx } from "../../../game/bossPresentation";
 import { getClassCombatLoadout, type LegacyAttackType } from "../../../game/combatLoadouts";
@@ -68,8 +68,7 @@ export default function CombatScreen() {
   const playerPercent = percent(combat.playerHp, stats.maxHp);
   const victory = combat.enemyCurrentHp <= 0;
   const defeat = combat.playerHp <= 0;
-
-  const recentLog = useMemo(() => combat.log.slice(-3), [combat.log]);
+  const recentLog = combat.log.slice(-3);
 
   const triggerAttack = (attackType: LegacyAttackType, actionName: string) => {
     if (isAnimating || victory || defeat) return;
@@ -107,9 +106,7 @@ export default function CombatScreen() {
       } as React.CSSProperties}
     >
       <div className="combat-rpg-vignette" aria-hidden="true" />
-      <div className="combat-rpg-particles" aria-hidden="true">
-        <span /><span /><span /><span /><span /><span />
-      </div>
+      <div className="combat-rpg-particles" aria-hidden="true"><span /><span /><span /><span /><span /><span /></div>
 
       {introVisible ? (
         <div className="combat-rpg-intro" aria-live="polite">
@@ -167,9 +164,7 @@ export default function CombatScreen() {
           <div className="combat-boss-projectile" aria-hidden="true"><span /></div>
         </div>
 
-        <div className={`combat-rpg-impact-layer ${fx.playerFx ? "is-player-impact" : ""} ${fx.bossFx ? "is-boss-impact" : ""}`} aria-hidden="true">
-          <i /><i /><i /><i />
-        </div>
+        <div className={`combat-rpg-impact-layer ${fx.playerFx ? "is-player-impact" : ""} ${fx.bossFx ? "is-boss-impact" : ""}`} aria-hidden="true"><i /><i /><i /><i /></div>
       </main>
 
       <section className="combat-rpg-command-panel">
@@ -188,10 +183,7 @@ export default function CombatScreen() {
             >
               <span className="combat-rpg-action-number">0{index + 1}</span>
               <span className="combat-rpg-action-icon">{move.icon}</span>
-              <span className="combat-rpg-action-copy">
-                <strong>{move.action.name}</strong>
-                <small>{actionDescription(move)}</small>
-              </span>
+              <span className="combat-rpg-action-copy"><strong>{move.action.name}</strong><small>{actionDescription(move)}</small></span>
               <span className="combat-rpg-action-chevron">›</span>
             </button>
           ))}
@@ -203,19 +195,11 @@ export default function CombatScreen() {
       </section>
 
       {victory ? (
-        <div className="combat-rpg-result combat-rpg-result--victory" aria-live="assertive">
-          <span>✦ BOSS DEFEATED ✦</span>
-          <strong>VICTORY</strong>
-          <small>{region.name} answers to you now.</small>
-        </div>
+        <div className="combat-rpg-result combat-rpg-result--victory" aria-live="assertive"><span>✦ BOSS DEFEATED ✦</span><strong>VICTORY</strong><small>{region.name} answers to you now.</small></div>
       ) : null}
 
       {defeat ? (
-        <div className="combat-rpg-result combat-rpg-result--defeat" aria-live="assertive">
-          <span>THE BATTLE IS NOT OVER</span>
-          <strong>DEFEAT</strong>
-          <small>Return stronger. The path remains.</small>
-        </div>
+        <div className="combat-rpg-result combat-rpg-result--defeat" aria-live="assertive"><span>THE BATTLE IS NOT OVER</span><strong>DEFEAT</strong><small>Return stronger. The path remains.</small></div>
       ) : null}
     </div>
   );
