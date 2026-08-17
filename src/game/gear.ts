@@ -148,6 +148,7 @@ export const saveEquipment = (characterId: number, equipment: EquippedGear) => {
     return;
   }
   window.localStorage.setItem(storageKey(characterId), JSON.stringify(equipment));
+  window.dispatchEvent(new CustomEvent("goalquest:equipment-changed", { detail: { characterId } }));
 };
 
 export const getEquippedItems = (characterId: number, stats: Stats, equipment: EquippedGear) => {
