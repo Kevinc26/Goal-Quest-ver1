@@ -39,9 +39,10 @@ export default function StartScreen() {
   const xpProgress = stats.nextLevelExp > 0
     ? Math.min(100, Math.round((stats.exp / stats.nextLevelExp) * 100))
     : 0;
+  const heroAccent = character?.color ?? "#4dff91";
 
   return (
-    <div className={`game-screen active start-screen ${character ? "" : "start-screen--intro"}`}>
+    <div className={`game-screen active start-screen start-screen--intro ${character ? "start-screen--player" : "start-screen--new"}`}>
       <header className="start-header">
         <div className="start-title-kicker" aria-hidden="true">
           <span />
@@ -52,53 +53,39 @@ export default function StartScreen() {
         <p className="start-tagline">Turn your goals into an adventure</p>
       </header>
 
-      {character ? (
-        <section className="start-character-panel" aria-label="Current character progress">
-          <div className="start-character-stage" style={{ "--gear-accent": character.color } as React.CSSProperties}>
-            <HeroGearVisuals items={equippedItems} compact />
-            <img
-              className="start-character-image"
-              src={characterImageSrc}
-              alt={character.name}
-              loading="eager"
-              decoding="async"
-              style={{ filter: `drop-shadow(0 0 10px ${character.color})` }}
-            />
-            <span className="start-character-platform" aria-hidden="true" />
-          </div>
+      <section
+        className={`intro-quest-layout ${character ? "intro-quest-layout--player" : ""}`}
+        aria-label={character ? "Current GoalQuest hero" : "Begin your GoalQuest journey"}
+      >
+        {character ? (
+          <aside className="intro-quest-panel intro-quest-panel--left intro-player-panel">
+            <span className="intro-panel-eyebrow">YOUR PROGRESS</span>
 
-          <div className="start-character-meta">
-            <div className="start-character-class">
-              LV. {stats.level} • {character.name.toUpperCase()}
+            <div className="intro-journey-step">
+              <span className="intro-step-icon">★</span>
+              <div>
+                <strong>LEVEL {stats.level}</strong>
+                <small>{stats.exp} / {stats.nextLevelExp} XP</small>
+              </div>
             </div>
-            <div className="start-path-name">{getPathName()}</div>
-            <p className="start-path-description">{getPathDescription()}</p>
 
-            {equippedItems.length > 0 ? (
-              <button type="button" className="start-gear-summary" onClick={() => setScreen("gear")}>
-                <span>◆ GEAR</span>
-                <span>{equippedItems.length}/4 EQUIPPED</span>
-              </button>
-            ) : null}
+            <div className="intro-journey-step">
+              <span className="intro-step-icon">◆</span>
+              <div>
+                <strong>DAILY QUESTS</strong>
+                <small>{stats.dailyTasksCompleted}/{stats.dailyTasksGoal} completed today</small>
+              </div>
+            </div>
 
-            <div className="start-xp-row" aria-hidden="true">
-              <span>XP</span>
-              <span>{stats.exp} / {stats.nextLevelExp}</span>
+            <div className="intro-journey-step">
+              <span className="intro-step-icon">✦</span>
+              <div>
+                <strong>STREAK</strong>
+                <small>{stats.dailyStreak} day{stats.dailyStreak === 1 ? "" : "s"} strong</small>
+              </div>
             </div>
-            <div
-              className="start-xp-track"
-              role="progressbar"
-              aria-label="Experience progress"
-              aria-valuemin={0}
-              aria-valuemax={stats.nextLevelExp}
-              aria-valuenow={Math.min(stats.exp, stats.nextLevelExp)}
-            >
-              <span className="start-xp-fill" style={{ width: `${xpProgress}%` }} />
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="intro-quest-layout" aria-label="Begin your GoalQuest journey">
+          </aside>
+        ) : (
           <aside className="intro-quest-panel intro-quest-panel--left">
             <span className="intro-panel-eyebrow">YOUR JOURNEY</span>
             <div className="intro-journey-step">
@@ -123,22 +110,89 @@ export default function StartScreen() {
               </div>
             </div>
           </aside>
+        )}
 
-          <div className="intro-quest-center">
-            <div className="intro-portal-scene" aria-hidden="true">
-              <span className="intro-portal-aura" />
-              <span className="intro-portal-ring intro-portal-ring--outer" />
-              <span className="intro-portal-ring intro-portal-ring--inner" />
-              <span className="intro-rune intro-rune--one">✦</span>
-              <span className="intro-rune intro-rune--two">◆</span>
-              <span className="intro-rune intro-rune--three">✧</span>
+        <div className="intro-quest-center">
+          <div
+            className={`intro-portal-scene ${character ? "intro-portal-scene--player" : ""}`}
+            style={{ "--hero-accent": heroAccent } as React.CSSProperties}
+            aria-hidden="true"
+          >
+            <span className="intro-portal-aura" />
+            <span className="intro-portal-ring intro-portal-ring--outer" />
+            <span className="intro-portal-ring intro-portal-ring--inner" />
+            <span className="intro-rune intro-rune--one">✦</span>
+            <span className="intro-rune intro-rune--two">◆</span>
+            <span className="intro-rune intro-rune--three">✧</span>
+
+            {character ? (
+              <div className="intro-selected-hero-wrap">
+                <HeroGearVisuals items={equippedItems} compact />
+                <img
+                  className="intro-hero-image intro-hero-image--selected"
+                  src={characterImageSrc}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            ) : (
               <img className="intro-hero-image" src={introHeroSrc} alt="" loading="eager" decoding="async" />
-              <span className="intro-hero-platform" />
-            </div>
+            )}
 
-            <p className="intro-hero-callout">YOUR HERO AWAITS</p>
+            <span className="intro-hero-platform" />
           </div>
 
+          {character ? (
+            <div className="intro-player-meta">
+              <div className="intro-player-class">LV. {stats.level} • {character.name.toUpperCase()}</div>
+              <div className="intro-player-path">{getPathName()}</div>
+              <p className="intro-player-description">{getPathDescription()}</p>
+              <div className="intro-player-xp-row" aria-hidden="true">
+                <span>XP</span>
+                <span>{stats.exp} / {stats.nextLevelExp}</span>
+              </div>
+              <div
+                className="start-xp-track intro-player-xp-track"
+                role="progressbar"
+                aria-label="Experience progress"
+                aria-valuemin={0}
+                aria-valuemax={stats.nextLevelExp}
+                aria-valuenow={Math.min(stats.exp, stats.nextLevelExp)}
+              >
+                <span className="start-xp-fill" style={{ width: `${xpProgress}%` }} />
+              </div>
+            </div>
+          ) : (
+            <p className="intro-hero-callout">YOUR HERO AWAITS</p>
+          )}
+        </div>
+
+        {character ? (
+          <aside className="intro-quest-panel intro-quest-panel--right intro-player-panel">
+            <span className="intro-panel-eyebrow">NEXT OBJECTIVES</span>
+
+            <div className="intro-feature-row">
+              <span className="intro-feature-icon"><i className="fas fa-calendar-day" aria-hidden="true" /></span>
+              <span>{remainingDailies > 0 ? `${remainingDailies} daily quest${remainingDailies === 1 ? "" : "s"} left` : "Daily quests cleared"}</span>
+            </div>
+
+            <div className="intro-feature-row">
+              <span className="intro-feature-icon"><i className="fas fa-map-marked-alt" aria-hidden="true" /></span>
+              <span>{regionDoneToday ? "Region mission complete" : "Continue your region"}</span>
+            </div>
+
+            <div className="intro-feature-row">
+              <span className="intro-feature-icon"><i className="fas fa-gem" aria-hidden="true" /></span>
+              <span>{equippedItems.length}/4 gear equipped</span>
+            </div>
+
+            <div className="intro-feature-row">
+              <span className="intro-feature-icon"><i className="fas fa-trophy" aria-hidden="true" /></span>
+              <span>Keep building your hero</span>
+            </div>
+          </aside>
+        ) : (
           <aside className="intro-quest-panel intro-quest-panel--right">
             <span className="intro-panel-eyebrow">EVERY QUEST COUNTS</span>
             <div className="intro-feature-row">
@@ -158,19 +212,20 @@ export default function StartScreen() {
               <span>Defeat milestones</span>
             </div>
           </aside>
-        </section>
-      )}
+        )}
+      </section>
 
-      <div className={`ff-menu start-menu ${character ? "" : "start-menu--intro"}`}>
+      <div className={`ff-menu start-menu start-menu--intro ${character ? "start-menu--player" : ""}`}>
         {character ? (
           <>
             <button
               type="button"
-              className="menu-option start-primary-action"
+              className="menu-option start-primary-action intro-primary-action"
               onClick={() => setScreen("world")}
             >
               <i className="fas fa-play" aria-hidden="true" />
               <span>{remainingDailies === 0 && !regionDoneToday ? "NEXT → CONTINUE ADVENTURE" : "CONTINUE ADVENTURE"}</span>
+              <span className="intro-primary-arrow" aria-hidden="true">›</span>
             </button>
 
             <button
@@ -190,7 +245,7 @@ export default function StartScreen() {
               </span>
             </button>
 
-            <div className="start-secondary-actions">
+            <div className="start-secondary-actions start-secondary-actions--player">
               <button
                 type="button"
                 className="menu-option start-secondary-action start-gear-action"
@@ -240,10 +295,6 @@ export default function StartScreen() {
           </>
         )}
       </div>
-
-      {character && stats.dailyStreak > 0 ? (
-        <div className="start-streak">🔥 {stats.dailyStreak} DAY{stats.dailyStreak === 1 ? "" : "S"} STREAK</div>
-      ) : null}
 
       <footer className="start-footer">© 2026 GOALQUEST</footer>
     </div>
