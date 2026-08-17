@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-import { goalQuestCharacters, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { goalQuestAssets, goalQuestCharacters, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { publicAssetPath } from "../utils";
 
 const bossLabEnabled = () => {
   if (typeof window === "undefined") return false;
@@ -30,6 +31,10 @@ export default function BossLab() {
         regionId,
         enemyCurrentHp: region.boss.hp,
         playerHp: live.stats.maxHp,
+        playerMp: live.stats.maxMp,
+        playerEffects: [],
+        bossEffects: [],
+        outcome: "active",
         turn: 0,
         log: [`Boss Lab: battle begins against ${region.boss.name}`]
       },
@@ -56,7 +61,7 @@ export default function BossLab() {
           </div>
 
           <div className="boss-lab-section">
-            <span>HERO</span>
+            <span>HERO · EXACT IN-GAME SPRITES</span>
             <div className="boss-lab-classes">
               {goalQuestCharacters.map((entry) => (
                 <button
@@ -65,8 +70,9 @@ export default function BossLab() {
                   className={character?.id === entry.id ? "active" : ""}
                   onClick={() => selectCharacter(entry.id)}
                   title={entry.name}
+                  aria-label={`Select ${entry.name}`}
                 >
-                  {entry.icon}
+                  <img src={publicAssetPath(goalQuestAssets.classes[entry.id])} alt="" aria-hidden="true" />
                 </button>
               ))}
             </div>
