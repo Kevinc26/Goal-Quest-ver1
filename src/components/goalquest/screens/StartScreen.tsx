@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import { getJourneyMode, subscribeJourneyMode, type JourneyMode } from "../../../game/journeyMode";
 import { getEquippedItems, loadEquipment, type EquippedGear } from "../../../game/gear";
 import { saveGoalQuestCloud } from "../../../lib/cloudSave";
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
@@ -23,6 +24,9 @@ export default function StartScreen() {
   const auth = useGoalQuestAuth();
   const [equipment, setEquipment] = useState<EquippedGear>(EMPTY_EQUIPMENT);
   const [signingOut, setSigningOut] = useState(false);
+  const [journeyMode, setJourneyModeState] = useState<JourneyMode | null>(() => getJourneyMode());
+
+  useEffect(() => subscribeJourneyMode(setJourneyModeState), []);
 
   useEffect(() => {
     if (!character) {
@@ -64,6 +68,8 @@ export default function StartScreen() {
     ? Math.min(100, Math.round((stats.exp / stats.nextLevelExp) * 100))
     : 0;
   const heroAccent = character?.color ?? "#4dff91";
+  const customOnly = journeyMode === "custom";
+  const hybrid = journeyMode === "hybrid";
 
   return (
     <div className={`game-screen active start-screen start-screen--intro ${character ? "start-screen--player" : "start-screen--new"}`}>
@@ -96,7 +102,7 @@ export default function StartScreen() {
             <div className="intro-journey-step">
               <span className="intro-step-icon">◆</span>
               <div>
-                <strong>DAILY QUESTS</strong>
+                <strong>{customOnly ? "MY QUESTS" : "DAILY QUESTS"}</strong>
                 <small>{stats.dailyTasksCompleted}/{stats.dailyTasksGoal} completed today</small>
               </div>
             </div>
@@ -197,13 +203,13 @@ export default function StartScreen() {
             <span className="intro-panel-eyebrow">NEXT OBJECTIVES</span>
 
             <div className="intro-feature-row">
-              <span className="intro-feature-icon"><i className="fas fa-calendar-day" aria-hidden="true" /></span>
-              <span>{remainingDailies > 0 ? `${remainingDailies} daily quest${remainingDailies === 1 ? "" : "s"} left` : "Daily quests cleared"}</span>
+              <span className="intro-feature-icon"><i className="fas fa-list-check" aria-hidden="true" /></span>
+              <span>{customOnly ? "Forge a real-life quest" : remainingDailies > 0 ? `${remainingDailies} quest${remainingDailies === 1 ? "" : "s"} left today` : "Today's quest goal cleared"}</span>
             </div>
 
             <div className="intro-feature-row">
               <span className="intro-feature-icon"><i className="fas fa-map-marked-alt" aria-hidden="true" /></span>
-              <span>{regionDoneToday ? "Region mission complete" : "Continue your region"}</span>
+              <span>{customOnly ? "Your goals drive progression" : regionDoneToday ? "Region mission complete" : "Continue your 8-map journey"}</span>
             </div>
 
             <div className="intro-feature-row">
@@ -242,32 +248,56 @@ export default function StartScreen() {
       <div className={`ff-menu start-menu start-menu--intro ${character ? "start-menu--player" : ""}`}>
         {character ? (
           <>
-            <button
-              type="button"
-              className="menu-option start-primary-action intro-primary-action"
-              onClick={() => setScreen("world")}
-            >
-              <i className="fas fa-play" aria-hidden="true" />
-              <span>{remainingDailies === 0 && !regionDoneToday ? "NEXT → CONTINUE ADVENTURE" : "CONTINUE ADVENTURE"}</span>
-              <span className="intro-primary-arrow" aria-hidden="true">›</span>
-            </button>
+            {!journeyMode ? (
+              <button
+                type="button"
+                className="menu-option start-primary-action intro-primary-action"
+                onClick={() => setScreen("journey")}
+              >
+                <i className="fas fa-compass" aria-hidden="true" />
+                <span>CHOOSE HOW YOU WANT TO PLAY</span>
+                <span className="intro-primary-arrow" aria-hidden="true">›</span>
+              </button>
+            ) : customOnly ? (
+              <button
+                type="button"
+                className="menu-option start-primary-action intro-primary-action"
+                onClick={() => setScreen("daily")}
+              >
+                <i className="fas fa-hammer" aria-hidden="true" />
+                <span>CREATE / CONTINUE MY QUESTS</span>
+                <span className="intro-primary-arrow" aria-hidden="true">›</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="menu-option start-primary-action intro-primary-action"
+                onClick={() => setScreen("world")}
+              >
+                <i className="fas fa-map" aria-hidden="true" />
+                <span>{regionDoneToday ? "EXPLORE THE 8-MAP ADVENTURE" : "CONTINUE THE 8-MAP ADVENTURE"}</span>
+                <span className="intro-primary-arrow" aria-hidden="true">›</span>
+              </button>
+            )}
 
-            <button
-              type="button"
-              className="menu-option start-daily-action"
-              onClick={() => setScreen("daily")}
-            >
-              <i className="fas fa-calendar-day" aria-hidden="true" />
-              <span className="start-daily-copy">
-                <span className="start-daily-topline">
-                  <span>{remainingDailies > 0 ? "NEXT → DAILY QUESTS" : "DAILY QUESTS"}</span>
-                  <span className="start-daily-count">{stats.dailyTasksCompleted}/{stats.dailyTasksGoal}</span>
+            {hybrid ? (
+              <button
+                type="button"
+                className="menu-option start-daily-action"
+                onClick={() => setScreen("daily")}
+              >
+                <i className="fas fa-hammer" aria-hidden="true" />
+                <span className="start-daily-copy">
+                  <span className="start-daily-topline">
+                    <span>MY PERSONAL QUESTS</span>
+                    <span className="start-daily-count">{stats.dailyTasksCompleted}/{stats.dailyTasksGoal}</span>
+                  </span>
+                  <span className="start-daily-progress-track" aria-hidden="true">
+                    <span className="start-daily-progress-fill" style={{ width: `${dailyProgress}%` }} />
+                  </span>
                 </span>
-                <span className="start-daily-progress-track" aria-hidden="true">
-                  <span className="start-daily-progress-fill" style={{ width: `${dailyProgress}%` }} />
-                </span>
-              </span>
-            </button>
+              </button>
+            ) : null}
 
             <div className="start-secondary-actions start-secondary-actions--player">
               <button
@@ -277,6 +307,14 @@ export default function StartScreen() {
               >
                 <i className="fas fa-gem" aria-hidden="true" />
                 <span>GEAR</span>
+              </button>
+              <button
+                type="button"
+                className="menu-option start-secondary-action"
+                onClick={() => setScreen("journey")}
+              >
+                <i className="fas fa-compass" aria-hidden="true" />
+                <span>PLAY STYLE</span>
               </button>
               <button
                 type="button"
