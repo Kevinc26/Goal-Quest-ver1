@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 import { getEquippedItems, loadEquipment, type EquippedGear } from "../../../game/gear";
+import { saveGoalQuestCloud } from "../../../lib/cloudSave";
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { useGoalQuestAuth } from "../auth/AuthProvider";
 import HeroGearVisuals from "../gear/HeroGearVisuals";
 import { publicAssetPath } from "../utils";
 
@@ -18,7 +20,9 @@ export default function StartScreen() {
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const getPathName = useGoalQuestStore((state) => state.getPathName);
   const getPathDescription = useGoalQuestStore((state) => state.getPathDescription);
+  const auth = useGoalQuestAuth();
   const [equipment, setEquipment] = useState<EquippedGear>(EMPTY_EQUIPMENT);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     if (!character) {
@@ -27,6 +31,26 @@ export default function StartScreen() {
     }
     setEquipment(loadEquipment(character.id, stats));
   }, [character, stats.level]);
+
+  const handleSignOut = async () => {
+    if (signingOut) {
+      return;
+    }
+
+    setSigningOut(true);
+    try {
+      if (auth.session) {
+        try {
+          await saveGoalQuestCloud(auth.session);
+        } catch (error) {
+          console.error("Final GoalQuest cloud save before sign out failed", error);
+        }
+      }
+      await auth.signOut();
+    } finally {
+      setSigningOut(false);
+    }
+  };
 
   const characterImageSrc = character ? publicAssetPath(goalQuestAssets.classes[character.id]) : "";
   const introHeroSrc = publicAssetPath(goalQuestAssets.classes[2]);
@@ -271,6 +295,30 @@ export default function StartScreen() {
                 <span>SETTINGS</span>
               </button>
             </div>
+
+            {auth.configured && auth.session ? (
+              <button
+                type="button"
+                className="menu-option start-secondary-action"
+                onClick={() => void handleSignOut()}
+                disabled={signingOut}
+                aria-label="Sign out of GoalQuest"
+                style={{
+                  width: "100%",
+                  minHeight: "34px",
+                  padding: "7px 12px",
+                  justifyContent: "center",
+                  gap: "8px",
+                  color: "#aebdcc",
+                  borderColor: "rgba(174,189,204,.28)",
+                  background: "rgba(13,25,40,.72)",
+                  opacity: signingOut ? 0.65 : 0.9
+                }}
+              >
+                <i className="fas fa-right-from-bracket" aria-hidden="true" />
+                <span>{signingOut ? "SAVING ADVENTURE..." : "SIGN OUT"}</span>
+              </button>
+            ) : null}
           </>
         ) : (
           <>
