@@ -4,6 +4,7 @@ import { bossSceneForRegion, classBattleFx } from "../../../game/bossPresentatio
 import { getClassCombatLoadout, type LegacyAttackType } from "../../../game/combatLoadouts";
 import { regionById } from "../../../game/data";
 import { goalQuestAssets, useGoalQuestStore } from "../../../stores/goalQuestStore";
+import BossArenaDecor from "../combat/BossArenaDecor";
 import BossSprite from "../combat/BossSprite";
 import { percent, publicAssetPath } from "../utils";
 
@@ -27,6 +28,12 @@ const actionDescription = (move: ReturnType<typeof getClassCombatLoadout>[number
   if (move.action.defensePower) parts.push(`GUARD ${move.action.defensePower}`);
   if (move.action.effect) parts.push(move.action.effect.id.toUpperCase());
   return parts.join(" · ");
+};
+
+const bossPhaseLabel = (bossPercent: number) => {
+  if (bossPercent > 66) return "PHASE I";
+  if (bossPercent > 33) return "PHASE II";
+  return "ENRAGED";
 };
 
 export default function CombatScreen() {
@@ -69,6 +76,8 @@ export default function CombatScreen() {
   const victory = combat.enemyCurrentHp <= 0;
   const defeat = combat.playerHp <= 0;
   const recentLog = combat.log.slice(-3);
+  const phaseLabel = bossPhaseLabel(bossPercent);
+  const bossEnraged = bossPercent <= 33 && bossPercent > 0;
 
   const triggerAttack = (attackType: LegacyAttackType, actionName: string) => {
     if (isAnimating || victory || defeat) return;
@@ -106,6 +115,7 @@ export default function CombatScreen() {
       } as React.CSSProperties}
     >
       <div className="combat-rpg-vignette" aria-hidden="true" />
+      <BossArenaDecor regionId={region.id} />
       <div className="combat-rpg-particles" aria-hidden="true"><span /><span /><span /><span /><span /><span /></div>
 
       {introVisible ? (
@@ -141,6 +151,7 @@ export default function CombatScreen() {
           <div><strong>{region.boss.name}</strong><span>RANK {region.boss.difficulty}</span></div>
           <div className="combat-rpg-hp-row"><span>HP</span><b>{combat.enemyCurrentHp}/{bossMaxHp}</b></div>
           <div className="combat-rpg-hp-track combat-rpg-hp-track--boss"><i style={{ width: `${bossPercent}%` }} /></div>
+          <div className={`combat-rpg-phase ${bossEnraged ? "is-enraged" : ""}`}>{phaseLabel}</div>
         </div>
         <div className="combat-rpg-hud-icon">{scene.bossGlyph}</div>
       </section>
@@ -156,7 +167,7 @@ export default function CombatScreen() {
 
         <div className="combat-rpg-versus-mark" aria-hidden="true">✦</div>
 
-        <div className={`combat-rpg-fighter combat-rpg-boss ${scene.bossClass} ${fx.bossFx} ${victory ? "combat-rpg-boss--defeated" : ""}`}>
+        <div className={`combat-rpg-fighter combat-rpg-boss ${scene.bossClass} ${fx.bossFx} ${bossEnraged ? "is-enraged" : ""} ${victory ? "combat-rpg-boss--defeated" : ""}`}>
           <div className="combat-rpg-ground-shadow combat-rpg-ground-shadow--boss" />
           <div className="combat-rpg-boss-aura" aria-hidden="true" />
           <BossSprite regionId={region.id} className="combat-rpg-boss-sprite" />
@@ -169,7 +180,7 @@ export default function CombatScreen() {
 
       <section className="combat-rpg-command-panel">
         <div className="combat-rpg-command-title">
-          <span>{isAnimating ? "ACTION IN PROGRESS" : "CHOOSE YOUR ACTION"}</span>
+          <span>{isAnimating ? "ACTION IN PROGRESS" : bossEnraged ? "BOSS ENRAGED · CHOOSE CAREFULLY" : "CHOOSE YOUR ACTION"}</span>
           <small>TURN {Math.max(1, combat.turn + 1)}</small>
         </div>
         <div className="combat-rpg-actions">
