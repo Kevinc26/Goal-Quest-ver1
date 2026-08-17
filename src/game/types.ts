@@ -94,12 +94,30 @@ export interface CurrentTask {
   secondsLeft: number;
 }
 
+export type CombatStatusEffectId = "guard" | "vulnerable" | "weakened" | "confused";
+
+export interface CombatStatusEffect {
+  id: CombatStatusEffectId;
+  turns: number;
+  potency: number;
+}
+
 export interface CombatState {
   regionId: number;
   enemyCurrentHp: number;
   playerHp: number;
   turn: number;
   log: string[];
+  /** Optional for compatibility with saves created before the RPG combat overhaul. */
+  outcome?: "active" | "victory" | "defeat";
+  /** Boss EXP reward, captured when victory happens so the result screen can present it. */
+  reward?: number;
+  /** Cinematic combat V2 resource state. Old saves fall back to Stats.mp. */
+  playerMp?: number;
+  /** Temporary player effects used by class guard/heal/status mechanics. */
+  playerEffects?: CombatStatusEffect[];
+  /** Temporary boss effects applied by class abilities. */
+  bossEffects?: CombatStatusEffect[];
 }
 
 export interface JourneyRecord {

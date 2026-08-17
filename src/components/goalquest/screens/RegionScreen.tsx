@@ -40,30 +40,6 @@ export default function RegionScreen() {
   const bossDefeated = isBossDefeated(region.id);
   const regionDoneToday = stats.lastRegionMissionDate === today;
   const regionTextAccent = readableAccent(region.color);
-  const firstBossTestingEnabled = region.id === 1 && !bossDefeated;
-  const canChallengeBoss = !bossDefeated && (regionCompleted || firstBossTestingEnabled);
-
-  const challengeBoss = () => {
-    if (regionCompleted) {
-      startCombat(region.id);
-      return;
-    }
-
-    if (region.id !== 1 || bossDefeated) {
-      return;
-    }
-
-    useGoalQuestStore.setState((state) => ({
-      currentCombat: {
-        regionId: region.id,
-        enemyCurrentHp: region.boss.hp,
-        playerHp: state.stats.maxHp,
-        turn: 0,
-        log: ["Battle begins against " + region.boss.name]
-      },
-      screen: "combat"
-    }));
-  };
 
   return (
     <div className="game-screen active">
@@ -109,12 +85,9 @@ export default function RegionScreen() {
         })}
       </div>
 
-      {canChallengeBoss ? (
+      {regionCompleted && !bossDefeated ? (
         <div style={{ textAlign: "center", marginTop: "30px" }}>
-          {firstBossTestingEnabled && !regionCompleted ? (
-            <div style={{ color: "var(--warning)", fontSize: "10px", marginBottom: "10px" }}>TEST MODE • FIRST BOSS UNLOCKED</div>
-          ) : null}
-          <button type="button" className="ff-button" onClick={challengeBoss} style={{ background: "var(--danger)" }}>⚔️ CHALLENGE BOSS</button>
+          <button type="button" className="ff-button" onClick={() => startCombat(region.id)} style={{ background: "var(--danger)" }}>⚔️ CHALLENGE BOSS</button>
         </div>
       ) : null}
 
