@@ -15,11 +15,25 @@ type CombatFxState = {
   bossActionLabel: string;
 };
 
+type DamageFxState = {
+  bossDamage: number | null;
+  playerDamage: number | null;
+  bossHit: boolean;
+  playerHit: boolean;
+};
+
 const EMPTY_FX: CombatFxState = {
   playerFx: "",
   bossFx: "",
   actionLabel: "",
   bossActionLabel: ""
+};
+
+const EMPTY_DAMAGE_FX: DamageFxState = {
+  bossDamage: null,
+  playerDamage: null,
+  bossHit: false,
+  playerHit: false
 };
 
 const actionDescription = (move: ReturnType<typeof getClassCombatLoadout>[number]) => {
@@ -36,6 +50,12 @@ const bossPhaseLabel = (bossPercent: number) => {
   return "ENRAGED";
 };
 
+const predictedPlayerDamage = (attackType: LegacyAttackType, dailyExp: number) => {
+  if (attackType === "weak") return 10 + Math.floor(dailyExp / 10);
+  if (attackType === "medium") return 20 + Math.floor(dailyExp / 5);
+  return 30 + Math.floor(dailyExp / 3);
+};
+
 export default function CombatScreen() {
   const combat = useGoalQuestStore((state) => state.currentCombat);
   const stats = useGoalQuestStore((state) => state.stats);
@@ -44,6 +64,7 @@ export default function CombatScreen() {
   const fleeCombat = useGoalQuestStore((state) => state.fleeCombat);
 
   const [fx, setFx] = useState<CombatFxState>(EMPTY_FX);
+  const [damageFx, setDamageFx] = useState<DamageFxState>(EMPTY_DAMAGE_FX);
   const [isAnimating, setIsAnimating] = useState(false);
   const [introVisible, setIntroVisible] = useState(true);
 
@@ -78,6 +99,8 @@ export default function CombatScreen() {
   const recentLog = combat.log.slice(-3);
   const phaseLabel = bossPhaseLabel(bossPercent);
   const bossEnraged = bossPercent <= 33 && bossPercent > 0;
+  const nextBossAttackIndex = combat.turn % Math.max(1, region.boss.attacks.length);
+  const nextBossAttack = region.boss.attacks[nextBossAttackIndex] ?? "Strike";
 
   const triggerAttack = (attackType: LegacyAttackType, actionName: string) => {
     if (isAnimating || victory || defeat) return;
@@ -86,27 +109,33 @@ export default function CombatScreen() {
     const bossAttack = region.boss.attacks[bossAttackIndex] ?? "Strike";
     const playerFx = classFx[attackType];
     const bossFx = scene.attackFx[bossAttack] ?? "fx-boss-strike";
+    const dealtDamage = Math.min(combat.enemyCurrentHp, predictedPlayerDamage(attackType, stats.dailyExp));
+    const receivedDamage = Math.min(combat.playerHp, 10 + region.boss.difficulty * 5);
 
     setIsAnimating(true);
+    setDamageFx(EMPTY_DAMAGE_FX);
     setFx({ playerFx, bossFx: "", actionLabel: actionName, bossActionLabel: "" });
 
     window.setTimeout(() => {
+      setDamageFx((current) => ({ ...current, bossDamage: dealtDamage, bossHit: true }));
       performAttack(attackType);
     }, 260);
 
     window.setTimeout(() => {
       setFx((current) => ({ ...current, bossFx, bossActionLabel: bossAttack }));
+      setDamageFx((current) => ({ ...current, playerDamage: receivedDamage, playerHit: true }));
     }, 520);
 
     window.setTimeout(() => {
       setFx(EMPTY_FX);
+      setDamageFx(EMPTY_DAMAGE_FX);
       setIsAnimating(false);
     }, 1150);
   };
 
   return (
     <div
-      className={`game-screen active combat-rpg-screen combat-region-${region.id} ${scene.atmosphere}`}
+      className={`game-screen active combat-rpg-screen combat-region-${region.id} ${scene.atmosphere} ${damageFx.playerHit ? "combat-screen-player-hit" : ""} ${damageFx.bossHit ? "combat-screen-boss-hit" : ""}`}
       style={{
         "--region-accent": region.color,
         "--region-rgb": region.colorRgb,
@@ -156,22 +185,30 @@ export default function CombatScreen() {
         <div className="combat-rpg-hud-icon">{scene.bossGlyph}</div>
       </section>
 
+      <div className={`combat-rpg-intent ${bossEnraged ? "is-enraged" : ""}`} aria-live="polite">
+        <span>BOSS INTENT</span>
+        <strong>{isAnimating && fx.bossActionLabel ? fx.bossActionLabel : nextBossAttack}</strong>
+        <small>{bossEnraged ? "ENRAGED STRIKE INCOMING" : "READ THE ENEMY · PLAN YOUR TURN"}</small>
+      </div>
+
       <main className="combat-rpg-stage" aria-label={`Battle against ${region.boss.name}`}>
-        <div className={`combat-rpg-fighter combat-rpg-player ${classFx.aura} ${fx.playerFx}`}>
+        <div className={`combat-rpg-fighter combat-rpg-player ${classFx.aura} ${fx.playerFx} ${damageFx.playerHit ? "is-hit" : ""}`}>
           <div className="combat-rpg-ground-shadow" />
           <div className="combat-rpg-player-aura" aria-hidden="true" />
           <img src={playerSprite} alt={character.name} className="combat-rpg-player-sprite" />
           {fx.actionLabel ? <div className="combat-rpg-action-callout combat-rpg-action-callout--player">{fx.actionLabel}</div> : null}
+          {damageFx.playerDamage !== null ? <div className="combat-rpg-damage-number combat-rpg-damage-number--player">-{damageFx.playerDamage}</div> : null}
           <div className="combat-player-projectile" aria-hidden="true"><span /></div>
         </div>
 
         <div className="combat-rpg-versus-mark" aria-hidden="true">✦</div>
 
-        <div className={`combat-rpg-fighter combat-rpg-boss ${scene.bossClass} ${fx.bossFx} ${bossEnraged ? "is-enraged" : ""} ${victory ? "combat-rpg-boss--defeated" : ""}`}>
+        <div className={`combat-rpg-fighter combat-rpg-boss ${scene.bossClass} ${fx.bossFx} ${bossEnraged ? "is-enraged" : ""} ${damageFx.bossHit ? "is-hit" : ""} ${victory ? "combat-rpg-boss--defeated" : ""}`}>
           <div className="combat-rpg-ground-shadow combat-rpg-ground-shadow--boss" />
           <div className="combat-rpg-boss-aura" aria-hidden="true" />
           <BossSprite regionId={region.id} className="combat-rpg-boss-sprite" />
           {fx.bossActionLabel ? <div className="combat-rpg-action-callout combat-rpg-action-callout--boss">{fx.bossActionLabel}</div> : null}
+          {damageFx.bossDamage !== null ? <div className="combat-rpg-damage-number combat-rpg-damage-number--boss">-{damageFx.bossDamage}</div> : null}
           <div className="combat-boss-projectile" aria-hidden="true"><span /></div>
         </div>
 
