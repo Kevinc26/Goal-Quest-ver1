@@ -58,14 +58,18 @@ const collectEquipment = () => {
 };
 
 const restoreEquipment = (equipment: Record<string, unknown> | null | undefined) => {
-  if (typeof window === "undefined" || !equipment) {
+  if (typeof window === "undefined") {
     return;
   }
 
+  const source = equipment ?? {};
   for (let characterId = 1; characterId <= 8; characterId += 1) {
-    const value = equipment[String(characterId)];
+    const key = `${GEAR_PREFIX}${characterId}`;
+    window.localStorage.removeItem(key);
+
+    const value = source[String(characterId)];
     if (value && typeof value === "object" && !Array.isArray(value)) {
-      window.localStorage.setItem(`${GEAR_PREFIX}${characterId}`, JSON.stringify(value));
+      window.localStorage.setItem(key, JSON.stringify(value));
     }
   }
 
@@ -196,9 +200,14 @@ export const bootstrapGoalQuestCloud = async (session: SupabaseSession) => {
   if (row && cloudHasProgress(row)) {
     hydrateStoreFromCloud(row);
   } else if (localHasProgress() && canMigrateLocal) {
+    // First account on a legacy/local-only GoalQuest browser: preserve the existing hero.
     await saveGoalQuestCloud(session);
   } else if (row) {
+    // A fresh or different account gets its own blank cloud state, never another user's local save.
     hydrateStoreFromCloud(row);
+  } else if (!canMigrateLocal) {
+    useGoalQuestStore.getState().resetGame();
+    restoreEquipment({});
   }
 
   if (typeof window !== "undefined") {
