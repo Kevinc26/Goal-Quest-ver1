@@ -1,4 +1,5 @@
 import { characterById } from "../game/data";
+import { getJourneyMode, setJourneyMode, type JourneyMode } from "../game/journeyMode";
 import { useGoalQuestStore } from "../stores/goalQuestStore";
 import { supabaseFetch, type SupabaseSession } from "./supabaseClient";
 
@@ -16,6 +17,7 @@ type CloudState = {
   lastPlayedDate?: string | null;
   lastLoginDate?: string | null;
   corruptionLevel?: number;
+  journeyMode?: JourneyMode | null;
 };
 
 type CloudSaveRow = {
@@ -92,7 +94,8 @@ const buildDurableState = () => {
     todayCompleted: state.todayCompleted,
     lastPlayedDate: state.lastPlayedDate,
     lastLoginDate: state.lastLoginDate,
-    corruptionLevel: state.corruptionLevel
+    corruptionLevel: state.corruptionLevel,
+    journeyMode: getJourneyMode()
   };
 };
 
@@ -189,6 +192,10 @@ const hydrateStoreFromCloud = (row: CloudSaveRow) => {
     corruptionLevel: typeof cloud.corruptionLevel === "number" ? cloud.corruptionLevel : 0
   }));
 
+  if (cloud.journeyMode === "adventure" || cloud.journeyMode === "custom" || cloud.journeyMode === "hybrid") {
+    setJourneyMode(cloud.journeyMode);
+  }
+
   restoreEquipment(row.equipment);
 };
 
@@ -268,6 +275,10 @@ export const startGoalQuestCloudSync = (session: SupabaseSession) => {
     lastObservedSnapshot = JSON.stringify(buildSavePayload(session));
     schedule();
   };
+  const journeyModeChanged = () => {
+    lastObservedSnapshot = JSON.stringify(buildSavePayload(session));
+    schedule();
+  };
   const visibilityChanged = () => {
     if (document.visibilityState === "hidden") {
       void flush();
@@ -275,6 +286,7 @@ export const startGoalQuestCloudSync = (session: SupabaseSession) => {
   };
 
   window.addEventListener("goalquest:equipment-changed", equipmentChanged);
+  window.addEventListener("goalquest:journey-mode-changed", journeyModeChanged);
   document.addEventListener("visibilitychange", visibilityChanged);
 
   return () => {
@@ -284,6 +296,7 @@ export const startGoalQuestCloudSync = (session: SupabaseSession) => {
       window.clearTimeout(timeoutId);
     }
     window.removeEventListener("goalquest:equipment-changed", equipmentChanged);
+    window.removeEventListener("goalquest:journey-mode-changed", journeyModeChanged);
     document.removeEventListener("visibilitychange", visibilityChanged);
   };
 };
