@@ -138,7 +138,7 @@ const cloudHasProgress = (row: CloudSaveRow) => {
       row.revision > 0 ||
       (stats?.exp ?? 0) > 0 ||
       (stats?.totalTasksCompleted ?? 0) > 0 ||
-      row.defeatedBosses?.length
+      (row.state?.defeatedBosses?.length ?? 0) > 0
   );
 };
 
@@ -213,7 +213,8 @@ export const bootstrapGoalQuestCloud = async (session: SupabaseSession) => {
 export const startGoalQuestCloudSync = (session: SupabaseSession) => {
   let timeoutId: number | null = null;
   let disposed = false;
-  let lastSnapshot = JSON.stringify(buildSavePayload(session));
+  let lastSavedSnapshot = JSON.stringify(buildSavePayload(session));
+  let lastObservedSnapshot = lastSavedSnapshot;
 
   const flush = async () => {
     if (disposed) {
@@ -221,13 +222,14 @@ export const startGoalQuestCloudSync = (session: SupabaseSession) => {
     }
 
     const nextSnapshot = JSON.stringify(buildSavePayload(session));
-    if (nextSnapshot === lastSnapshot) {
+    lastObservedSnapshot = nextSnapshot;
+    if (nextSnapshot === lastSavedSnapshot) {
       return;
     }
 
-    lastSnapshot = nextSnapshot;
     try {
       await saveGoalQuestCloud(session);
+      lastSavedSnapshot = nextSnapshot;
     } catch (error) {
       console.error("GoalQuest cloud save failed", error);
     }
@@ -243,8 +245,20 @@ export const startGoalQuestCloudSync = (session: SupabaseSession) => {
     }, 900);
   };
 
-  const unsubscribe = useGoalQuestStore.subscribe(schedule);
-  const equipmentChanged = () => schedule();
+  const handleStoreChange = () => {
+    const nextSnapshot = JSON.stringify(buildSavePayload(session));
+    if (nextSnapshot === lastObservedSnapshot) {
+      return;
+    }
+    lastObservedSnapshot = nextSnapshot;
+    schedule();
+  };
+
+  const unsubscribe = useGoalQuestStore.subscribe(handleStoreChange);
+  const equipmentChanged = () => {
+    lastObservedSnapshot = JSON.stringify(buildSavePayload(session));
+    schedule();
+  };
   const visibilityChanged = () => {
     if (document.visibilityState === "hidden") {
       void flush();
