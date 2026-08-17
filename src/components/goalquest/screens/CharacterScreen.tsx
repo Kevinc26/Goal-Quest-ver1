@@ -36,7 +36,6 @@ export default function CharacterScreen() {
   const selectedCharacter = useGoalQuestStore((state) => state.character);
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const selectCharacter = useGoalQuestStore((state) => state.selectCharacter);
-  const startAdventure = useGoalQuestStore((state) => state.startAdventure);
   const touchStartX = useRef<number | null>(null);
 
   const initialIndex = Math.max(
@@ -86,7 +85,7 @@ export default function CharacterScreen() {
 
   const confirmCharacter = () => {
     selectCharacter(activeCharacter.id);
-    startAdventure();
+    setScreen("journey");
   };
 
   const onTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {

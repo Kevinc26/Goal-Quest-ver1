@@ -3,6 +3,7 @@ export type MissionType = "text" | "timer" | "check";
 export type ScreenName =
   | "start"
   | "characters"
+  | "journey"
   | "gear"
   | "world"
   | "region"
