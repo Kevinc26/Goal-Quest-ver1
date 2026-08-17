@@ -94,13 +94,79 @@ export default function CombatScreen() {
   const bossMaxHp = region.boss.hp;
   const bossPercent = percent(combat.enemyCurrentHp, bossMaxHp);
   const playerPercent = percent(combat.playerHp, stats.maxHp);
-  const victory = combat.enemyCurrentHp <= 0;
-  const defeat = combat.playerHp <= 0;
+  const combatOutcome = combat.outcome ?? (combat.enemyCurrentHp <= 0 ? "victory" : combat.playerHp <= 0 ? "defeat" : "active");
+  const victory = combatOutcome === "victory";
+  const defeat = combatOutcome === "defeat";
   const recentLog = combat.log.slice(-3);
   const phaseLabel = bossPhaseLabel(bossPercent);
   const bossEnraged = bossPercent <= 33 && bossPercent > 0;
   const nextBossAttackIndex = combat.turn % Math.max(1, region.boss.attacks.length);
   const nextBossAttack = region.boss.attacks[nextBossAttackIndex] ?? "Strike";
+  const reward = combat.reward ?? 100 * region.boss.difficulty;
+
+  const finishResult = () => {
+    useGoalQuestStore.setState({ currentCombat: null, screen: "world" });
+  };
+
+  const resolveCinematicVictory = (damage: number, actionName: string) => {
+    const rewardExp = 100 * region.boss.difficulty;
+
+    useGoalQuestStore.setState((state) => {
+      const nextExp = state.stats.exp + rewardExp;
+      const nextDailyExp = state.stats.dailyExp + rewardExp;
+      const shouldLevel = nextExp >= state.stats.nextLevelExp;
+      const nextMaxHp = shouldLevel ? state.stats.maxHp + 10 : state.stats.maxHp;
+      const nextMaxMp = shouldLevel ? state.stats.maxMp + 10 : state.stats.maxMp;
+
+      return {
+        defeatedBosses: [...new Set([...state.defeatedBosses, region.id])],
+        stats: {
+          ...state.stats,
+          exp: nextExp,
+          dailyExp: nextDailyExp,
+          level: shouldLevel ? state.stats.level + 1 : state.stats.level,
+          maxHp: nextMaxHp,
+          maxMp: nextMaxMp,
+          hp: shouldLevel ? nextMaxHp : state.stats.hp,
+          mp: shouldLevel ? nextMaxMp : state.stats.mp,
+          nextLevelExp: shouldLevel ? Math.floor(state.stats.nextLevelExp * 1.5) : state.stats.nextLevelExp
+        },
+        currentCombat: state.currentCombat
+          ? {
+              ...state.currentCombat,
+              enemyCurrentHp: 0,
+              outcome: "victory",
+              reward: rewardExp,
+              log: [...state.currentCombat.log, `${actionName} deals ${damage} damage.`, "Victory!"]
+            }
+          : state.currentCombat
+      };
+    });
+  };
+
+  const resolveCinematicDefeat = (playerDamage: number, bossDamage: number, actionName: string, bossAttack: string) => {
+    useGoalQuestStore.setState((state) => ({
+      stats: {
+        ...state.stats,
+        hp: 0
+      },
+      currentCombat: state.currentCombat
+        ? {
+            ...state.currentCombat,
+            enemyCurrentHp: Math.max(0, state.currentCombat.enemyCurrentHp - playerDamage),
+            playerHp: 0,
+            turn: state.currentCombat.turn + 1,
+            outcome: "defeat",
+            log: [
+              ...state.currentCombat.log,
+              `${actionName} deals ${playerDamage} damage.`,
+              `${region.boss.name} uses ${bossAttack} for ${bossDamage} damage.`,
+              "You were defeated."
+            ]
+          }
+        : state.currentCombat
+    }));
+  };
 
   const triggerAttack = (attackType: LegacyAttackType, actionName: string) => {
     if (isAnimating || victory || defeat) return;
@@ -109,8 +175,12 @@ export default function CombatScreen() {
     const bossAttack = region.boss.attacks[bossAttackIndex] ?? "Strike";
     const playerFx = classFx[attackType];
     const bossFx = scene.attackFx[bossAttack] ?? "fx-boss-strike";
-    const dealtDamage = Math.min(combat.enemyCurrentHp, predictedPlayerDamage(attackType, stats.dailyExp));
-    const receivedDamage = Math.min(combat.playerHp, 10 + region.boss.difficulty * 5);
+    const rawPlayerDamage = predictedPlayerDamage(attackType, stats.dailyExp);
+    const dealtDamage = Math.min(combat.enemyCurrentHp, rawPlayerDamage);
+    const rawBossDamage = 10 + region.boss.difficulty * 5;
+    const receivedDamage = Math.min(combat.playerHp, rawBossDamage);
+    const bossWillFall = combat.enemyCurrentHp - rawPlayerDamage <= 0;
+    const playerWillFall = !bossWillFall && combat.playerHp - rawBossDamage <= 0;
 
     setIsAnimating(true);
     setDamageFx(EMPTY_DAMAGE_FX);
@@ -118,24 +188,49 @@ export default function CombatScreen() {
 
     window.setTimeout(() => {
       setDamageFx((current) => ({ ...current, bossDamage: dealtDamage, bossHit: true }));
+
+      if (bossWillFall) {
+        resolveCinematicVictory(dealtDamage, actionName);
+        return;
+      }
+
+      if (playerWillFall) {
+        useGoalQuestStore.setState((state) => ({
+          currentCombat: state.currentCombat
+            ? {
+                ...state.currentCombat,
+                enemyCurrentHp: Math.max(0, state.currentCombat.enemyCurrentHp - dealtDamage),
+                log: [...state.currentCombat.log, `${actionName} deals ${dealtDamage} damage.`]
+              }
+            : state.currentCombat
+        }));
+        return;
+      }
+
       performAttack(attackType);
     }, 260);
 
-    window.setTimeout(() => {
-      setFx((current) => ({ ...current, bossFx, bossActionLabel: bossAttack }));
-      setDamageFx((current) => ({ ...current, playerDamage: receivedDamage, playerHit: true }));
-    }, 520);
+    if (!bossWillFall) {
+      window.setTimeout(() => {
+        setFx((current) => ({ ...current, bossFx, bossActionLabel: bossAttack }));
+        setDamageFx((current) => ({ ...current, playerDamage: receivedDamage, playerHit: true }));
+
+        if (playerWillFall) {
+          resolveCinematicDefeat(dealtDamage, receivedDamage, actionName, bossAttack);
+        }
+      }, 520);
+    }
 
     window.setTimeout(() => {
       setFx(EMPTY_FX);
       setDamageFx(EMPTY_DAMAGE_FX);
       setIsAnimating(false);
-    }, 1150);
+    }, bossWillFall || playerWillFall ? 1450 : 1150);
   };
 
   return (
     <div
-      className={`game-screen active combat-rpg-screen combat-region-${region.id} ${scene.atmosphere} ${damageFx.playerHit ? "combat-screen-player-hit" : ""} ${damageFx.bossHit ? "combat-screen-boss-hit" : ""}`}
+      className={`game-screen active combat-rpg-screen combat-region-${region.id} ${scene.atmosphere} ${damageFx.playerHit ? "combat-screen-player-hit" : ""} ${damageFx.bossHit ? "combat-screen-boss-hit" : ""} ${victory ? "combat-screen-victory" : ""} ${defeat ? "combat-screen-defeat" : ""}`}
       style={{
         "--region-accent": region.color,
         "--region-rgb": region.colorRgb,
@@ -180,19 +275,21 @@ export default function CombatScreen() {
           <div><strong>{region.boss.name}</strong><span>RANK {region.boss.difficulty}</span></div>
           <div className="combat-rpg-hp-row"><span>HP</span><b>{combat.enemyCurrentHp}/{bossMaxHp}</b></div>
           <div className="combat-rpg-hp-track combat-rpg-hp-track--boss"><i style={{ width: `${bossPercent}%` }} /></div>
-          <div className={`combat-rpg-phase ${bossEnraged ? "is-enraged" : ""}`}>{phaseLabel}</div>
+          <div className={`combat-rpg-phase ${bossEnraged ? "is-enraged" : ""}`}>{victory ? "DEFEATED" : phaseLabel}</div>
         </div>
         <div className="combat-rpg-hud-icon">{scene.bossGlyph}</div>
       </section>
 
-      <div className={`combat-rpg-intent ${bossEnraged ? "is-enraged" : ""}`} aria-live="polite">
-        <span>BOSS INTENT</span>
-        <strong>{isAnimating && fx.bossActionLabel ? fx.bossActionLabel : nextBossAttack}</strong>
-        <small>{bossEnraged ? "ENRAGED STRIKE INCOMING" : "READ THE ENEMY · PLAN YOUR TURN"}</small>
-      </div>
+      {!victory && !defeat ? (
+        <div className={`combat-rpg-intent ${bossEnraged ? "is-enraged" : ""}`} aria-live="polite">
+          <span>BOSS INTENT</span>
+          <strong>{isAnimating && fx.bossActionLabel ? fx.bossActionLabel : nextBossAttack}</strong>
+          <small>{bossEnraged ? "ENRAGED STRIKE INCOMING" : "READ THE ENEMY · PLAN YOUR TURN"}</small>
+        </div>
+      ) : null}
 
       <main className="combat-rpg-stage" aria-label={`Battle against ${region.boss.name}`}>
-        <div className={`combat-rpg-fighter combat-rpg-player ${classFx.aura} ${fx.playerFx} ${damageFx.playerHit ? "is-hit" : ""}`}>
+        <div className={`combat-rpg-fighter combat-rpg-player ${classFx.aura} ${fx.playerFx} ${damageFx.playerHit ? "is-hit" : ""} ${defeat ? "is-defeated" : ""}`}>
           <div className="combat-rpg-ground-shadow" />
           <div className="combat-rpg-player-aura" aria-hidden="true" />
           <img src={playerSprite} alt={character.name} className="combat-rpg-player-sprite" />
@@ -215,40 +312,46 @@ export default function CombatScreen() {
         <div className={`combat-rpg-impact-layer ${fx.playerFx ? "is-player-impact" : ""} ${fx.bossFx ? "is-boss-impact" : ""}`} aria-hidden="true"><i /><i /><i /><i /></div>
       </main>
 
-      <section className="combat-rpg-command-panel">
-        <div className="combat-rpg-command-title">
-          <span>{isAnimating ? "ACTION IN PROGRESS" : bossEnraged ? "BOSS ENRAGED · CHOOSE CAREFULLY" : "CHOOSE YOUR ACTION"}</span>
-          <small>TURN {Math.max(1, combat.turn + 1)}</small>
-        </div>
-        <div className="combat-rpg-actions">
-          {loadout.map((move, index) => (
-            <button
-              key={move.attackType}
-              type="button"
-              className={`combat-rpg-action combat-rpg-action--${move.attackType}`}
-              onClick={() => triggerAttack(move.attackType, move.action.name)}
-              disabled={isAnimating || victory || defeat}
-            >
-              <span className="combat-rpg-action-number">0{index + 1}</span>
-              <span className="combat-rpg-action-icon">{move.icon}</span>
-              <span className="combat-rpg-action-copy"><strong>{move.action.name}</strong><small>{actionDescription(move)}</small></span>
-              <span className="combat-rpg-action-chevron">›</span>
+      <section className={`combat-rpg-command-panel ${victory || defeat ? "is-result" : ""}`}>
+        {victory || defeat ? (
+          <div className={`combat-rpg-result-card ${victory ? "is-victory" : "is-defeat"}`}>
+            <span>{victory ? "✦ ENCOUNTER CLEARED ✦" : "THE PATH REMAINS"}</span>
+            <strong>{victory ? "VICTORY" : "DEFEAT"}</strong>
+            <p>{victory ? `${region.boss.name} has fallen. ${region.name} is yours.` : `${region.boss.name} stopped this attempt. Recover and challenge it again.`}</p>
+            {victory ? <b>+{reward} EXP</b> : <b>HP DEPLETED</b>}
+            <button type="button" className="combat-rpg-result-continue" onClick={finishResult}>
+              {victory ? "CONTINUE JOURNEY" : "RETURN TO WORLD"} <span>›</span>
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div className="combat-rpg-command-title">
+              <span>{isAnimating ? "ACTION IN PROGRESS" : bossEnraged ? "BOSS ENRAGED · CHOOSE CAREFULLY" : "CHOOSE YOUR ACTION"}</span>
+              <small>TURN {Math.max(1, combat.turn + 1)}</small>
+            </div>
+            <div className="combat-rpg-actions">
+              {loadout.map((move, index) => (
+                <button
+                  key={move.attackType}
+                  type="button"
+                  className={`combat-rpg-action combat-rpg-action--${move.attackType}`}
+                  onClick={() => triggerAttack(move.attackType, move.action.name)}
+                  disabled={isAnimating}
+                >
+                  <span className="combat-rpg-action-number">0{index + 1}</span>
+                  <span className="combat-rpg-action-icon">{move.icon}</span>
+                  <span className="combat-rpg-action-copy"><strong>{move.action.name}</strong><small>{actionDescription(move)}</small></span>
+                  <span className="combat-rpg-action-chevron">›</span>
+                </button>
+              ))}
+            </div>
 
-        <div className="combat-rpg-log" aria-live="polite">
-          {recentLog.map((entry, index) => <span key={`${entry}-${index}`}>{entry}</span>)}
-        </div>
+            <div className="combat-rpg-log" aria-live="polite">
+              {recentLog.map((entry, index) => <span key={`${entry}-${index}`}>{entry}</span>)}
+            </div>
+          </>
+        )}
       </section>
-
-      {victory ? (
-        <div className="combat-rpg-result combat-rpg-result--victory" aria-live="assertive"><span>✦ BOSS DEFEATED ✦</span><strong>VICTORY</strong><small>{region.name} answers to you now.</small></div>
-      ) : null}
-
-      {defeat ? (
-        <div className="combat-rpg-result combat-rpg-result--defeat" aria-live="assertive"><span>THE BATTLE IS NOT OVER</span><strong>DEFEAT</strong><small>Return stronger. The path remains.</small></div>
-      ) : null}
     </div>
   );
 }
