@@ -85,6 +85,7 @@ export default function CharacterScreen() {
   );
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<-1 | 1>(1);
 
   useEffect(() => {
     if (!selectedCharacter) return;
@@ -96,10 +97,12 @@ export default function CharacterScreen() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
+        setTransitionDirection(-1);
         setActiveIndex((current) => wrapIndex(current - 1));
       }
       if (event.key === "ArrowRight") {
         event.preventDefault();
+        setTransitionDirection(1);
         setActiveIndex((current) => wrapIndex(current + 1));
       }
     };
@@ -114,8 +117,14 @@ export default function CharacterScreen() {
   const activeImageSrc = resolvePublicAsset(goalQuestAssets.classes[activeCharacter.id]);
   const perks = classPerks[activeCharacter.id] ?? [];
 
-  const moveBy = (direction: number) => {
+  const moveBy = (direction: -1 | 1) => {
+    setTransitionDirection(direction);
     setActiveIndex((current) => wrapIndex(current + direction));
+  };
+
+  const selectIndex = (index: number, direction: -1 | 1 = 1) => {
+    setTransitionDirection(direction);
+    setActiveIndex(index);
   };
 
   const confirmCharacter = () => {
@@ -148,7 +157,7 @@ export default function CharacterScreen() {
         key={`${character.id}-${offset}`}
         type="button"
         className={`character-portal-preview character-portal-preview--${offset < 0 ? "left" : "right"} character-portal-preview--${near ? "near" : "far"}`}
-        onClick={() => setActiveIndex(index)}
+        onClick={() => selectIndex(index, offset < 0 ? -1 : 1)}
         aria-label={`Select ${character.name}`}
         style={{
           "--preview-accent": accent,
@@ -171,12 +180,14 @@ export default function CharacterScreen() {
 
   return (
     <div
-      className="game-screen active character-select-screen character-portal-screen"
+      className="game-screen active character-select-screen character-portal-screen character-portal-screen--cinematic"
       style={{ "--class-accent": activeAccent } as React.CSSProperties}
     >
       <div className="character-portal-stars" aria-hidden="true">
         <span /><span /><span /><span /><span /><span /><span /><span />
       </div>
+
+      <div className="character-portal-ambient-grid" aria-hidden="true" />
 
       <button type="button" className="character-portal-back" onClick={() => setScreen("start")} aria-label="Back">
         <i className="fas fa-arrow-left" aria-hidden="true" />
@@ -188,7 +199,7 @@ export default function CharacterScreen() {
       </header>
 
       <main className="character-portal-layout">
-        <aside className="character-portal-info" aria-live="polite">
+        <aside key={`info-${activeCharacter.id}`} className="character-portal-info character-portal-info--animated" aria-live="polite">
           <div className="character-portal-info-kicker">LV. {stats.level} <b>•</b> {activeCharacter.name}</div>
           <h2>{activePath?.name ?? "PATH OF THE ADVENTURER"}</h2>
           <div className="character-portal-divider"><span>◆</span></div>
@@ -223,10 +234,18 @@ export default function CharacterScreen() {
             {renderPreview(-2)}
             {renderPreview(-1)}
 
-            <article className="character-portal-active" aria-live="polite">
+            <article
+              key={activeCharacter.id}
+              className={`character-portal-active character-portal-active--enter character-portal-active--${transitionDirection < 0 ? "from-left" : "from-right"}`}
+              aria-live="polite"
+            >
+              <div className="character-portal-core" aria-hidden="true" />
               <div className="character-portal-ring character-portal-ring--outer" aria-hidden="true" />
+              <div className="character-portal-ring character-portal-ring--middle" aria-hidden="true" />
               <div className="character-portal-ring character-portal-ring--inner" aria-hidden="true" />
               <div className="character-portal-burst" aria-hidden="true" />
+              <div className="character-portal-energy-arc character-portal-energy-arc--one" aria-hidden="true" />
+              <div className="character-portal-energy-arc character-portal-energy-arc--two" aria-hidden="true" />
               <span className="character-portal-rune character-portal-rune--one" aria-hidden="true">✦</span>
               <span className="character-portal-rune character-portal-rune--two" aria-hidden="true">◆</span>
               <span className="character-portal-rune character-portal-rune--three" aria-hidden="true">✧</span>
@@ -253,12 +272,14 @@ export default function CharacterScreen() {
               const imageSrc = resolvePublicAsset(goalQuestAssets.classes[character.id]);
               const accent = classAccents[character.id] ?? character.color;
               const isActive = index === activeIndex;
+              const rawDelta = index - activeIndex;
+              const direction: -1 | 1 = rawDelta < 0 ? -1 : 1;
               return (
                 <button
                   key={character.id}
                   type="button"
                   className={isActive ? "active" : ""}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => selectIndex(index, direction)}
                   aria-label={`Show ${character.name}`}
                   aria-current={isActive ? "true" : undefined}
                   style={{ "--portrait-accent": accent } as React.CSSProperties}
@@ -288,7 +309,7 @@ export default function CharacterScreen() {
           {goalQuestCharacters.map((character, index) => {
             const path = pathForCharacter(character.id);
             return (
-              <button key={character.id} type="button" className={index === activeIndex ? "active" : ""} onClick={() => setActiveIndex(index)}>
+              <button key={character.id} type="button" className={index === activeIndex ? "active" : ""} onClick={() => selectIndex(index, index < activeIndex ? -1 : 1)}>
                 <strong>{character.name}</strong>
                 <span>{path?.name.replace("PATH OF ", "") ?? "ADVENTURER"}</span>
                 <small>HP {character.hp} · MP {character.mp}</small>
