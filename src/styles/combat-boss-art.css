@@ -1,0 +1,220 @@
+/* GoalQuest boss art + mirrored battle staging
+   Bosses live on the left and heroes on the right so both face the center. */
+
+.combat-rpg-screen::before {
+  background:
+    radial-gradient(circle at 20% 58%, color-mix(in srgb, var(--region-accent) 24%, transparent), transparent 31%),
+    radial-gradient(circle at 80% 75%, color-mix(in srgb, var(--class-accent) 18%, transparent), transparent 28%),
+    linear-gradient(180deg, rgba(3, 7, 18, 0.08), rgba(3, 7, 18, 0.66));
+}
+
+/* HUD follows the combatants. */
+.combat-rpg-hud--boss { left: 42px; right: auto; }
+.combat-rpg-hud--player { right: 42px; left: auto; }
+
+/* Reorder the fighters without changing combat state or mechanics. */
+.combat-rpg-boss { order: 1; justify-content: flex-start; }
+.combat-rpg-player { order: 3; justify-content: flex-end; }
+.combat-rpg-versus-mark { order: 2; }
+
+/* The original procedural SVG remains in the DOM as a safe fallback, but the
+   authored boss art is the visible battle sprite. */
+.combat-rpg-boss-sprite { display: none !important; }
+.combat-rpg-boss::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: -8%;
+  bottom: -2%;
+  width: 118%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: contain;
+  filter:
+    drop-shadow(0 20px 19px rgba(0,0,0,.58))
+    drop-shadow(0 0 24px color-mix(in srgb, var(--region-accent) 32%, transparent));
+  transform-origin: 42% 88%;
+  pointer-events: none;
+  animation: combatBossArtIdle 3.2s ease-in-out infinite;
+}
+
+.combat-region-1 .combat-rpg-boss::before { background-image: url("/assets/bosses/01-urzag.webp"); }
+.combat-region-2 .combat-rpg-boss::before { background-image: url("/assets/bosses/02-zephyrion.webp"); }
+.combat-region-3 .combat-rpg-boss::before { background-image: url("/assets/bosses/03-maldrak.webp"); }
+.combat-region-4 .combat-rpg-boss::before { background-image: url("/assets/bosses/04-xilith.webp"); }
+.combat-region-5 .combat-rpg-boss::before { background-image: url("/assets/bosses/05-thalor.webp"); }
+.combat-region-6 .combat-rpg-boss::before { background-image: url("/assets/bosses/06-nyxara.webp"); }
+.combat-region-7 .combat-rpg-boss::before { background-image: url("/assets/bosses/07-kaelstrom.webp"); }
+.combat-region-8 .combat-rpg-boss::before { background-image: url("/assets/bosses/08-oblivion.webp"); }
+
+/* Portrait-oriented bosses can be a little taller without swallowing the HUD. */
+.combat-region-2 .combat-rpg-boss::before,
+.combat-region-4 .combat-rpg-boss::before,
+.combat-region-7 .combat-rpg-boss::before,
+.combat-region-8 .combat-rpg-boss::before {
+  left: -3%;
+  width: 108%;
+  height: 102%;
+}
+
+@keyframes combatBossArtIdle {
+  0%,100% { transform: translateY(0) rotate(.25deg); }
+  50% { transform: translateY(-9px) rotate(-.45deg); }
+}
+
+/* Grounding and auras now match the new sides. */
+.combat-rpg-ground-shadow { left: auto; right: 7%; }
+.combat-rpg-ground-shadow--boss { left: 3%; right: auto; }
+.combat-rpg-player-aura { left: auto; right: 7%; }
+.combat-rpg-boss-aura { left: 4%; right: auto; }
+
+.combat-rpg-action-callout--player { left: auto; right: 23%; }
+.combat-rpg-action-callout--boss { left: 16%; right: auto; }
+
+/* Hero attacks now travel from right -> left. */
+.player-sword-slash .combat-rpg-player-sprite,.player-knight-lunge .combat-rpg-player-sprite,.player-knight-breaker .combat-rpg-player-sprite,
+.player-shield-bash .combat-rpg-player-sprite,.player-tank-guard .combat-rpg-player-sprite,.player-fortress-breaker .combat-rpg-player-sprite,
+.player-ninja-strike .combat-rpg-player-sprite,.player-shadow-cut .combat-rpg-player-sprite,.player-distraction-break .combat-rpg-player-sprite {
+  animation: heroLungeFromRight .52s cubic-bezier(.16,.9,.22,1) both;
+}
+.player-arrow-shot .combat-rpg-player-sprite,.player-focus-arrow .combat-rpg-player-sprite,.player-arrow-volley .combat-rpg-player-sprite,
+.player-magic-bolt .combat-rpg-player-sprite,.player-magic-lance .combat-rpg-player-sprite,.player-magic-fire .combat-rpg-player-sprite,
+.player-flask-toss .combat-rpg-player-sprite,.player-mixture .combat-rpg-player-sprite,.player-transmutation .combat-rpg-player-sprite,
+.player-sacred-hit .combat-rpg-player-sprite,.player-clarity-ray .combat-rpg-player-sprite,.player-balance-judgment .combat-rpg-player-sprite,
+.player-light-hit .combat-rpg-player-sprite,.player-heal-pulse .combat-rpg-player-sprite,.player-radiant-burst .combat-rpg-player-sprite {
+  animation: heroCastFromRight .52s cubic-bezier(.2,.85,.28,1) both;
+}
+@keyframes heroLungeFromRight {
+  0% { transform: translateX(0); }
+  38% { transform: translateX(-35px) rotate(-1deg) scale(1.06); }
+  62% { transform: translateX(-54px) rotate(1deg) scale(1.08); }
+  100% { transform: translateX(0); }
+}
+@keyframes heroCastFromRight {
+  0% { transform: translateY(0) scale(1); }
+  38% { transform: translateY(-10px) scale(1.05); }
+  68% { filter: brightness(1.35) drop-shadow(0 0 24px var(--class-accent)); transform: translate(-16px,-5px) scale(1.06); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.player-arrow-shot .combat-player-projectile span,.player-focus-arrow .combat-player-projectile span,.player-arrow-volley .combat-player-projectile span {
+  left: auto;
+  right: 48%;
+  background: linear-gradient(270deg,var(--class-accent),#fff);
+  animation: arrowFlightRightToLeft .44s ease-out both;
+}
+@keyframes arrowFlightRightToLeft {
+  from { transform: translateX(30px) scaleX(.25); opacity: 0; }
+  35% { opacity: 1; }
+  to { transform: translateX(-360px) scaleX(1.1); opacity: 0; }
+}
+
+.player-magic-bolt .combat-player-projectile span,.player-magic-lance .combat-player-projectile span,.player-magic-fire .combat-player-projectile span,
+.player-light-hit .combat-player-projectile span,.player-radiant-burst .combat-player-projectile span,.player-sacred-hit .combat-player-projectile span,.player-clarity-ray .combat-player-projectile span,.player-balance-judgment .combat-player-projectile span {
+  left: auto;
+  right: 48%;
+  animation: spellFlightRightToLeft .52s ease-out both;
+}
+@keyframes spellFlightRightToLeft {
+  from { transform: translate(18px,18px) scale(.2); opacity: 0; }
+  30% { opacity: 1; }
+  to { transform: translate(-350px,-18px) scale(1.4); opacity: 0; }
+}
+
+.player-flask-toss .combat-player-projectile span,.player-mixture .combat-player-projectile span,.player-transmutation .combat-player-projectile span {
+  left: auto;
+  right: 50%;
+  animation: flaskArcRightToLeft .65s cubic-bezier(.15,.55,.3,1) both;
+}
+@keyframes flaskArcRightToLeft {
+  0% { transform: translate(0,0) rotate(0) scale(.6); opacity: 0; }
+  20% { opacity: 1; }
+  55% { transform: translate(-190px,-120px) rotate(-270deg); }
+  100% { transform: translate(-360px,-8px) rotate(-620deg) scale(.85); opacity: 0; }
+}
+
+.player-ninja-strike::after,.player-shadow-cut::after,.player-distraction-break::after,.player-sword-slash::after,.player-knight-lunge::after,.player-knight-breaker::after,.player-shield-bash::after,.player-fortress-breaker::after {
+  left: auto;
+  right: 48%;
+  background: linear-gradient(270deg,color-mix(in srgb,var(--class-accent) 70%,white),transparent);
+  transform: rotate(14deg);
+  animation: slashTrailRightToLeft .42s ease-out both;
+}
+@keyframes slashTrailRightToLeft {
+  from { opacity: 0; clip-path: inset(0 0 0 100%); }
+  35% { opacity: 1; }
+  to { opacity: 0; clip-path: inset(0 0 0 0); }
+}
+
+/* Boss attacks now travel from left -> right, including the new boss artwork. */
+.combat-rpg-boss.fx-confusion::before,.combat-rpg-boss.fx-doubt::before,.combat-rpg-boss.fx-anxiety::before,.combat-rpg-boss.fx-obsession::before {
+  animation: bossPsychicAttackFromLeft .65s ease-out both;
+}
+.combat-rpg-boss.fx-procrastination::before,.combat-rpg-boss.fx-stone-crush::before,.combat-rpg-boss.fx-routine::before,.combat-rpg-boss.fx-tentacle::before,.combat-rpg-boss.fx-boss-strike::before {
+  animation: bossPhysicalAttackFromLeft .64s cubic-bezier(.2,.85,.3,1) both;
+}
+.combat-rpg-boss.fx-distraction::before,.combat-rpg-boss.fx-toxic::before,.combat-rpg-boss.fx-ashfall::before,.combat-rpg-boss.fx-eclipse::before,.combat-rpg-boss.fx-burnout::before,.combat-rpg-boss.fx-mist::before,.combat-rpg-boss.fx-ink::before,.combat-rpg-boss.fx-static::before,.combat-rpg-boss.fx-crystal::before,.combat-rpg-boss.fx-fall::before,.combat-rpg-boss.fx-panic::before,.combat-rpg-boss.fx-paralysis::before,.combat-rpg-boss.fx-imbalance::before,.combat-rpg-boss.fx-whiteout::before {
+  animation: bossPowerAttackFromLeft .72s ease-out both;
+}
+@keyframes bossPsychicAttackFromLeft {
+  0% { transform: translate(0,0); }
+  35% { transform: translate(15px,-12px) scale(1.05); filter: brightness(1.5) saturate(1.4); }
+  65% { transform: translate(31px,3px) scale(1.08); }
+  100% { transform: translate(0,0); }
+}
+@keyframes bossPhysicalAttackFromLeft {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(54px) scale(1.09); }
+  70% { transform: translateX(68px) scale(1.1); }
+  100% { transform: translateX(0); }
+}
+@keyframes bossPowerAttackFromLeft {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08) translateY(-13px); filter: brightness(1.55); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+.combat-rpg-boss[class*="fx-"] .combat-boss-projectile span {
+  left: 47%;
+  right: auto;
+  animation: bossFxTravelLeftToRight .65s ease-in both;
+}
+@keyframes bossFxTravelLeftToRight {
+  from { transform: translate(0,-10px) scale(.3); opacity: 0; }
+  30% { opacity: 1; }
+  to { transform: translate(360px,35px) scale(1.45); opacity: 0; }
+}
+
+.combat-rpg-impact-layer.is-player-impact i { left: 23%; right: auto; }
+.combat-rpg-impact-layer.is-boss-impact i { left: auto; right: 23%; }
+
+.combat-rpg-boss--defeated::before {
+  animation: bossArtDefeat 1.25s ease-in forwards !important;
+}
+@keyframes bossArtDefeat {
+  0% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
+  35% { filter: brightness(3) saturate(.4); transform: translateY(-8px) scale(1.05); }
+  100% { opacity: 0; filter: brightness(5) blur(3px); transform: translateY(30px) scale(.75); }
+}
+
+@media (max-width: 980px) {
+  .combat-rpg-hud--boss { left: 16px; right: auto; }
+  .combat-rpg-hud--player { right: 16px; left: auto; }
+  .combat-rpg-boss::before { left: -6%; width: 114%; }
+  .combat-region-2 .combat-rpg-boss::before,
+  .combat-region-4 .combat-rpg-boss::before,
+  .combat-region-7 .combat-rpg-boss::before,
+  .combat-region-8 .combat-rpg-boss::before { left: 0; width: 105%; }
+}
+
+@media (max-width: 680px) {
+  .combat-rpg-hud--boss { left: 7px; right: auto; }
+  .combat-rpg-hud--player { right: 7px; left: auto; }
+  .combat-rpg-boss::before { left: -10%; width: 122%; height: 92%; }
+  .combat-region-2 .combat-rpg-boss::before,
+  .combat-region-4 .combat-rpg-boss::before,
+  .combat-region-7 .combat-rpg-boss::before,
+  .combat-region-8 .combat-rpg-boss::before { left: -2%; width: 108%; height: 96%; }
+}
