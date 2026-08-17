@@ -2,6 +2,7 @@
 
 import type { ScreenName } from "../../game/types";
 import { useGoalQuestStore } from "../../stores/goalQuestStore";
+import BossLab from "./combat/BossLab";
 import AchievementsScreen from "./screens/AchievementsScreen";
 import CharacterScreen from "./screens/CharacterScreen";
 import CombatScreen from "./screens/CombatScreen";
@@ -31,5 +32,5 @@ export default function ScreenRouter() {
     achievements: <AchievementsScreen />
   };
 
-  return <>{componentByScreen[screen]}</>;
+  return <>{componentByScreen[screen]}<BossLab /></>;
 }
