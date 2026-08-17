@@ -100,6 +100,10 @@ export interface CombatState {
   playerHp: number;
   turn: number;
   log: string[];
+  /** Optional for compatibility with saves created before the RPG combat overhaul. */
+  outcome?: "active" | "victory" | "defeat";
+  /** Boss EXP reward, captured when victory happens so the result screen can present it. */
+  reward?: number;
 }
 
 export interface JourneyRecord {
