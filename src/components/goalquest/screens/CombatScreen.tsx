@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import { bossAttackProfileFor, bossCombatProfileForRegion } from "../../../game/bossCombatProfiles";
 import { bossSceneForRegion, classBattleFx } from "../../../game/bossPresentation";
 import { getClassCombatLoadout, type ClassCombatMove } from "../../../game/combatLoadouts";
 import { regionById } from "../../../game/data";
@@ -22,10 +23,20 @@ type DamageFxState = {
   bossHit: boolean;
   playerHit: boolean;
   heal: number | null;
+  bossHeal: number | null;
+  mpDrain: number | null;
 };
 
 const EMPTY_FX: CombatFxState = { playerFx: "", bossFx: "", actionLabel: "", bossActionLabel: "" };
-const EMPTY_DAMAGE_FX: DamageFxState = { bossDamage: null, playerDamage: null, bossHit: false, playerHit: false, heal: null };
+const EMPTY_DAMAGE_FX: DamageFxState = {
+  bossDamage: null,
+  playerDamage: null,
+  bossHit: false,
+  playerHit: false,
+  heal: null,
+  bossHeal: null,
+  mpDrain: null
+};
 
 const EFFECT_LABELS: Record<CombatStatusEffectId, string> = {
   guard: "GUARD",
@@ -36,8 +47,7 @@ const EFFECT_LABELS: Record<CombatStatusEffectId, string> = {
 
 const actionDescription = (move: ClassCombatMove) => {
   const parts = [`POWER ${move.action.power}`];
-  if (move.action.mpCost) parts.push(`${move.action.mpCost} MP`);
-  else parts.push("FREE");
+  parts.push(move.action.mpCost ? `${move.action.mpCost} MP` : "FREE");
   if (move.action.healPower) parts.push(`HEAL ${move.action.healPower}`);
   if (move.action.defensePower) parts.push(`GUARD ${move.action.defensePower}`);
   if (move.action.effect) parts.push(EFFECT_LABELS[move.action.effect.id]);
@@ -65,19 +75,17 @@ const upsertEffect = (effects: CombatStatusEffect[], incoming: CombatStatusEffec
 const tickEffects = (effects: CombatStatusEffect[]) =>
   effects.map((effect) => ({ ...effect, turns: effect.turns - 1 })).filter((effect) => effect.turns > 0);
 
-const bossAttackEffect = (attackIndex: number): CombatStatusEffect | null => {
-  if (attackIndex % 3 === 0) return { id: "confused", turns: 2, potency: 2 };
-  if (attackIndex % 3 === 1) return { id: "weakened", turns: 2, potency: 3 };
-  if (attackIndex % 3 === 2) return { id: "vulnerable", turns: 2, potency: 2 };
-  return null;
-};
+const reduceGuard = (effects: CombatStatusEffect[], amount: number) =>
+  effects
+    .map((effect) => effect.id === "guard" ? { ...effect, potency: Math.max(0, effect.potency - amount) } : effect)
+    .filter((effect) => effect.id !== "guard" || effect.potency > 0);
 
 const effectChips = (effects: CombatStatusEffect[], owner: "player" | "boss") => {
   if (!effects.length) return null;
   return (
     <div className={`combat-status-row combat-status-row--${owner}`} aria-label={`${owner} status effects`}>
       {effects.map((effect) => (
-        <span key={`${effect.id}-${effect.turns}`} className={`combat-status-chip combat-status-chip--${effect.id}`}>
+        <span key={`${effect.id}-${effect.turns}-${effect.potency}`} className={`combat-status-chip combat-status-chip--${effect.id}`}>
           {EFFECT_LABELS[effect.id]} <b>{effect.turns}</b>
         </span>
       ))}
@@ -111,6 +119,7 @@ export default function CombatScreen() {
 
   const loadout = getClassCombatLoadout(character.id);
   const scene = bossSceneForRegion(region.id);
+  const combatProfile = bossCombatProfileForRegion(region.id);
   const classFx = classBattleFx[character.id] ?? classBattleFx[1];
   const playerSprite = publicAssetPath(goalQuestAssets.classes[character.id]);
   const arenaBackground = publicAssetPath(goalQuestAssets.acts[region.id]);
@@ -124,11 +133,12 @@ export default function CombatScreen() {
   const combatOutcome = combat.outcome ?? (combat.enemyCurrentHp <= 0 ? "victory" : combat.playerHp <= 0 ? "defeat" : "active");
   const victory = combatOutcome === "victory";
   const defeat = combatOutcome === "defeat";
-  const recentLog = combat.log.slice(-4);
+  const recentLog = combat.log.slice(-5);
   const phaseLabel = bossPhaseLabel(bossPercent);
   const bossEnraged = bossPercent <= 33 && bossPercent > 0;
   const nextBossAttackIndex = combat.turn % Math.max(1, region.boss.attacks.length);
   const nextBossAttack = region.boss.attacks[nextBossAttackIndex] ?? "Strike";
+  const nextAttackProfile = bossAttackProfileFor(region.id, nextBossAttack);
   const reward = combat.reward ?? 100 * region.boss.difficulty;
 
   const finishResult = () => useGoalQuestStore.setState({ currentCombat: null, screen: "world" });
@@ -186,6 +196,7 @@ export default function CombatScreen() {
 
     const bossAttackIndex = combat.turn % Math.max(1, region.boss.attacks.length);
     const bossAttack = region.boss.attacks[bossAttackIndex] ?? "Strike";
+    const attackProfile = bossAttackProfileFor(region.id, bossAttack);
     const playerFx = classFx[move.attackType];
     const bossFx = scene.attackFx[bossAttack] ?? "fx-boss-strike";
 
@@ -205,7 +216,7 @@ export default function CombatScreen() {
     let nextPlayerEffects = [...playerEffects];
     let nextBossEffects = [...bossEffects];
     let nextHp = combat.playerHp;
-    const nextMp = Math.max(0, playerMp - move.action.mpCost);
+    let nextMp = Math.max(0, playerMp - move.action.mpCost);
     let healed = 0;
 
     if (move.action.healPower) {
@@ -225,18 +236,22 @@ export default function CombatScreen() {
 
     const bossWillFall = combat.enemyCurrentHp - rawPlayerDamage <= 0;
     const bossBase = 8 + region.boss.difficulty * 4 + (bossEnraged ? 3 : 0);
-    const bossMultiplier = bossAttackIndex % 3 === 0 ? 0.82 : bossAttackIndex % 3 === 1 ? 1 : 1.18;
-    const bossPower = Math.max(1, Math.floor(bossBase * bossMultiplier) - bossWeakened);
+    const bossPower = Math.max(1, Math.floor(bossBase * attackProfile.powerMultiplier) - bossWeakened);
     const classDefense = Math.floor(character.hp / 20);
-    const effectiveGuard = playerGuard + (move.action.defensePower ?? 0);
+    const effectiveGuard = Math.max(0, playerGuard + (move.action.defensePower ?? 0) - (attackProfile.guardBreak ?? 0));
     const rawBossDamage = Math.max(1, bossPower - classDefense - effectiveGuard + playerVulnerable);
     const receivedDamage = Math.min(nextHp, rawBossDamage);
     const finalHp = Math.max(0, nextHp - rawBossDamage);
-    const incomingEffect = bossAttackEffect(bossAttackIndex);
     const playerWillFall = !bossWillFall && finalHp <= 0;
+    const mpDrained = bossWillFall ? 0 : Math.min(nextMp, attackProfile.mpDrain ?? 0);
+    nextMp = Math.max(0, nextMp - mpDrained);
+    const bossHeal = bossWillFall ? 0 : Math.min(attackProfile.bossHeal ?? 0, Math.max(0, bossMaxHp - (combat.enemyCurrentHp - dealtDamage)));
 
-    if (incomingEffect && !bossWillFall && !playerWillFall) {
-      nextPlayerEffects = upsertEffect(nextPlayerEffects, incomingEffect);
+    if (attackProfile.guardBreak) {
+      nextPlayerEffects = reduceGuard(nextPlayerEffects, attackProfile.guardBreak);
+    }
+    if (attackProfile.effect && !bossWillFall && !playerWillFall) {
+      nextPlayerEffects = upsertEffect(nextPlayerEffects, attackProfile.effect);
     }
 
     setResourceWarning("");
@@ -248,43 +263,49 @@ export default function CombatScreen() {
       setDamageFx((current) => ({ ...current, bossDamage: dealtDamage, bossHit: true }));
 
       if (bossWillFall) {
-        awardVictory({
-          damage: dealtDamage,
-          actionName: move.action.name,
-          nextHp,
-          nextMp,
-          nextPlayerEffects,
-          nextBossEffects
-        });
+        awardVictory({ damage: dealtDamage, actionName: move.action.name, nextHp, nextMp, nextPlayerEffects, nextBossEffects });
         return;
       }
 
-      useGoalQuestStore.setState((state) => ({
-        stats: { ...state.stats, hp: playerWillFall ? 0 : finalHp, mp: nextMp },
-        currentCombat: state.currentCombat ? {
-          ...state.currentCombat,
-          enemyCurrentHp: Math.max(0, state.currentCombat.enemyCurrentHp - dealtDamage),
-          playerHp: playerWillFall ? 0 : finalHp,
-          playerMp: nextMp,
-          playerEffects: playerWillFall ? nextPlayerEffects : tickEffects(nextPlayerEffects),
-          bossEffects: tickEffects(nextBossEffects),
-          turn: state.currentCombat.turn + 1,
-          outcome: playerWillFall ? "defeat" : "active",
-          log: [
-            ...state.currentCombat.log,
-            `${move.action.name} deals ${dealtDamage} damage.${healed ? ` Restores ${healed} HP.` : ""}`,
-            `${region.boss.name} uses ${bossAttack} for ${receivedDamage} damage.`,
-            ...(incomingEffect && !playerWillFall ? [`${EFFECT_LABELS[incomingEffect.id]} affects you.`] : []),
-            ...(playerWillFall ? ["You were defeated."] : [])
-          ]
-        } : state.currentCombat
-      }));
+      useGoalQuestStore.setState((state) => {
+        const enemyAfterPlayer = Math.max(0, state.currentCombat ? state.currentCombat.enemyCurrentHp - dealtDamage : 0);
+        const enemyAfterHeal = Math.min(bossMaxHp, enemyAfterPlayer + bossHeal);
+        return {
+          stats: { ...state.stats, hp: playerWillFall ? 0 : finalHp, mp: nextMp },
+          currentCombat: state.currentCombat ? {
+            ...state.currentCombat,
+            enemyCurrentHp: enemyAfterHeal,
+            playerHp: playerWillFall ? 0 : finalHp,
+            playerMp: nextMp,
+            playerEffects: playerWillFall ? nextPlayerEffects : tickEffects(nextPlayerEffects),
+            bossEffects: tickEffects(nextBossEffects),
+            turn: state.currentCombat.turn + 1,
+            outcome: playerWillFall ? "defeat" : "active",
+            log: [
+              ...state.currentCombat.log,
+              `${move.action.name} deals ${dealtDamage} damage.${healed ? ` Restores ${healed} HP.` : ""}`,
+              `${region.boss.name} uses ${bossAttack} for ${receivedDamage} damage.`,
+              ...(attackProfile.effect && !playerWillFall ? [`${EFFECT_LABELS[attackProfile.effect.id]} affects you.`] : []),
+              ...(mpDrained ? [`${bossAttack} drains ${mpDrained} MP.`] : []),
+              ...(bossHeal ? [`${region.boss.name} recovers ${bossHeal} HP.`] : []),
+              ...(attackProfile.guardBreak ? [`${bossAttack} breaks ${attackProfile.guardBreak} guard.`] : []),
+              ...(playerWillFall ? ["You were defeated."] : [])
+            ]
+          } : state.currentCombat
+        };
+      });
     }, 300);
 
     if (!bossWillFall) {
       window.setTimeout(() => {
         setFx((current) => ({ ...current, bossFx, bossActionLabel: bossAttack }));
-        setDamageFx((current) => ({ ...current, playerDamage: receivedDamage, playerHit: true }));
+        setDamageFx((current) => ({
+          ...current,
+          playerDamage: receivedDamage,
+          playerHit: true,
+          bossHeal: bossHeal || null,
+          mpDrain: mpDrained || null
+        }));
       }, 620);
     }
 
@@ -294,6 +315,12 @@ export default function CombatScreen() {
       setIsAnimating(false);
     }, bossWillFall || playerWillFall ? 1500 : 1220);
   };
+
+  const intentSubline = bossEnraged
+    ? combatProfile.enragedLine
+    : bossPercent <= 66
+      ? combatProfile.phaseTwoLine
+      : nextAttackProfile.telegraph;
 
   return (
     <div
@@ -342,7 +369,7 @@ export default function CombatScreen() {
 
       <section className="combat-rpg-hud combat-rpg-hud--boss" aria-label="Boss status">
         <div className="combat-rpg-hud-copy">
-          <div><strong>{region.boss.name}</strong><span>RANK {region.boss.difficulty}</span></div>
+          <div><strong>{region.boss.name}</strong><span>{combatProfile.identity}</span></div>
           <div className="combat-rpg-hp-row"><span>HP</span><b>{combat.enemyCurrentHp}/{bossMaxHp}</b></div>
           <div className="combat-rpg-hp-track combat-rpg-hp-track--boss"><i style={{ width: `${bossPercent}%` }} /></div>
           <div className={`combat-rpg-phase ${bossEnraged ? "is-enraged" : ""}`}>{victory ? "DEFEATED" : phaseLabel}</div>
@@ -355,7 +382,7 @@ export default function CombatScreen() {
         <div className={`combat-rpg-intent ${bossEnraged ? "is-enraged" : ""}`} aria-live="polite">
           <span>BOSS INTENT</span>
           <strong>{isAnimating && fx.bossActionLabel ? fx.bossActionLabel : nextBossAttack}</strong>
-          <small>{bossEnraged ? "ENRAGED STRIKE INCOMING" : "READ THE ENEMY · PLAN YOUR TURN"}</small>
+          <small>{intentSubline}</small>
         </div>
       ) : null}
 
@@ -367,6 +394,7 @@ export default function CombatScreen() {
           {fx.actionLabel ? <div className="combat-rpg-action-callout combat-rpg-action-callout--player">{fx.actionLabel}</div> : null}
           {damageFx.playerDamage !== null ? <div className="combat-rpg-damage-number combat-rpg-damage-number--player">-{damageFx.playerDamage}</div> : null}
           {damageFx.heal !== null ? <div className="combat-rpg-heal-number">+{damageFx.heal}</div> : null}
+          {damageFx.mpDrain !== null ? <div className="combat-rpg-resource-number">-{damageFx.mpDrain} MP</div> : null}
           <div className="combat-player-projectile" aria-hidden="true"><span /></div>
         </div>
 
@@ -378,6 +406,7 @@ export default function CombatScreen() {
           <BossSprite regionId={region.id} className="combat-rpg-boss-sprite" />
           {fx.bossActionLabel ? <div className="combat-rpg-action-callout combat-rpg-action-callout--boss">{fx.bossActionLabel}</div> : null}
           {damageFx.bossDamage !== null ? <div className="combat-rpg-damage-number combat-rpg-damage-number--boss">-{damageFx.bossDamage}</div> : null}
+          {damageFx.bossHeal !== null ? <div className="combat-rpg-heal-number combat-rpg-heal-number--boss">+{damageFx.bossHeal}</div> : null}
           <div className="combat-boss-projectile" aria-hidden="true"><span /></div>
         </div>
 
