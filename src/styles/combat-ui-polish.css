@@ -1,0 +1,651 @@
+/* GoalQuest combat UI polish — layout hierarchy + premium command cards.
+   Imported last so this pass only changes presentation, never combat mechanics. */
+
+.combat-rpg-screen {
+  min-height: min(920px, calc(100vh - 16px));
+  padding: 18px 28px 22px;
+  border-radius: 20px;
+}
+
+/* ---------- Header / encounter hierarchy ---------- */
+.combat-rpg-header {
+  width: min(100%, 1240px);
+  min-height: 92px;
+  margin: 0 auto;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.combat-rpg-title-block {
+  width: min(76%, 860px);
+  max-width: 860px;
+  padding-top: 3px;
+}
+
+.combat-rpg-title-block > span {
+  margin-bottom: 7px;
+  font-size: 8px;
+  line-height: 1.25;
+  letter-spacing: 2.3px;
+  opacity: .9;
+}
+
+.combat-rpg-title-block h1 {
+  max-width: 860px;
+  margin: 0;
+  font-size: clamp(22px, 2.55vw, 34px);
+  line-height: 1.03;
+  letter-spacing: .4px;
+  text-wrap: balance;
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, .32),
+    0 0 18px color-mix(in srgb, var(--region-accent) 35%, transparent);
+}
+
+.combat-rpg-title-block p {
+  max-width: 680px;
+  margin: 7px 0 0;
+  font-size: 7px;
+  line-height: 1.55;
+  letter-spacing: 1.05px;
+  opacity: .82;
+}
+
+.combat-rpg-flee {
+  min-width: 94px;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-color: rgba(202, 216, 239, .18);
+  background: linear-gradient(180deg, rgba(8, 16, 31, .82), rgba(4, 10, 23, .8));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .035);
+  font-size: 8px;
+  letter-spacing: .65px;
+}
+
+.combat-rpg-flee:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--region-accent) 50%, rgba(255, 255, 255, .25));
+  background: linear-gradient(180deg, rgba(14, 25, 43, .9), rgba(5, 12, 26, .88));
+}
+
+/* ---------- Compact, aligned status HUD ---------- */
+.combat-rpg-hud {
+  top: 122px;
+  width: min(326px, 28vw);
+  min-height: 106px;
+  padding: 11px 13px;
+  gap: 11px;
+  border-radius: 14px;
+  border-color: color-mix(in srgb, var(--region-accent) 34%, rgba(255, 255, 255, .18));
+  background:
+    linear-gradient(180deg, rgba(7, 16, 31, .92), rgba(4, 10, 22, .88));
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, .3),
+    inset 0 1px rgba(255, 255, 255, .04),
+    inset 0 0 24px color-mix(in srgb, var(--region-accent) 5%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+/* Combat-boss-art flips the fighters; keep the HUD on the same side as its fighter. */
+.combat-rpg-hud--boss {
+  left: 38px;
+  right: auto;
+}
+
+.combat-rpg-hud--player {
+  left: auto;
+  right: 38px;
+}
+
+.combat-rpg-hud-icon {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(16, 27, 45, .72), rgba(3, 8, 18, .64));
+}
+
+.combat-rpg-hud-copy > div:first-child {
+  margin-bottom: 6px;
+}
+
+.combat-rpg-hud-copy strong {
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.combat-rpg-hud-copy > div:first-child span {
+  font-size: 6px;
+  opacity: .8;
+}
+
+.combat-rpg-hp-row,
+.combat-rpg-mp-row {
+  font-size: 7px;
+}
+
+.combat-rpg-hp-track {
+  height: 6px;
+}
+
+.combat-rpg-mp-track {
+  height: 4px;
+}
+
+.combat-status-row {
+  margin-top: 6px;
+}
+
+/* ---------- Boss intent: readable, but no longer a third giant HUD ---------- */
+.combat-rpg-intent {
+  top: 205px;
+  width: min(300px, 27vw);
+  padding: 9px 13px 10px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(7, 13, 27, .93), rgba(3, 8, 18, .88));
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, .28),
+    inset 0 1px rgba(255, 255, 255, .035),
+    inset 0 0 20px color-mix(in srgb, var(--region-accent) 5%, transparent);
+}
+
+.combat-rpg-intent > span {
+  margin-bottom: 4px;
+  font-size: 6px;
+  letter-spacing: 1.8px;
+}
+
+.combat-rpg-intent > strong {
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.combat-rpg-intent > small {
+  max-width: 270px;
+  margin: 5px auto 0;
+  font-size: 5.7px;
+  line-height: 1.45;
+  letter-spacing: .65px;
+}
+
+/* ---------- Arena spacing ---------- */
+.combat-rpg-stage {
+  width: min(100%, 1210px);
+  height: clamp(390px, 50vh, 500px);
+  margin: 68px auto 0;
+  padding: 90px 72px 24px;
+}
+
+.combat-rpg-fighter {
+  width: 40%;
+}
+
+.combat-rpg-versus-mark {
+  top: 53%;
+  font-size: 34px;
+  opacity: .55;
+}
+
+/* ---------- Command deck ---------- */
+.combat-rpg-command-panel {
+  width: min(100%, 1200px);
+  margin: -2px auto 0;
+  padding: 15px 16px 14px;
+  border-radius: 18px;
+  border-color: color-mix(in srgb, var(--region-accent) 30%, rgba(255, 255, 255, .13));
+  background:
+    linear-gradient(180deg, rgba(5, 13, 27, .96), rgba(2, 7, 17, .97));
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, .42),
+    inset 0 1px rgba(255, 255, 255, .045),
+    inset 0 0 30px color-mix(in srgb, var(--region-accent) 3%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.combat-rpg-command-title {
+  min-height: 28px;
+  padding: 1px 4px 10px;
+  font-size: 7px;
+  letter-spacing: 1.55px;
+}
+
+.combat-rpg-command-title > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.combat-rpg-command-title > span::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border: 1px solid color-mix(in srgb, var(--class-accent) 70%, white);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--class-accent) 42%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--class-accent) 55%, transparent);
+  transform: rotate(45deg);
+}
+
+.combat-rpg-command-title small {
+  padding: 4px 7px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .025);
+  font-size: 6px;
+  letter-spacing: .7px;
+}
+
+.combat-rpg-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.combat-rpg-action {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto 27px;
+  align-items: center;
+  gap: 11px;
+  min-height: 82px;
+  padding: 12px 11px 12px 15px;
+  overflow: hidden;
+  border: 1px solid rgba(152, 174, 208, .16);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 14% 50%, color-mix(in srgb, var(--class-accent) 7%, transparent), transparent 32%),
+    linear-gradient(180deg, rgba(13, 27, 46, .9), rgba(5, 15, 29, .94));
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, .18),
+    inset 0 1px rgba(255, 255, 255, .04),
+    inset 0 0 24px rgba(255, 255, 255, .012);
+  isolation: isolate;
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease,
+    filter .18s ease;
+}
+
+.combat-rpg-action::before {
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  opacity: .72;
+}
+
+.combat-rpg-action::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 0 58%, color-mix(in srgb, var(--class-accent) 5%, transparent) 72%, transparent 88%);
+  opacity: .7;
+  transform: translateX(-18%);
+  transition: transform .3s ease, opacity .3s ease;
+}
+
+.combat-rpg-action:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.008);
+  border-color: color-mix(in srgb, var(--class-accent) 50%, rgba(255, 255, 255, .5));
+  background:
+    radial-gradient(circle at 14% 50%, color-mix(in srgb, var(--class-accent) 15%, transparent), transparent 36%),
+    linear-gradient(180deg, rgba(17, 34, 55, .96), rgba(6, 17, 32, .97));
+  box-shadow:
+    0 15px 30px rgba(0, 0, 0, .3),
+    0 0 22px color-mix(in srgb, var(--class-accent) 11%, transparent),
+    inset 0 1px rgba(255, 255, 255, .06);
+}
+
+.combat-rpg-action:hover:not(:disabled)::after {
+  opacity: 1;
+  transform: translateX(4%);
+}
+
+.combat-rpg-action:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--class-accent) 70%, white);
+  outline-offset: 2px;
+}
+
+.combat-rpg-action-number {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  color: rgba(218, 228, 244, .26);
+  font-size: 5.7px;
+  letter-spacing: .3px;
+}
+
+.combat-rpg-action-icon {
+  grid-column: 1;
+  min-width: 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  border-color: color-mix(in srgb, var(--class-accent) 22%, rgba(255, 255, 255, .12));
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--class-accent) 14%, transparent), transparent 68%),
+    rgba(2, 8, 18, .58);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, .045),
+    0 0 16px color-mix(in srgb, var(--class-accent) 7%, transparent);
+  font-size: 20px;
+}
+
+.combat-rpg-action-copy {
+  grid-column: 2;
+  gap: 5px;
+}
+
+.combat-rpg-action-copy strong {
+  overflow: visible;
+  color: #f7f9ff;
+  font-size: 9px;
+  line-height: 1.35;
+  letter-spacing: .15px;
+  text-overflow: clip;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.combat-rpg-action-copy small {
+  color: rgba(205, 216, 235, .52);
+  font-size: 5.9px;
+  line-height: 1.55;
+  letter-spacing: .22px;
+}
+
+.combat-rpg-action-cost {
+  grid-column: 3;
+  margin-left: 0;
+  padding: 5px 7px;
+  border-radius: 7px;
+  border-color: color-mix(in srgb, #70bdff 30%, rgba(255, 255, 255, .12));
+  color: #8bd0ff;
+  background: linear-gradient(180deg, rgba(39, 99, 158, .17), rgba(22, 58, 99, .12));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035);
+  font-size: 6px;
+  letter-spacing: .35px;
+}
+
+.combat-rpg-action-chevron {
+  grid-column: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid color-mix(in srgb, var(--class-accent) 20%, rgba(255, 255, 255, .08));
+  border-radius: 50%;
+  color: color-mix(in srgb, var(--class-accent) 78%, white);
+  background: color-mix(in srgb, var(--class-accent) 5%, rgba(3, 9, 20, .72));
+  font-size: 15px;
+  line-height: 1;
+  transition: transform .18s ease, background .18s ease;
+}
+
+.combat-rpg-action:hover:not(:disabled) .combat-rpg-action-chevron {
+  transform: translateX(2px);
+  background: color-mix(in srgb, var(--class-accent) 11%, rgba(3, 9, 20, .72));
+}
+
+.combat-rpg-action.is-resource-locked {
+  opacity: .38;
+  filter: saturate(.45) brightness(.86);
+}
+
+.combat-rpg-action.is-resource-locked .combat-rpg-action-cost {
+  border-color: rgba(255, 102, 120, .24);
+  color: #ff93a0;
+  background: rgba(139, 37, 52, .13);
+}
+
+/* Keep the combat log useful without turning it into a fourth information bar. */
+.combat-rpg-log {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 11px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, .045);
+}
+
+.combat-rpg-log span {
+  display: none;
+  min-width: 0;
+  padding: 0 7px;
+  border-top: 0;
+  color: rgba(196, 207, 228, .34);
+  font-size: 5.7px;
+  line-height: 1.45;
+}
+
+.combat-rpg-log span:nth-last-child(-n + 3) {
+  display: block;
+}
+
+.combat-rpg-log span:last-child {
+  color: rgba(232, 239, 251, .7);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .combat-rpg-title-block {
+    width: min(72%, 720px);
+  }
+
+  .combat-rpg-title-block h1 {
+    font-size: clamp(20px, 3vw, 30px);
+  }
+
+  .combat-rpg-hud {
+    width: min(302px, 31vw);
+  }
+
+  .combat-rpg-hud--boss { left: 22px; }
+  .combat-rpg-hud--player { right: 22px; }
+
+  .combat-rpg-stage {
+    padding-inline: 46px;
+  }
+
+  .combat-rpg-action {
+    grid-template-columns: 43px minmax(0, 1fr) auto 24px;
+    gap: 9px;
+    padding-inline: 12px 9px;
+  }
+
+  .combat-rpg-action-icon {
+    width: 43px;
+    min-width: 43px;
+    height: 43px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .combat-rpg-screen {
+    min-height: calc(100vh - 12px);
+    padding: 15px 16px 18px;
+  }
+
+  .combat-rpg-header {
+    min-height: 84px;
+  }
+
+  .combat-rpg-title-block {
+    width: calc(100% - 100px);
+  }
+
+  .combat-rpg-title-block h1 {
+    font-size: clamp(18px, 3.6vw, 25px);
+  }
+
+  .combat-rpg-title-block p {
+    display: none;
+  }
+
+  .combat-rpg-hud {
+    top: 104px;
+    width: calc(50% - 28px);
+  }
+
+  .combat-rpg-hud--boss { left: 14px; }
+  .combat-rpg-hud--player { right: 14px; }
+
+  .combat-rpg-intent {
+    top: 204px;
+    width: min(290px, 42vw);
+  }
+
+  .combat-rpg-stage {
+    height: 450px;
+    margin-top: 72px;
+    padding: 104px 26px 22px;
+  }
+
+  .combat-rpg-actions {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .combat-rpg-action {
+    min-height: 66px;
+  }
+
+  .combat-rpg-log {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .combat-rpg-screen {
+    padding: 11px 9px 14px;
+    border-radius: 13px;
+  }
+
+  .combat-rpg-header {
+    min-height: 55px;
+    align-items: center;
+  }
+
+  .combat-rpg-title-block {
+    width: calc(100% - 80px);
+    padding: 0;
+  }
+
+  .combat-rpg-title-block > span,
+  .combat-rpg-title-block p {
+    display: none;
+  }
+
+  .combat-rpg-title-block h1 {
+    font-size: clamp(13px, 4.4vw, 18px);
+    line-height: 1.12;
+  }
+
+  .combat-rpg-flee {
+    min-width: 72px;
+    min-height: 34px;
+    padding: 7px 8px;
+    border-radius: 9px;
+    font-size: 6px;
+  }
+
+  .combat-rpg-hud {
+    top: 68px;
+    width: calc(50% - 13px);
+    min-height: 82px;
+    padding: 8px;
+    gap: 7px;
+    border-radius: 10px;
+  }
+
+  .combat-rpg-hud--boss { left: 5px; }
+  .combat-rpg-hud--player { right: 5px; }
+
+  .combat-rpg-hud-icon {
+    display: none;
+  }
+
+  .combat-rpg-intent {
+    top: 163px;
+    width: min(250px, 66vw);
+    padding: 7px 9px 8px;
+  }
+
+  .combat-rpg-intent > span { font-size: 5px; }
+  .combat-rpg-intent > strong { font-size: 7px; }
+  .combat-rpg-intent > small { display: none; }
+
+  .combat-rpg-stage {
+    height: 360px;
+    margin-top: 82px;
+    padding: 70px 7px 18px;
+  }
+
+  .combat-rpg-fighter {
+    width: 46%;
+  }
+
+  .combat-rpg-command-panel {
+    margin-top: 0;
+    padding: 9px;
+    border-radius: 12px;
+  }
+
+  .combat-rpg-command-title {
+    min-height: 22px;
+    padding: 0 2px 7px;
+    font-size: 5.6px;
+  }
+
+  .combat-rpg-actions {
+    gap: 6px;
+  }
+
+  .combat-rpg-action {
+    grid-template-columns: 36px minmax(0, 1fr) auto 21px;
+    min-height: 55px;
+    gap: 7px;
+    padding: 7px 7px 7px 10px;
+    border-radius: 10px;
+  }
+
+  .combat-rpg-action-number {
+    display: none;
+  }
+
+  .combat-rpg-action-icon {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    font-size: 15px;
+  }
+
+  .combat-rpg-action-copy {
+    gap: 3px;
+  }
+
+  .combat-rpg-action-copy strong {
+    font-size: 7px;
+  }
+
+  .combat-rpg-action-copy small {
+    font-size: 5px;
+    line-height: 1.4;
+  }
+
+  .combat-rpg-action-cost {
+    padding: 4px 5px;
+    font-size: 5px;
+  }
+
+  .combat-rpg-action-chevron {
+    width: 21px;
+    height: 21px;
+    font-size: 12px;
+  }
+}
