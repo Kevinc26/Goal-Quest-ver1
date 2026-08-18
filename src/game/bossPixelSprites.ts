@@ -12,9 +12,9 @@ type BossSpriteTheme = {
 /*
  * Production boss art contract
  * ----------------------------
- * The combat renderer always tries the standalone HD asset first.  Each asset
+ * The combat renderer always tries the standalone HD asset first. Each asset
  * is a full-resolution transparent character render (not a crop from the boss
- * roster poster).  Until an HD file is available, BossSprite safely falls back
+ * roster poster). Until an HD file is available, BossSprite safely falls back
  * to the legacy pixel sprite so combat never breaks.
  *
  * Keep these filenames stable: they are the canonical one-boss-per-region
@@ -22,7 +22,7 @@ type BossSpriteTheme = {
  */
 export const BOSS_PIXEL_THEMES: Record<number, BossSpriteTheme> = {
   1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64", hdSrc: "/assets/bosses/hd3/01-urzag-hd.avif", hdStem: "01-urzag-hd", hdParts: 0, hdMime: "image/avif" },
-  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdSrc: "/assets/bosses/hd3/02-zephyrion-hd.avif", hdStem: "02-zephyrion-hd", hdParts: 0, hdMime: "image/avif" },
+  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdSrc: "/assets/bosses/hd3/02-zephyrion-hd.avif", hdStem: "02-zephyrion-hd-v2", hdParts: 6, hdMime: "image/avif" },
   3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64", hdSrc: "/assets/bosses/hd3/03-maldrak-hd.avif", hdStem: "03-maldrak-hd", hdParts: 0, hdMime: "image/avif" },
   4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64", hdSrc: "/assets/bosses/hd3/04-xilith-hd.avif", hdStem: "04-xilith-hd", hdParts: 0, hdMime: "image/avif" },
   5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64", hdSrc: "/assets/bosses/hd3/05-thalor-hd.avif", hdStem: "05-thalor-hd", hdParts: 0, hdMime: "image/avif" },
@@ -47,8 +47,9 @@ export const bossHdSpriteSrcForRegion = (regionId: number) =>
 export const bossHdSpritePartsForRegion = (regionId: number) => {
   const theme = BOSS_PIXEL_THEMES[regionId] ?? BOSS_PIXEL_THEMES[1];
   if (!theme.hdParts) return [];
+  const extension = theme.hdMime === "image/avif" ? "avif" : "webp";
   return Array.from({ length: theme.hdParts }, (_, index) =>
-    `/assets/bosses/hd/${theme.hdStem}.webp.base64.part${String(index + 1).padStart(2, "0")}`
+    `/assets/bosses/hd/${theme.hdStem}.${extension}.base64.part${String(index + 1).padStart(2, "0")}`
   );
 };
 
