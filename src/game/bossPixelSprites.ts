@@ -9,7 +9,7 @@ type BossSpriteTheme = {
   hdBase64Src?: string;
   hdStem?: string;
   hdParts?: number;
-  hdMime: "image/webp" | "image/avif";
+  hdMime: "image/png" | "image/webp" | "image/avif";
   assetStatus: BossAssetStatus;
   auditNote: string;
 };
@@ -17,100 +17,88 @@ type BossSpriteTheme = {
 /*
  * Boss art contract
  * -----------------
- * Boss Lab (?bosslab=1) is a strict visual QA mode. Only entries explicitly
- * marked "ready" may render HD art there; pending/invalid entries show a loud
- * error card instead of silently falling back to the legacy pixel sprite.
+ * The final boss renders are now stored as normal PNG files under
+ * public/assets/bosses/hd. Boss Lab (?bosslab=1) loads those files directly.
  *
- * Outside Boss Lab we keep gameplay safe: approved HD art is preferred and a
- * legacy pixel sprite is used only when an approved HD asset fails to load.
+ * The files currently have a .png.png suffix because that is how they were
+ * uploaded from the desktop. We intentionally reference the exact repository
+ * filenames here so the visual QA can proceed without another asset migration.
+ *
+ * Outside Boss Lab the legacy pixel sprite remains only as an emergency
+ * fallback if one of the direct PNG files fails to load.
  */
 export const BOSS_PIXEL_THEMES: Record<number, BossSpriteTheme> = {
   1: {
     name: "Urzag, Devourer of Habits",
     sprite: "/assets/bosses/pixel/03-urzag.png.base64",
-    hdSrc: "/assets/bosses/hd3/01-urzag-hd.avif",
-    hdBase64Src: "/assets/bosses/hd3/01-urzag-hd.avif.base64",
-    hdStem: "01-urzag-hd",
+    hdSrc: "/assets/bosses/hd/01-urzag.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "HD candidate exists but has not passed a distinct-render visual audit."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   2: {
     name: "Zephyrion, Thief of Time",
     sprite: "/assets/bosses/pixel/06-zephyrion.png.base64",
-    hdSrc: "/assets/bosses/hd3/02-zephyrion-hd.avif",
-    hdBase64Src: "/assets/bosses/hd3/02-zephyrion-hd.avif.base64",
-    hdStem: "02-zephyrion-hd-v2",
-    hdParts: 6,
-    hdMime: "image/avif",
+    hdSrc: "/assets/bosses/hd/02-zephyrion.png.png",
+    hdParts: 0,
+    hdMime: "image/png",
     assetStatus: "ready",
-    auditNote: "Approved chunked v2 HD render."
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   3: {
     name: "Maldrak, Heart of Fire",
     sprite: "/assets/bosses/pixel/04-maldrak.png.base64",
-    hdSrc: "/assets/bosses/hd3/03-maldrak-hd.avif",
-    hdBase64Src: "/assets/bosses/hd3/03-maldrak-hd.avif.base64",
-    hdStem: "03-maldrak-hd",
+    hdSrc: "/assets/bosses/hd/03-maldrak.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "HD candidate exists but has not passed a distinct-render visual audit."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   4: {
     name: "Xilith, Queen of Chaos",
     sprite: "/assets/bosses/pixel/01-xilith.png.base64",
-    hdSrc: "/assets/bosses/hd3/04-xilith-hd.avif",
-    hdBase64Src: "/assets/bosses/hd3/04-xilith-hd.avif.base64",
-    hdStem: "04-xilith-hd",
+    hdSrc: "/assets/bosses/hd/04-xilith.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "invalid",
-    auditNote: "Rejected: the current candidate is visually too close to the legacy pixel boss."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   5: {
     name: "Thalor, Titan of Steel",
     sprite: "/assets/bosses/pixel/02-thalor.png.base64",
-    hdSrc: "/assets/bosses/hd4/05-thalor-hd.avif",
-    hdBase64Src: "/assets/bosses/hd4/05-thalor-hd.avif.base64",
-    hdStem: "05-thalor-hd",
+    hdSrc: "/assets/bosses/hd/05-thalor.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "Current staged candidate is incomplete/unverified and is not approved for combat."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   6: {
     name: "Nyxara, Weaver of Nightmares",
     sprite: "/assets/bosses/pixel/07-nyxara.png.base64",
-    hdSrc: "/assets/bosses/hd4/06-nyxara-hd.avif",
-    hdBase64Src: "/assets/bosses/hd4/06-nyxara-hd.avif.base64",
-    hdStem: "06-nyxara-hd",
+    hdSrc: "/assets/bosses/hd/06-nyxara.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "HD candidate exists but has not passed a distinct-render visual audit."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   7: {
     name: "Kaelstrom, Eternal Storm",
     sprite: "/assets/bosses/pixel/05-kaelstrom.png.base64",
-    hdSrc: "/assets/bosses/hd3/07-kaelstrom-hd.avif",
-    hdBase64Src: "/assets/bosses/hd3/07-kaelstrom-hd.avif.base64",
-    hdStem: "07-kaelstrom-hd",
+    hdSrc: "/assets/bosses/hd/07-kaelstrom.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "HD candidate exists but has not passed a distinct-render visual audit."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   },
   8: {
     name: "Oblivion, Final Consumer",
     sprite: "/assets/bosses/pixel/08-oblivion.png.base64",
-    hdSrc: "/assets/bosses/hd3/08-oblivion-hd.avif",
-    hdStem: "08-oblivion-hd",
+    hdSrc: "/assets/bosses/hd/08-oblivion.png.png",
     hdParts: 0,
-    hdMime: "image/avif",
-    assetStatus: "pending",
-    auditNote: "No approved HD render is currently present."
+    hdMime: "image/png",
+    assetStatus: "ready",
+    auditNote: "Manual PNG uploaded and wired for live visual QA."
   }
 };
 
@@ -136,7 +124,7 @@ export const bossHdSpriteBase64SrcForRegion = (regionId: number) =>
 export const bossHdSpritePartsForRegion = (regionId: number) => {
   const theme = bossThemeForRegion(regionId);
   if (!theme.hdParts || !theme.hdStem) return [];
-  const extension = theme.hdMime === "image/avif" ? "avif" : "webp";
+  const extension = theme.hdMime === "image/avif" ? "avif" : theme.hdMime === "image/webp" ? "webp" : "png";
   return Array.from({ length: theme.hdParts }, (_, index) =>
     `/assets/bosses/hd/${theme.hdStem}.${extension}.base64.part${String(index + 1).padStart(2, "0")}`
   );
@@ -154,7 +142,8 @@ export const bossAssetAuditNoteForRegion = (regionId: number) =>
 export const bossHdDebugSourceForRegion = (regionId: number) => {
   const theme = bossThemeForRegion(regionId);
   if (theme.hdParts && theme.hdStem) {
-    return `/assets/bosses/hd/${theme.hdStem}.${theme.hdMime === "image/avif" ? "avif" : "webp"}.base64.part01 (+${theme.hdParts - 1})`;
+    const extension = theme.hdMime === "image/avif" ? "avif" : theme.hdMime === "image/webp" ? "webp" : "png";
+    return `/assets/bosses/hd/${theme.hdStem}.${extension}.base64.part01 (+${theme.hdParts - 1})`;
   }
   return theme.hdBase64Src ?? theme.hdSrc ?? "UNCONFIGURED";
 };
