@@ -26,6 +26,11 @@ const preloadImage = (src: string) =>
     image.src = src;
   });
 
+const loadBase64Asset = (path: string, mime: string) =>
+  fetchBase64Text(path)
+    .then((base64) => `data:${mime};base64,${base64}`)
+    .then(preloadImage);
+
 export default function BossSprite({ regionId, className }: BossSpriteProps) {
   const [spriteSrc, setSpriteSrc] = useState("");
 
@@ -46,8 +51,16 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
         .then((parts) => `data:${hdMime};base64,${parts.join("")}`)
         .then(preloadImage);
 
+    const loadStagedHdBase64 = () =>
+      hdSrc ? loadBase64Asset(`${hdSrc}.base64`, hdMime) : Promise.reject(new Error("No HD source"));
+
+    // Production order: real standalone HD binary -> staged HD base64 -> chunked HD -> legacy pixel fallback.
     const loadSprite = hdSrc
-      ? preloadImage(hdSrc).catch(() => hdParts.length ? loadChunkedHd().catch(loadLegacy) : loadLegacy())
+      ? preloadImage(hdSrc).catch(() =>
+          loadStagedHdBase64().catch(() =>
+            hdParts.length ? loadChunkedHd().catch(loadLegacy) : loadLegacy()
+          )
+        )
       : hdParts.length
         ? loadChunkedHd().catch(loadLegacy)
         : loadLegacy();
