@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { bossHdSpritePartsForRegion, bossPixelSpriteForRegion } from "../../../game/bossPixelSprites";
+import {
+  bossHdSpriteMimeForRegion,
+  bossHdSpritePartsForRegion,
+  bossPixelSpriteForRegion
+} from "../../../game/bossPixelSprites";
 
 type BossSpriteProps = {
   regionId: number;
@@ -9,9 +13,7 @@ type BossSpriteProps = {
 
 const fetchBase64Text = async (path: string) => {
   const response = await fetch(path);
-  if (!response.ok) {
-    throw new Error(`Unable to load boss sprite asset: ${path}`);
-  }
+  if (!response.ok) throw new Error(`Unable to load boss sprite asset: ${path}`);
   return (await response.text()).trim();
 };
 
@@ -22,6 +24,7 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
     let active = true;
     const legacySpriteFile = bossPixelSpriteForRegion(regionId);
     const hdParts = bossHdSpritePartsForRegion(regionId);
+    const hdMime = bossHdSpriteMimeForRegion(regionId);
 
     setSpriteSrc("");
 
@@ -30,7 +33,7 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
 
     const loadSprite = hdParts.length
       ? Promise.all(hdParts.map(fetchBase64Text))
-          .then((parts) => `data:image/avif;base64,${parts.join("")}`)
+          .then((parts) => `data:${hdMime};base64,${parts.join("")}`)
           .catch(loadLegacy)
       : loadLegacy();
 
@@ -51,12 +54,5 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
     return <span className={`${className ?? ""} combat-rpg-boss-sprite--loading`} aria-hidden="true" />;
   }
 
-  return (
-    <img
-      src={spriteSrc}
-      alt={`Boss for region ${regionId}`}
-      className={className}
-      draggable={false}
-    />
-  );
+  return <img src={spriteSrc} alt={`Boss for region ${regionId}`} className={className} draggable={false} />;
 }
