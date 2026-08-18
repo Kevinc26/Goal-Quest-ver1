@@ -1,14 +1,21 @@
 import { REGIONS } from "./data";
 
-export const BOSS_PIXEL_THEMES: Record<number, { name: string; sprite: string }> = {
-  1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64" },
-  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64" },
-  3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64" },
-  4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64" },
-  5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64" },
-  6: { name: "Nyxara, Weaver of Nightmares", sprite: "/assets/bosses/pixel/07-nyxara.png.base64" },
-  7: { name: "Kaelstrom, Eternal Storm", sprite: "/assets/bosses/pixel/05-kaelstrom.png.base64" },
-  8: { name: "Oblivion, Final Consumer", sprite: "/assets/bosses/pixel/08-oblivion.png.base64" }
+type BossSpriteTheme = {
+  name: string;
+  sprite: string;
+  hdStem: string;
+  hdParts: number;
+};
+
+export const BOSS_PIXEL_THEMES: Record<number, BossSpriteTheme> = {
+  1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64", hdStem: "01-urzag", hdParts: 0 },
+  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdStem: "02-zephyrion", hdParts: 0 },
+  3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64", hdStem: "03-maldrak", hdParts: 0 },
+  4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64", hdStem: "04-xilith", hdParts: 0 },
+  5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64", hdStem: "05-thalor", hdParts: 0 },
+  6: { name: "Nyxara, Weaver of Nightmares", sprite: "/assets/bosses/pixel/07-nyxara.png.base64", hdStem: "06-nyxara", hdParts: 0 },
+  7: { name: "Kaelstrom, Eternal Storm", sprite: "/assets/bosses/pixel/05-kaelstrom.png.base64", hdStem: "07-kaelstrom", hdParts: 0 },
+  8: { name: "Oblivion, Final Consumer", sprite: "/assets/bosses/pixel/08-oblivion.png.base64", hdStem: "08-oblivion", hdParts: 0 }
 };
 
 /* Preserve combat mechanics, HP, difficulty and attacks. Only the boss identity
@@ -22,6 +29,15 @@ for (const region of REGIONS) {
 
 export const bossPixelSpriteForRegion = (regionId: number) =>
   BOSS_PIXEL_THEMES[regionId]?.sprite ?? BOSS_PIXEL_THEMES[1].sprite;
+
+export const bossHdSpritePartsForRegion = (regionId: number) => {
+  const theme = BOSS_PIXEL_THEMES[regionId] ?? BOSS_PIXEL_THEMES[1];
+  if (!theme.hdParts) return [];
+
+  return Array.from({ length: theme.hdParts }, (_, index) =>
+    `/assets/bosses/hd/${theme.hdStem}.avif.base64.part${String(index + 1).padStart(2, "0")}`
+  );
+};
 
 export const bossPixelNameForRegion = (regionId: number) =>
   BOSS_PIXEL_THEMES[regionId]?.name ?? BOSS_PIXEL_THEMES[1].name;
