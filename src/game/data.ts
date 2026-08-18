@@ -102,12 +102,12 @@ export const CHARACTERS: Character[] = [
 export const REGIONS: Region[] = [
   {
     id: 1,
-    name: "CHAOS FOREST",
+    name: "CINDERROOT WILDS",
     color: "#ff6b6b",
     colorRgb: "255,107,107",
     icon: "🧠",
     boss: {
-      name: "Dragon of Disorder",
+      name: "Urzag, Devourer of Habits",
       sprite: "🐉",
       hp: 100,
       difficulty: 1,
@@ -126,12 +126,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 2,
-    name: "MOUNTAIN OF IDENTITY",
+    name: "CHRONOSPIRE HEIGHTS",
     color: "#4ecdc4",
     colorRgb: "78,205,196",
     icon: "🏔️",
     boss: {
-      name: "Golem of the Old Self",
+      name: "Zephyrion, Thief of Time",
       sprite: "🗿",
       hp: 120,
       difficulty: 2,
@@ -150,12 +150,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 3,
-    name: "CITY OF INFLUENCE",
+    name: "ASHEN CRUCIBLE",
     color: "#45b7d1",
     colorRgb: "69,183,209",
     icon: "🏰",
     boss: {
-      name: "Hydra of Bad Habits",
+      name: "Maldrak, Heart of Fire",
       sprite: "🐍",
       hp: 150,
       difficulty: 3,
@@ -174,12 +174,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 4,
-    name: "DESERT OF MOTIVATION",
+    name: "THORNVEIL COURT",
     color: "#f9c74f",
     colorRgb: "249,199,79",
     icon: "🏜️",
     boss: {
-      name: "Phoenix of Discouragement",
+      name: "Xilith, Queen of Chaos",
       sprite: "🔥",
       hp: 140,
       difficulty: 3,
@@ -198,12 +198,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 5,
-    name: "OCEAN OF DISCIPLINE",
+    name: "FROSTIRON DEPTHS",
     color: "#4a4e69",
     colorRgb: "74,78,105",
     icon: "🌊",
     boss: {
-      name: "Kraken of Laziness",
+      name: "Thalor, Titan of Steel",
       sprite: "🐙",
       hp: 160,
       difficulty: 4,
@@ -222,12 +222,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 6,
-    name: "SKY OF CREATIVITY",
+    name: "DREAMLESS VEIL",
     color: "#9d4edd",
     colorRgb: "157,78,221",
     icon: "☁️",
     boss: {
-      name: "Dragon of Creative Block",
+      name: "Nyxara, Weaver of Nightmares",
       sprite: "🌩️",
       hp: 180,
       difficulty: 4,
@@ -246,12 +246,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 7,
-    name: "HELL OF FEAR",
+    name: "TEMPEST CROWN",
     color: "#f94144",
     colorRgb: "249,65,68",
     icon: "🔥",
     boss: {
-      name: "Demon of Anxiety",
+      name: "Kaelstrom, Eternal Storm",
       sprite: "😈",
       hp: 200,
       difficulty: 5,
@@ -270,12 +270,12 @@ export const REGIONS: Region[] = [
   },
   {
     id: 8,
-    name: "SKY OF HARMONY",
+    name: "SHATTERED HEAVENS",
     color: "#90be6d",
     colorRgb: "144,190,109",
     icon: "🌈",
     boss: {
-      name: "Angel of Balance",
+      name: "Oblivion, Final Consumer",
       sprite: "👼",
       hp: 250,
       difficulty: 5,
