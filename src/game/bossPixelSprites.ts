@@ -10,7 +10,7 @@ type BossSpriteTheme = {
 
 export const BOSS_PIXEL_THEMES: Record<number, BossSpriteTheme> = {
   1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64", hdStem: "01-urzag-game", hdParts: 0, hdMime: "image/webp" },
-  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdStem: "02-zephyrion-game", hdParts: 0, hdMime: "image/webp" },
+  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdStem: "02-zephyrion-game", hdParts: 1, hdMime: "image/avif" },
   3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64", hdStem: "03-maldrak-game", hdParts: 0, hdMime: "image/webp" },
   4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64", hdStem: "04-xilith-game", hdParts: 0, hdMime: "image/webp" },
   5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64", hdStem: "05-thalor-game", hdParts: 0, hdMime: "image/webp" },
