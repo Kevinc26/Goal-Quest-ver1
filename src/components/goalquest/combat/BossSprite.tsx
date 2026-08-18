@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   bossHdSpriteMimeForRegion,
   bossHdSpritePartsForRegion,
+  bossHdSpriteSrcForRegion,
   bossPixelSpriteForRegion
 } from "../../../game/bossPixelSprites";
 
@@ -17,12 +18,21 @@ const fetchBase64Text = async (path: string) => {
   return (await response.text()).trim();
 };
 
+const preloadImage = (src: string) =>
+  new Promise<string>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(src);
+    image.onerror = () => reject(new Error(`Unable to decode boss sprite: ${src}`));
+    image.src = src;
+  });
+
 export default function BossSprite({ regionId, className }: BossSpriteProps) {
   const [spriteSrc, setSpriteSrc] = useState("");
 
   useEffect(() => {
     let active = true;
     const legacySpriteFile = bossPixelSpriteForRegion(regionId);
+    const hdSrc = bossHdSpriteSrcForRegion(regionId);
     const hdParts = bossHdSpritePartsForRegion(regionId);
     const hdMime = bossHdSpriteMimeForRegion(regionId);
 
@@ -31,11 +41,16 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
     const loadLegacy = () =>
       fetchBase64Text(legacySpriteFile).then((base64) => `data:image/png;base64,${base64}`);
 
-    const loadSprite = hdParts.length
-      ? Promise.all(hdParts.map(fetchBase64Text))
-          .then((parts) => `data:${hdMime};base64,${parts.join("")}`)
-          .catch(loadLegacy)
-      : loadLegacy();
+    const loadChunkedHd = () =>
+      Promise.all(hdParts.map(fetchBase64Text))
+        .then((parts) => `data:${hdMime};base64,${parts.join("")}`)
+        .then(preloadImage);
+
+    const loadSprite = hdSrc
+      ? preloadImage(hdSrc).catch(() => hdParts.length ? loadChunkedHd().catch(loadLegacy) : loadLegacy())
+      : hdParts.length
+        ? loadChunkedHd().catch(loadLegacy)
+        : loadLegacy();
 
     loadSprite
       .then((src) => {
