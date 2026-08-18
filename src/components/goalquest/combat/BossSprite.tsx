@@ -54,12 +54,13 @@ export default function BossSprite({ regionId, className }: BossSpriteProps) {
     const loadStagedHdBase64 = () =>
       hdSrc ? loadBase64Asset(`${hdSrc}.base64`, hdMime) : Promise.reject(new Error("No HD source"));
 
-    // Production order: real standalone HD binary -> staged HD base64 -> chunked HD -> legacy pixel fallback.
+    // Production order: real standalone HD binary -> new chunked HD render -> staged legacy HD -> pixel fallback.
+    // Chunked assets are used for the new full-resolution boss renders because GitHub stores them as text chunks.
     const loadSprite = hdSrc
       ? preloadImage(hdSrc).catch(() =>
-          loadStagedHdBase64().catch(() =>
-            hdParts.length ? loadChunkedHd().catch(loadLegacy) : loadLegacy()
-          )
+          hdParts.length
+            ? loadChunkedHd().catch(() => loadStagedHdBase64().catch(loadLegacy))
+            : loadStagedHdBase64().catch(loadLegacy)
         )
       : hdParts.length
         ? loadChunkedHd().catch(loadLegacy)
