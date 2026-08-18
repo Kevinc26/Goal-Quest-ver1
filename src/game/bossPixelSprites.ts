@@ -9,15 +9,26 @@ type BossSpriteTheme = {
   hdMime: "image/webp" | "image/avif";
 };
 
+/*
+ * Production boss art contract
+ * ----------------------------
+ * The combat renderer always tries the standalone HD asset first.  Each asset
+ * is a full-resolution transparent character render (not a crop from the boss
+ * roster poster).  Until an HD file is available, BossSprite safely falls back
+ * to the legacy pixel sprite so combat never breaks.
+ *
+ * Keep these filenames stable: they are the canonical one-boss-per-region
+ * targets for the new generated art set.
+ */
 export const BOSS_PIXEL_THEMES: Record<number, BossSpriteTheme> = {
-  1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64", hdSrc: "/assets/bosses/hd/01-urzag.avif", hdStem: "01-urzag-game", hdParts: 0, hdMime: "image/avif" },
-  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdSrc: "/assets/bosses/hd/02-zephyrion.avif", hdStem: "02-zephyrion-hd", hdParts: 0, hdMime: "image/webp" },
-  3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64", hdStem: "03-maldrak-game", hdParts: 0, hdMime: "image/webp" },
-  4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64", hdStem: "04-xilith-game", hdParts: 0, hdMime: "image/webp" },
-  5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64", hdStem: "05-thalor-game", hdParts: 0, hdMime: "image/webp" },
-  6: { name: "Nyxara, Weaver of Nightmares", sprite: "/assets/bosses/pixel/07-nyxara.png.base64", hdStem: "06-nyxara-game", hdParts: 0, hdMime: "image/webp" },
-  7: { name: "Kaelstrom, Eternal Storm", sprite: "/assets/bosses/pixel/05-kaelstrom.png.base64", hdStem: "07-kaelstrom-game", hdParts: 0, hdMime: "image/webp" },
-  8: { name: "Oblivion, Final Consumer", sprite: "/assets/bosses/pixel/08-oblivion.png.base64", hdStem: "08-oblivion-game", hdParts: 0, hdMime: "image/webp" }
+  1: { name: "Urzag, Devourer of Habits", sprite: "/assets/bosses/pixel/03-urzag.png.base64", hdSrc: "/assets/bosses/hd3/01-urzag-hd.avif", hdStem: "01-urzag-hd", hdParts: 0, hdMime: "image/avif" },
+  2: { name: "Zephyrion, Thief of Time", sprite: "/assets/bosses/pixel/06-zephyrion.png.base64", hdSrc: "/assets/bosses/hd3/02-zephyrion-hd.avif", hdStem: "02-zephyrion-hd", hdParts: 0, hdMime: "image/avif" },
+  3: { name: "Maldrak, Heart of Fire", sprite: "/assets/bosses/pixel/04-maldrak.png.base64", hdSrc: "/assets/bosses/hd3/03-maldrak-hd.avif", hdStem: "03-maldrak-hd", hdParts: 0, hdMime: "image/avif" },
+  4: { name: "Xilith, Queen of Chaos", sprite: "/assets/bosses/pixel/01-xilith.png.base64", hdSrc: "/assets/bosses/hd3/04-xilith-hd.avif", hdStem: "04-xilith-hd", hdParts: 0, hdMime: "image/avif" },
+  5: { name: "Thalor, Titan of Steel", sprite: "/assets/bosses/pixel/02-thalor.png.base64", hdSrc: "/assets/bosses/hd3/05-thalor-hd.avif", hdStem: "05-thalor-hd", hdParts: 0, hdMime: "image/avif" },
+  6: { name: "Nyxara, Weaver of Nightmares", sprite: "/assets/bosses/pixel/07-nyxara.png.base64", hdSrc: "/assets/bosses/hd3/06-nyxara-hd.avif", hdStem: "06-nyxara-hd", hdParts: 0, hdMime: "image/avif" },
+  7: { name: "Kaelstrom, Eternal Storm", sprite: "/assets/bosses/pixel/05-kaelstrom.png.base64", hdSrc: "/assets/bosses/hd3/07-kaelstrom-hd.avif", hdStem: "07-kaelstrom-hd", hdParts: 0, hdMime: "image/avif" },
+  8: { name: "Oblivion, Final Consumer", sprite: "/assets/bosses/pixel/08-oblivion.png.base64", hdSrc: "/assets/bosses/hd3/08-oblivion-hd.avif", hdStem: "08-oblivion-hd", hdParts: 0, hdMime: "image/avif" }
 };
 
 /* Preserve combat mechanics, HP, difficulty and attacks. Only the boss identity
