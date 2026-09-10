@@ -1,13 +1,9 @@
 import React, { useMemo, useState } from "react";
 
+import { isBossLabEnabled } from "../../../game/bossLabAccess";
 import { BOSS_PIXEL_THEMES, type BossAssetStatus } from "../../../game/bossPixelSprites";
 import { goalQuestAssets, goalQuestCharacters, goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
 import { publicAssetPath } from "../utils";
-
-const bossLabEnabled = () => {
-  if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).get("bosslab") === "1";
-};
 
 const statusLabel = (status: BossAssetStatus) => status.toUpperCase();
 
@@ -25,7 +21,7 @@ export default function BossLab() {
     return counts;
   }, []);
 
-  if (!bossLabEnabled()) return null;
+  if (!isBossLabEnabled()) return null;
 
   const launchBoss = (regionId: number) => {
     const state = useGoalQuestStore.getState();
