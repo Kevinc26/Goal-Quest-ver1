@@ -8,11 +8,13 @@ import { GoalQuestAuthProvider, useGoalQuestAuth } from "./auth/AuthProvider";
 import AerilCompanion from "./effects/AerilCompanion";
 import CorruptionVisuals from "./effects/CorruptionVisuals";
 import ParticleBackground from "./effects/ParticleBackground";
+import RetentionDirector from "./effects/RetentionDirector";
 import RetentionTelemetry from "./effects/RetentionTelemetry";
 import { onboardingScreens } from "./onboardingData";
 import MusicToggleButton from "./overlays/MusicToggleButton";
 import NotificationLayer from "./overlays/NotificationLayer";
 import OnboardingOverlay from "./overlays/OnboardingOverlay";
+import RetentionJourneyPanel from "./overlays/RetentionJourneyPanel";
 import TaskModal from "./overlays/TaskModal";
 import ScreenRouter from "./ScreenRouter";
 
@@ -123,6 +125,7 @@ function GoalQuestExperience() {
   return (
     <>
       <RetentionTelemetry enabled={!auth.loading && cloudReady} session={auth.session} />
+      <RetentionDirector enabled={!auth.loading && cloudReady && !showLoading} session={auth.session} />
 
       {!showLoading ? (
         <>
@@ -153,6 +156,7 @@ function GoalQuestExperience() {
           <NotificationLayer />
           <MusicToggleButton />
           <AerilCompanion />
+          <RetentionJourneyPanel />
         </>
       ) : null}
 
