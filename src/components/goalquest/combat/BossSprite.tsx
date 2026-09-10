@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import { isBossLabEnabled } from "../../../game/bossLabAccess";
 import {
   bossAssetAuditNoteForRegion,
   bossAssetStatusForRegion,
@@ -29,11 +30,6 @@ type SpriteState = {
   error?: string;
 };
 
-const bossLabStrictEnabled = () => {
-  if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).get("bosslab") === "1";
-};
-
 const fetchBase64Text = async (path: string) => {
   const response = await fetch(path);
   if (!response.ok) throw new Error(`Unable to load boss sprite asset: ${path} (${response.status})`);
@@ -57,7 +53,7 @@ const loadBase64Asset = (path: string, mime: string) =>
 
 export default function BossSprite({ regionId, className }: BossSpriteProps) {
   const [spriteState, setSpriteState] = useState<SpriteState>({ status: "loading" });
-  const strictMode = bossLabStrictEnabled();
+  const strictMode = isBossLabEnabled();
   const assetStatus = bossAssetStatusForRegion(regionId);
   const bossName = bossPixelNameForRegion(regionId);
   const auditNote = bossAssetAuditNoteForRegion(regionId);
