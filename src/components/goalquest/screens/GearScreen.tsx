@@ -27,13 +27,26 @@ export default function GearScreen() {
   const stats = useGoalQuestStore((state) => state.stats);
   const setScreen = useGoalQuestStore((state) => state.setScreen);
   const [equipment, setEquipment] = useState<EquippedGear>(EMPTY_EQUIPMENT);
+  const [retentionRevision, setRetentionRevision] = useState(0);
 
   useEffect(() => {
     if (!character) {
+      setEquipment(EMPTY_EQUIPMENT);
       return;
     }
     setEquipment(loadEquipment(character.id, stats));
-  }, [character, stats.level]);
+  }, [character, stats.level, retentionRevision]);
+
+  useEffect(() => {
+    const refreshRetentionGear = () => setRetentionRevision((value) => value + 1);
+    window.addEventListener("goalquest:retention-changed", refreshRetentionGear);
+    window.addEventListener("goalquest:equipment-restored", refreshRetentionGear);
+
+    return () => {
+      window.removeEventListener("goalquest:retention-changed", refreshRetentionGear);
+      window.removeEventListener("goalquest:equipment-restored", refreshRetentionGear);
+    };
+  }, []);
 
   const gear = useMemo(() => (character ? getGearForCharacter(character.id) : []), [character]);
   const equippedItems = character ? getEquippedItems(character.id, stats, equipment) : [];
@@ -93,7 +106,7 @@ export default function GearScreen() {
           <h3>{unlockedCount === 4 ? "MASTER LOADOUT" : `${unlockedCount}/4 REWARDS UNLOCKED`}</h3>
           <p>
             {nextReward
-              ? `Next reward: ${nextReward.name} at Level ${nextReward.unlockLevel}.`
+              ? `Next reward: ${nextReward.name} at Level ${nextReward.unlockLevel}, or forge it early with Gear Fragments.`
               : "All current evolution rewards unlocked. More tiers can be added later."}
           </p>
           <div className="gear-progress-track" aria-hidden="true">
@@ -118,7 +131,7 @@ export default function GearScreen() {
 
               <div className="gear-item-symbol" aria-hidden="true">{unlocked ? item.symbol : "?"}</div>
               <h3>{unlocked ? item.name : "LOCKED REWARD"}</h3>
-              <p>{unlocked ? item.description : `Reach Level ${item.unlockLevel} to reveal this ${GEAR_SLOT_LABELS[item.slot].toLowerCase()}.`}</p>
+              <p>{unlocked ? item.description : `Reach Level ${item.unlockLevel} or forge this ${GEAR_SLOT_LABELS[item.slot].toLowerCase()} with retention rewards.`}</p>
 
               <button
                 type="button"
@@ -135,7 +148,7 @@ export default function GearScreen() {
 
       <div className="gear-explainer">
         <span>✦</span>
-        <p>Gear is cosmetic in this first version. It changes your hero’s visual presentation without affecting combat balance.</p>
+        <p>Gear is cosmetic in this first version. Earn it by leveling up or forge it early with Gear Fragments from daily, streak, and weekly rewards.</p>
       </div>
     </div>
   );
