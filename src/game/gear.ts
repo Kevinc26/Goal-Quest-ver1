@@ -1,3 +1,4 @@
+import { readBonusGearUnlocks } from "./retention";
 import type { Stats } from "./types";
 
 export type GearSlot = "weapon" | "armor" | "relic" | "aura";
@@ -97,7 +98,8 @@ export const getGearForCharacter = (characterId: number): GearItem[] =>
 export const getGearUnlockedAtLevel = (characterId: number, level: number) =>
   getGearForCharacter(characterId).find((item) => item.unlockLevel === level) ?? null;
 
-export const isGearUnlocked = (item: GearItem, stats: Stats) => stats.level >= item.unlockLevel;
+export const isGearUnlocked = (item: GearItem, stats: Stats) =>
+  stats.level >= item.unlockLevel || readBonusGearUnlocks(item.characterId).includes(item.id);
 
 export const getNextGearReward = (characterId: number, stats: Stats) =>
   getGearForCharacter(characterId)
