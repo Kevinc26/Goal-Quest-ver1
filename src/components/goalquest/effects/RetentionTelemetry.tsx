@@ -8,7 +8,7 @@ import {
   type QuestEventInput
 } from "../../../lib/questEvents";
 import type { SupabaseSession } from "../../../lib/supabaseClient";
-import { useGoalQuestStore } from "../../../stores/goalQuestStore";
+import { goalQuestRegions, useGoalQuestStore } from "../../../stores/goalQuestStore";
 
 type RetentionTelemetryProps = {
   enabled: boolean;
@@ -162,11 +162,12 @@ export default function RetentionTelemetry({ enabled, session }: RetentionTeleme
       next.defeatedBosses
         .filter((regionId) => !previousBosses.has(regionId))
         .forEach((regionId) => {
+          const region = goalQuestRegions.find((entry) => entry.id === regionId);
           emit({
             eventType: "boss_defeated",
             source: "boss",
             regionId,
-            xpAwarded: 100 * regionId,
+            xpAwarded: 100 * (region?.boss.difficulty ?? 1),
             metadata: { localDate: eventDate }
           });
         });
