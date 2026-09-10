@@ -98,18 +98,28 @@ export default function WorldScreen() {
             <div
               key={region.id}
               className={`region-tile ${unlocked ? "" : "locked"}`}
+              role="button"
+              tabIndex={unlocked ? 0 : -1}
+              aria-disabled={!unlocked}
+              aria-label={unlocked ? `${region.name}, ${regionProgress} of 7 quests complete` : `${region.name}, locked`}
               onClick={() => {
-                if (unlocked) {
+                if (unlocked) enterRegion(region.id);
+              }}
+              onKeyDown={(event) => {
+                if (event.target !== event.currentTarget || !unlocked) return;
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
                   enterRegion(region.id);
                 }
               }}
-              aria-hidden="true"
             >
               <div>
                 <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden", marginBottom: "10px", background: "rgba(0,0,0,0.35)" }}>
                   <img
                     src={publicAssetPath(goalQuestAssets.acts[region.id])}
                     alt={region.name}
+                    loading={region.id === 1 ? "eager" : "lazy"}
+                    decoding="async"
                     style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
                   />
                 </div>
