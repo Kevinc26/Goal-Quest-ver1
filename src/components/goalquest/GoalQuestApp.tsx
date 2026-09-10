@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 
 import { bootstrapGoalQuestCloud, startGoalQuestCloudSync } from "../../lib/cloudSave";
+import { localDateKey, trackQuestEvent } from "../../lib/questEvents";
 import { useGoalQuestStore } from "../../stores/goalQuestStore";
 import AuthScreen from "./auth/AuthScreen";
 import { GoalQuestAuthProvider, useGoalQuestAuth } from "./auth/AuthProvider";
 import AerilCompanion from "./effects/AerilCompanion";
 import CorruptionVisuals from "./effects/CorruptionVisuals";
 import ParticleBackground from "./effects/ParticleBackground";
+import RetentionTelemetry from "./effects/RetentionTelemetry";
 import { onboardingScreens } from "./onboardingData";
 import MusicToggleButton from "./overlays/MusicToggleButton";
 import NotificationLayer from "./overlays/NotificationLayer";
@@ -91,6 +93,14 @@ function GoalQuestExperience() {
     window.localStorage.setItem(`goalquest_onboarding_seen_${accountKey}`, "true");
     setOnboardingStep(null);
 
+    if (auth.session) {
+      void trackQuestEvent(auth.session, {
+        eventType: "onboarding_completed",
+        source: "system",
+        metadata: { localDate: localDateKey(), choseClassNext: goToCharacters }
+      }).catch((error) => console.warn("GoalQuest onboarding analytics failed", error));
+    }
+
     if (goToCharacters) {
       setScreen("characters");
     }
@@ -112,6 +122,8 @@ function GoalQuestExperience() {
 
   return (
     <>
+      <RetentionTelemetry enabled={!auth.loading && cloudReady} session={auth.session} />
+
       {!showLoading ? (
         <>
           <ParticleBackground />
